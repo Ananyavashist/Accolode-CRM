@@ -1,0 +1,70 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    @apply bg-surface text-ink antialiased;
+    font-size: 14px;
+    line-height: 1.5;
+    font-feature-settings: "cv11", "ss01";
+  }
+
+  h1 {
+    @apply text-[20px] font-bold leading-tight;
+  }
+
+  h2,
+  h3 {
+    @apply text-[16px] font-semibold leading-snug;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply rounded-full bg-black/10;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-black/20;
+  }
+}
+
+@layer components {
+  .section-card {
+    @apply rounded-2xl border border-hairline bg-surface;
+  }
+
+  .pill {
+    @apply inline-flex items-center gap-1 rounded-[6px] px-2.5 py-1 text-xs font-medium;
+  }
+
+  .btn {
+    @apply inline-flex h-10 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-[10px] p-[10px] text-sm font-semibold leading-none transition-colors;
+  }
+
+  .btn-primary {
+    @apply btn bg-primary text-white shadow-card hover:bg-primary-700;
+  }
+
+  .btn-outline {
+    @apply btn border border-hairline bg-surface text-ink hover:bg-hairline;
+  }
+
+  .icon-btn {
+    @apply inline-flex h-9 w-9 items-center justify-center rounded-full border border-hairline bg-surface text-ink-muted transition-colors hover:bg-hairline;
+  }
+}
