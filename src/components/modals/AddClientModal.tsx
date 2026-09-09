@@ -6,7 +6,7 @@ import { RangeField } from "@/components/ui/RangeField";
 import { Snackbar } from "@/components/ui/Snackbar";
 import { useCrm } from "@/store/CrmContext";
 import { useUi } from "@/store/UiContext";
-import type { AddClientInput } from "@/types";
+import { CLIENT_SOURCE_OPTIONS, type AddClientInput, type ClientSource } from "@/types";
 
 const CITIES = ["Mumbai", "Delhi", "Bengaluru", "Gurgaon", "Noida", "Pune"];
 const LOCALITIES: Record<string, string[]> = {
@@ -40,6 +40,10 @@ function formatTimeline(months: number): string {
 }
 
 const INITIAL = {
+  name: "",
+  phone: "",
+  email: "",
+  source: "" as "" | ClientSource,
   dealType: "" as "" | AddClientInput["dealType"],
   city: "",
   locality: "",
@@ -58,6 +62,7 @@ export function AddClientModal() {
   const { addClient } = useCrm();
   const [form, setForm] = useState(INITIAL);
   const [toast, setToast] = useState<string | null>(null);
+  const [errors, setErrors] = useState<{ name?: string; phone?: string }>({});
 
   const localities = useMemo(
     () => (form.city ? LOCALITIES[form.city] ?? [] : []),
@@ -68,6 +73,7 @@ export function AddClientModal() {
     if (!addClientOpen) {
       setForm(INITIAL);
       setToast(null);
+      setErrors({});
     }
   }, [addClientOpen]);
 
@@ -77,12 +83,24 @@ export function AddClientModal() {
     return () => clearTimeout(t);
   }, [toast]);
 
+  useEffect(() => {
+    if (!addClientOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeAddClient();
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [addClientOpen, closeAddClient]);
+
   if (!addClientOpen) return null;
 
   const patch = (partial: Partial<typeof INITIAL>) =>
     setForm((prev) => ({ ...prev, ...partial }));
 
   const canSave =
+    form.name.trim() &&
+    form.phone.trim() &&
+    form.source &&
     form.dealType &&
     form.city &&
     form.locality &&
@@ -91,8 +109,20 @@ export function AddClientModal() {
     form.furnishing;
 
   const handleSave = () => {
-    if (!canSave || !form.dealType) return;
-    addClient({ ...form, dealType: form.dealType });
+    const next = {
+      name: form.name.trim() ? undefined : "Name is required",
+      phone: form.phone.trim() ? undefined : "Phone is required",
+    };
+    setErrors(next);
+    if (next.name || next.phone || !canSave || !form.dealType || !form.source) return;
+    addClient({
+      ...form,
+      name: form.name.trim(),
+      phone: form.phone.trim(),
+      email: form.email.trim(),
+      source: form.source,
+      dealType: form.dealType,
+    });
     setToast("Client saved to Client Database");
     setTimeout(() => closeAddClient(), 600);
   };
@@ -100,14 +130,15 @@ export function AddClientModal() {
   return (
     <>
       <div
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+        className="fixed inset-0 z-50 flex items-stretch justify-center bg-black/40 sm:items-center sm:p-4"
         onClick={closeAddClient}
         role="presentation"
       >
         <div
-          className="section-card flex max-h-[90vh] w-full max-w-4xl flex-col overflow-hidden shadow-pop"
+          className="section-card flex h-full w-full max-w-4xl flex-col overflow-hidden shadow-pop sm:h-auto sm:max-h-[90vh]"
           onClick={(e) => e.stopPropagation()}
           role="dialog"
+          aria-modal="true"
           aria-labelledby="add-client-title"
         >
           <div className="flex items-center justify-between border-b border-hairline px-5 py-4">
@@ -125,6 +156,53 @@ export function AddClientModal() {
 
           <div className="grid flex-1 overflow-y-auto lg:grid-cols-2">
             <div className="space-y-5 border-b border-hairline p-5 lg:border-b-0 lg:border-r">
+              <label className="block">
+                <span className="text-sm font-medium text-ink">Name</span>
+                <input
+                  value={form.name}
+                  onChange={(e) => patch({ name: e.target.value })}
+                  className="input-field mt-1.5"
+                  autoFocus
+                  aria-invalid={Boolean(errors.name)}
+                  aria-describedby={errors.name ? "add-client-name-error" : undefined}
+                />
+                {errors.name && (
+                  <p id="add-client-name-error" className="mt-1 text-xs text-status-awaiting">
+                    {errors.name}
+                  </p>
+                )}
+              </label>
+              <label className="block">
+                <span className="text-sm font-medium text-ink">Phone</span>
+                <input
+                  value={form.phone}
+                  onChange={(e) => patch({ phone: e.target.value })}
+                  className="input-field mt-1.5"
+                  aria-invalid={Boolean(errors.phone)}
+                  aria-describedby={errors.phone ? "add-client-phone-error" : undefined}
+                />
+                {errors.phone && (
+                  <p id="add-client-phone-error" className="mt-1 text-xs text-status-awaiting">
+                    {errors.phone}
+                  </p>
+                )}
+              </label>
+              <label className="block">
+                <span className="text-sm font-medium text-ink">Email</span>
+                <input
+                  type="email"
+                  value={form.email}
+                  onChange={(e) => patch({ email: e.target.value })}
+                  className="input-field mt-1.5"
+                />
+              </label>
+              <SelectDropdown
+                label="Source"
+                value={form.source}
+                options={[...CLIENT_SOURCE_OPTIONS]}
+                onChange={(v) => patch({ source: v as ClientSource })}
+                disabled={false}
+              />
               <SelectDropdown
                 label="Is the client willing to rent or buy a property?"
                 value={form.dealType}
@@ -184,7 +262,7 @@ export function AddClientModal() {
                 </div>
 
                 <RangeField
-                  label="Price Range"
+                  label="Price (up to)"
                   min={5000}
                   max={1000000}
                   value={form.priceMax}
@@ -194,7 +272,7 @@ export function AddClientModal() {
                   disabled={false}
                 />
                 <RangeField
-                  label="Area (sq. ft.)"
+                  label="Area (up to, sq. ft.)"
                   min={0}
                   max={4000}
                   value={form.areaMax}

@@ -1,58 +1,62 @@
-/** Brand data palette — earthy tones with accessible contrast on white. */
+/** Cool analogous data palette that sits next to Accolode teal. */
 export const DATA_PALETTE = {
-  green: "#607456",
-  cream: "#EEE0CC",
-  terracotta: "#BA6A4C",
-  burgundy: "#7B2525",
+  teal: "#124553",
+  cyan: "#2A9D8F",
+  slate: "#3D5A80",
+  seafoam: "#52B788",
+  indigo: "#4C6EF5",
 } as const;
 
 export const DATA_PALETTE_ORDER = [
-  DATA_PALETTE.burgundy,
-  DATA_PALETTE.green,
-  DATA_PALETTE.terracotta,
-  DATA_PALETTE.cream,
+  DATA_PALETTE.teal,
+  DATA_PALETTE.cyan,
+  DATA_PALETTE.slate,
+  DATA_PALETTE.seafoam,
+  DATA_PALETTE.indigo,
 ] as const;
 
 export const CHART = {
-  primary: DATA_PALETTE.green,
-  grid: "#E8E8E8",
-  tick: "#5C6670",
+  primary: DATA_PALETTE.teal,
+  grid: "#E5E7EB",
+  tick: "#6B7280",
 } as const;
 
-/** Lead acquisition & line chart series */
 export const ACQUISITION_COLORS = {
-  direct: DATA_PALETTE.burgundy,
-  social: DATA_PALETTE.green,
-  platform: DATA_PALETTE.terracotta,
+  direct: DATA_PALETTE.teal,
+  social: DATA_PALETTE.cyan,
+  platform: DATA_PALETTE.slate,
 } as const;
 
-/** Property platform donut slices */
 export const PLATFORM_COLORS: Record<string, string> = {
-  ShiftHona: DATA_PALETTE.burgundy,
-  Magicbricks: DATA_PALETTE.green,
-  "99acres": DATA_PALETTE.terracotta,
+  ShiftHona: DATA_PALETTE.teal,
+  Magicbricks: DATA_PALETTE.cyan,
+  "99acres": DATA_PALETTE.slate,
 };
 
-/** Client-in-progress location slices */
 export const LOCATION_SLICE_COLORS = [
-  DATA_PALETTE.burgundy,
-  DATA_PALETTE.green,
-  DATA_PALETTE.terracotta,
-  DATA_PALETTE.cream,
-  DATA_PALETTE.burgundy,
-  DATA_PALETTE.green,
+  DATA_PALETTE.teal,
+  DATA_PALETTE.cyan,
+  DATA_PALETTE.slate,
+  DATA_PALETTE.seafoam,
+  DATA_PALETTE.indigo,
+  DATA_PALETTE.teal,
 ] as const;
 
-/** Properties bar chart */
 export const BAR_COLORS = {
-  rent: DATA_PALETTE.green,
-  sold: DATA_PALETTE.terracotta,
+  rent: DATA_PALETTE.teal,
+  sold: DATA_PALETTE.seafoam,
 } as const;
 
-/** Listed property type chips — solid backgrounds */
+/** Rent / Buy / Sale must not share a teal wash — brokers scan these first. */
+export const TYPE_CHIP = {
+  Rent: { bg: "#EEF5F7", text: "#124553" },
+  Buy: { bg: "#EEF0FE", text: "#4C6EF5" },
+  Sale: { bg: "#DCE4EE", text: "#3D5A80" },
+} as const;
+
 export const LISTING_CHIP = {
-  rent: { bg: "#E4EBE0", text: BAR_COLORS.rent },
-  sold: { bg: "#F3E0D8", text: BAR_COLORS.sold },
+  rent: TYPE_CHIP.Rent,
+  sold: TYPE_CHIP.Sale,
 } as const;
 
 export const STATUS = {

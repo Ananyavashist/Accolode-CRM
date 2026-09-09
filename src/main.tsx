@@ -4,7 +4,10 @@ import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import { CrmProvider } from "./store/CrmContext";
 import { UiProvider } from "./store/UiContext";
+import { startRevealScrollbar } from "./lib/revealScrollbar";
 import "./index.css";
+
+startRevealScrollbar();
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

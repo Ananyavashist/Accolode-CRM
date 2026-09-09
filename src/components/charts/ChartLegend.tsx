@@ -10,7 +10,7 @@ export const ACQUISITION_SERIES = [
 
 export const PROPERTIES_SERIES = [
   { key: "rent", label: "Rent", color: BAR_COLORS.rent },
-  { key: "sold", label: "Sold", color: BAR_COLORS.sold },
+  { key: "sold", label: "Sale", color: BAR_COLORS.sold },
 ] as const;
 
 interface ChartLegendProps {
@@ -60,7 +60,7 @@ export function DonutDetailLegend({
       <div className={cn("w-full", className)}>
         <div className="text-center">
           <p className="text-xs text-ink-soft">Total</p>
-          <p className="text-lg font-bold text-ink">
+          <p className="text-lg font-semibold text-ink">
             {total} {unit}
           </p>
         </div>
@@ -88,7 +88,7 @@ export function DonutDetailLegend({
   return (
     <div className={cn("flex min-w-0 flex-1 flex-col justify-center", className)}>
       <p className="text-xs text-ink-soft">Total</p>
-      <p className="text-xl font-bold text-ink">
+      <p className="text-xl font-semibold text-ink">
         {total} {unit}
       </p>
       <div className="mt-3 space-y-2">

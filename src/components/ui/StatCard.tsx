@@ -18,19 +18,19 @@ export function StatCard({
 }: StatCardProps) {
   const isUp = trendDirection === "up";
   return (
-    <div className="section-card flex flex-col gap-3 p-4">
+    <div className="section-card flex flex-col gap-4 p-4">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2 text-sm font-medium text-ink-muted">
+        <div className="flex items-center gap-1.5 text-xs font-medium text-ink-muted">
           <span>{title}</span>
-          <Info size={14} className="text-ink-soft" />
+          <Info size={13} className="text-ink-soft" />
         </div>
         <button className="text-ink-soft transition-colors hover:text-ink" aria-label="More">
-          <MoreHorizontal size={18} />
+          <MoreHorizontal size={16} />
         </button>
       </div>
 
-      <div className="flex items-center gap-2">
-        <span className="text-3xl font-bold tracking-tight text-ink">{value}</span>
+      <div className="flex items-end gap-2">
+        <span className="text-[28px] font-semibold leading-none tracking-tight text-ink">{value}</span>
         {trend && (
           <span
             className={cn(
@@ -46,7 +46,7 @@ export function StatCard({
         )}
       </div>
 
-      {subtitle && <p className="text-xs text-ink-soft">{subtitle}</p>}
+      {subtitle && <p className="text-xs text-ink-muted">{subtitle}</p>}
     </div>
   );
 }

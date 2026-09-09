@@ -3,9 +3,11 @@ export type Intent = "High" | "Medium" | "Low";
 export type ConversionStatus =
   | "Active Lead"
   | "Awaiting Action"
-  | "Completed Client"
-  | "Completed";
+  | "Completed"
+  | "Completed Client";
 export type ClientCategory = "Renter" | "Buyer";
+export type ClientSource = "Referral" | "Walk-in" | "WhatsApp" | "Portal";
+export type LeadStatus = "new" | "accepted" | "deprioritised";
 export type ProgressStage =
   | "Inquiry"
   | "New"
@@ -17,7 +19,6 @@ export type ProgressStage =
 export const CONVERSION_STATUS_OPTIONS: ConversionStatus[] = [
   "Active Lead",
   "Awaiting Action",
-  "Completed Client",
   "Completed",
 ];
 
@@ -28,6 +29,13 @@ export const PROGRESS_STAGE_OPTIONS: ProgressStage[] = [
   "Site Visit",
   "Negotiation",
   "Closed",
+];
+
+export const CLIENT_SOURCE_OPTIONS: ClientSource[] = [
+  "Referral",
+  "Walk-in",
+  "WhatsApp",
+  "Portal",
 ];
 
 export interface PropertyPreference {
@@ -64,6 +72,10 @@ export interface Lead {
     timeline: string;
   };
   properties: PropertyPreference[];
+  status?: LeadStatus;
+  deprioritisedAt?: string;
+  viewedPropertiesAtDeprioritise?: number;
+  returnedReason?: string;
 }
 
 export interface Client {
@@ -80,6 +92,8 @@ export interface Client {
   phone: string;
   city: string;
   progressStage: ProgressStage | string;
+  source?: ClientSource;
+  lastTouchedAt?: string;
   onboarding: {
     preferredLocation: string;
     preferredNeighbour: string;
@@ -88,6 +102,13 @@ export interface Client {
     furnishing: string;
     budget: string;
     shiftingTimeline: string;
+    updatedAt?: Partial<Record<"budget" | "preferredLocation" | "propertyType", string>>;
+  };
+  observed?: {
+    browsingBudget?: string;
+    browsingLocations?: string[];
+    viewedProperties?: number;
+    lastActiveAt?: string;
   };
   properties: PropertyPreference[];
 }
@@ -110,6 +131,10 @@ export interface ChatMessage {
 }
 
 export interface AddClientInput {
+  name: string;
+  phone: string;
+  email: string;
+  source: ClientSource;
   dealType: DealType;
   city: string;
   locality: string;
@@ -122,6 +147,34 @@ export interface AddClientInput {
   areaMax: number;
   availableFromMonths: number;
 }
+
+export interface Task {
+  id: string;
+  clientId: string;
+  text: string;
+  dueDate: string;
+  done: boolean;
+}
+
+export interface WhatsAppSend {
+  id: string;
+  clientId: string;
+  clientName: string;
+  phone: string;
+  sentAt: string;
+  preview: string;
+  stage?: string;
+}
+
+export type FirstStepId =
+  | "triage"
+  | "followUp"
+  | "saidDoing"
+  | "siteVisit"
+  | "walkIn"
+  | "whatsapp";
+
+export type FirstSteps = Record<FirstStepId, boolean>;
 
 export interface AppNotification {
   id: string;

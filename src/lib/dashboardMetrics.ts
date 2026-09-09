@@ -12,7 +12,7 @@ export interface PieSlice {
 }
 
 export function computeNewLeads(leads: Lead[]): number {
-  return leads.length;
+  return leads.filter((l) => (l.status ?? "new") === "new").length;
 }
 
 export function computeQualified(leads: Lead[], clients: Client[]): number {
@@ -93,9 +93,8 @@ export function computeClientDatabaseStats(clients: Client[]) {
   return {
     total: clients.length,
     active: clients.filter((c) => c.status === "Active Lead").length,
-    completed: clients.filter(
-      (c) => c.status === "Completed Client" || c.status === "Completed",
-    ).length,
+    completed: clients.filter((c) => c.status === "Completed" || c.status === "Completed Client")
+      .length,
     awaiting: clients.filter((c) => c.status === "Awaiting Action").length,
   };
 }

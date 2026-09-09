@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Plus, Search } from "@/components/ui/icons";
 import { Avatar } from "@/components/ui/Avatar";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 const STAFF = [
   { id: "s1", name: "Priya Nair", role: "Senior Broker", phone: "+91 98110 11220", activeClients: 18, location: "Connaught Place" },
@@ -27,46 +28,52 @@ export function StaffList() {
   }, [query]);
 
   return (
-    <div className="space-y-section p-section">
+    <div className="page">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h1 className="text-ink">Staff List</h1>
-          <p className="mt-1 text-ink-muted">Manage brokers and field agents on your team</p>
+          <p className="page-lede">Manage brokers and field agents on your team</p>
         </div>
         <button className="btn-primary">
           Add Staff <Plus size={16} />
         </button>
       </div>
 
-      <div className="section-card p-4">
-        <label className="relative mb-4 block max-w-md">
-          <Search
-            size={16}
-            className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ink-soft"
-          />
-          <input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search staff by name, role, or location"
-            className="h-10 w-full rounded-[10px] border border-hairline bg-sidebar pl-9 pr-3 text-sm text-ink outline-none focus:border-primary/30 focus:bg-surface"
-          />
-        </label>
+      <div className="section-card">
+        <div className="border-b border-hairline p-4">
+          <label htmlFor="staff-search" className="sr-only">
+            Search staff
+          </label>
+          <div className="relative max-w-md">
+            <Search
+              size={16}
+              className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ink-muted"
+            />
+            <input
+              id="staff-search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search staff by name, role, or location"
+              className="input-field pl-9"
+            />
+          </div>
+        </div>
 
-        <div className="overflow-x-auto">
+        <div className="hidden overflow-x-auto md:block">
           <table className="w-full min-w-[640px] text-left text-sm">
             <thead>
-              <tr className="border-b border-hairline text-xs text-ink-soft">
-                <th className="pb-3 pr-4 font-medium">Name</th>
-                <th className="pb-3 pr-4 font-medium">Role</th>
-                <th className="pb-3 pr-4 font-medium">Phone</th>
-                <th className="pb-3 pr-4 font-medium">Location</th>
-                <th className="pb-3 font-medium">Active Clients</th>
+              <tr className="border-b border-hairline text-xs text-ink-muted">
+                <th className="px-4 pb-3 pr-4 pt-3 font-medium">Name</th>
+                <th className="pb-3 pr-4 pt-3 font-medium">Role</th>
+                <th className="pb-3 pr-4 pt-3 font-medium">Phone</th>
+                <th className="pb-3 pr-4 pt-3 font-medium">Location</th>
+                <th className="pb-3 pr-4 pt-3 font-medium">Active Clients</th>
               </tr>
             </thead>
             <tbody>
               {rows.map((member) => (
                 <tr key={member.id} className="border-b border-hairline last:border-0">
-                  <td className="py-3 pr-4">
+                  <td className="px-4 py-3 pr-4">
                     <div className="flex items-center gap-2.5">
                       <Avatar name={member.name} size={32} />
                       <span className="font-medium text-ink">{member.name}</span>
@@ -75,15 +82,38 @@ export function StaffList() {
                   <td className="py-3 pr-4 text-ink-muted">{member.role}</td>
                   <td className="py-3 pr-4 text-ink-muted">{member.phone}</td>
                   <td className="py-3 pr-4 text-ink-muted">{member.location}</td>
-                  <td className="py-3 font-semibold text-ink">{member.activeClients}</td>
+                  <td className="py-3 pr-4 font-semibold text-ink">{member.activeClients}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
 
+        <div className="divide-y divide-hairline md:hidden">
+          {rows.map((member) => (
+            <div key={member.id} className="flex items-center gap-3 px-4 py-3">
+              <Avatar name={member.name} size={36} />
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-medium text-ink">{member.name}</p>
+                <p className="truncate text-xs text-ink-muted">
+                  {member.role} · {member.location}
+                </p>
+              </div>
+              <span className="text-sm font-semibold text-ink">{member.activeClients}</span>
+            </div>
+          ))}
+        </div>
+
         {rows.length === 0 && (
-          <p className="py-12 text-center text-sm text-ink-muted">No staff match your search.</p>
+          <EmptyState
+            title="No staff match your search"
+            description="Try a different name, role, or location."
+            action={
+              <button className="btn-ghost" onClick={() => setQuery("")}>
+                Clear search
+              </button>
+            }
+          />
         )}
       </div>
     </div>

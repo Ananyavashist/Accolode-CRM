@@ -42,14 +42,18 @@ export function Topbar({ onOpenMobile }: TopbarProps) {
       </button>
 
       <div className="relative w-full max-w-md">
+        <label htmlFor="global-search" className="sr-only">
+          Search
+        </label>
         <Search
           size={16}
-          className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ink-soft"
+          className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ink-muted"
         />
         <input
-          type="text"
-          placeholder="Search"
-          className="h-10 w-full rounded-[10px] border border-hairline bg-sidebar pl-9 pr-4 text-sm text-ink outline-none transition-colors placeholder:text-ink-soft focus:border-primary/40 focus:bg-surface"
+          id="global-search"
+          type="search"
+          placeholder="Search clients, leads, properties"
+          className="input-field bg-sidebar pl-9"
         />
       </div>
 

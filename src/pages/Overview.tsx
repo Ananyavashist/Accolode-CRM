@@ -55,11 +55,11 @@ export function Overview() {
   }, [leads, clients]);
 
   return (
-    <div className="space-y-section p-section">
+    <div className="page">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h1 className="text-ink">Welcome Rakesh Verma</h1>
-          <p className="mt-1 text-ink-muted">
+          <p className="page-lede">
             An overview of all the details for the broker to synthesis the data
           </p>
         </div>
@@ -119,8 +119,8 @@ export function Overview() {
         <div className="section-card flex flex-col p-4 lg:col-span-2">
           <div className="flex items-start justify-between gap-2">
             <div>
-              <h2 className="text-base font-semibold text-ink">Lead Acquisition through Sources</h2>
-              <p className="text-sm text-ink-muted">
+              <h2>Lead Acquisition through Sources</h2>
+              <p className="mt-0.5 text-[13px] text-ink-muted">
                 Total leads generated this month from different sources
               </p>
             </div>
@@ -159,7 +159,7 @@ export function Overview() {
 
       <div className="section-card flex flex-col p-4">
         <div className="flex items-start justify-between gap-2">
-          <h2 className="text-base font-semibold text-ink">Properties Overview</h2>
+          <h2>Properties Overview</h2>
           <PeriodDropdown
             value={propertiesPeriod}
             options={[...PROPERTIES_PERIODS]}

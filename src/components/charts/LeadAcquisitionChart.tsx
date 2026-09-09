@@ -44,7 +44,7 @@ export function LeadAcquisitionChart({ data }: { data: AcquisitionPoint[] }) {
 
   return (
     <ResponsiveContainer width="100%" height={260}>
-      <LineChart data={data} margin={{ top: 10, right: 8, left: -18, bottom: 0 }}>
+      <LineChart data={data} margin={{ top: 16, right: 16, left: 4, bottom: 8 }}>
         <CartesianGrid vertical={false} stroke={CHART.grid} />
         <XAxis
           dataKey="date"
