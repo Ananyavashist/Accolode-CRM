@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Location, Logout, Setting2 } from "iconsax-reactjs";
+import { Logout, MapPin, Settings, UnfoldMore } from "@/components/ui/icons";
 import { Avatar } from "@/components/ui/Avatar";
 import { AVATAR_IMAGES } from "@/data/images";
 import { cn } from "@/lib/utils";
@@ -40,7 +40,7 @@ export function ProfilePopup({ open, onClose, collapsed }: ProfilePopupProps) {
           className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-ink transition-colors hover:bg-sidebar"
           role="menuitem"
         >
-          <Setting2 size={18} variant="Linear" color="currentColor" />
+          <Settings size={18} />
           Account Settings
         </button>
         <div className="my-1 border-t border-hairline" />
@@ -49,11 +49,11 @@ export function ProfilePopup({ open, onClose, collapsed }: ProfilePopupProps) {
           className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-status-awaiting transition-colors hover:bg-status-awaitingBg"
           role="menuitem"
         >
-          <Logout size={18} variant="Linear" color="currentColor" />
+          <Logout size={18} />
           Logout
         </button>
         <div className="mt-2 flex items-center gap-2 border-t border-hairline px-3 py-2.5">
-          <Location size={14} variant="Linear" className="shrink-0 text-ink-soft" color="currentColor" />
+          <MapPin size={14} className="shrink-0 text-ink-soft" />
           <span className="text-xs text-ink-muted">Connaught Place, New Delhi</span>
         </div>
       </div>
@@ -87,28 +87,12 @@ export function SidebarProfile({ collapsed }: SidebarProfileProps) {
               <span className="min-w-0 flex-1 truncate text-left text-sm font-semibold text-ink">
                 Rakesh Verma
               </span>
-              <ChevronUpDown size={16} className="shrink-0 text-ink-soft" />
+              <UnfoldMore size={16} className="shrink-0 text-ink-soft" />
             </>
           )}
         </button>
       </div>
       <ProfilePopup open={open} onClose={() => setOpen(false)} collapsed={collapsed} />
     </>
-  );
-}
-
-function ChevronUpDown({ size, className }: { size?: number; className?: string }) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 16 16"
-      fill="none"
-      className={className}
-      aria-hidden
-    >
-      <path d="M4 6l4-4 4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M4 10l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
   );
 }

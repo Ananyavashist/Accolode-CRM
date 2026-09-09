@@ -30,7 +30,12 @@ function BarTooltip({ active, payload, label }: TooltipProps<number, string>) {
 export function PropertiesBarChart({ data }: { data: PropertiesPoint[] }) {
   return (
     <ResponsiveContainer width="100%" height={280}>
-      <BarChart data={data} margin={{ top: 10, right: 8, left: -18, bottom: 0 }} barGap={6}>
+      <BarChart
+        data={data}
+        margin={{ top: 16, right: 16, left: 4, bottom: 8 }}
+        barCategoryGap="32%"
+        barGap={10}
+      >
         <CartesianGrid vertical={false} stroke={CHART.grid} />
         <XAxis
           dataKey="month"
@@ -39,9 +44,9 @@ export function PropertiesBarChart({ data }: { data: PropertiesPoint[] }) {
           tick={{ fontSize: 12, fill: CHART.tick }}
         />
         <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 12, fill: CHART.tick }} />
-        <Tooltip content={<BarTooltip />} shared={false} cursor={{ fill: "rgba(96,116,86,0.1)" }} />
-        <Bar dataKey="rent" fill={BAR_COLORS.rent} radius={[6, 6, 0, 0]} maxBarSize={52} />
-        <Bar dataKey="sold" fill={BAR_COLORS.sold} radius={[6, 6, 0, 0]} maxBarSize={52} />
+        <Tooltip content={<BarTooltip />} shared={false} cursor={{ fill: "rgba(18,69,83,0.06)" }} />
+        <Bar dataKey="rent" fill={BAR_COLORS.rent} radius={[6, 6, 0, 0]} maxBarSize={36} />
+        <Bar dataKey="sold" fill={BAR_COLORS.sold} radius={[6, 6, 0, 0]} maxBarSize={36} />
       </BarChart>
     </ResponsiveContainer>
   );

@@ -9,13 +9,16 @@ import {
   LayoutGrid,
   MessageSquare,
   Navigation,
+  Notes,
   Sparkles,
+  Staff,
   UserCircle,
   Users,
 } from "@/components/ui/icons";
-import { Profile2User } from "iconsax-reactjs";
 import { SidebarProfile } from "@/components/layout/SidebarProfile";
+import { FirstStepsWidget } from "@/components/layout/FirstSteps";
 import { useCrm } from "@/store/CrmContext";
+import { clientProfilePath } from "@/lib/pipeline";
 import { cn } from "@/lib/utils";
 
 interface SidebarProps {
@@ -25,29 +28,26 @@ interface SidebarProps {
   onCloseMobile: () => void;
 }
 
-function StaffIcon({ size = 18, className }: { size?: number; className?: string }) {
-  return <Profile2User size={size} variant="Linear" className={className} color="currentColor" />;
-}
-
 const NAV_ITEMS = [
   { to: "/", label: "Dashboard", icon: LayoutGrid, end: true },
-  { to: "/clients", label: "Client Database", icon: Users },
+  { to: "/notes", label: "Notes", icon: Notes },
+  { to: "/clients", label: "Client Database", icon: Users, end: true },
   { to: "/client-leads", label: "Client Leads", icon: Sparkles },
   { to: "/listed-properties", label: "Listed Properties", icon: Building2 },
-  { to: "/staff", label: "Staff List", icon: StaffIcon },
-  { to: "/calendar", label: "Calender", icon: Calendar },
-  { to: "/messages", label: "Messages", icon: MessageSquare },
+  { to: "/staff", label: "Staff List", icon: Staff },
+  { to: "/calendar", label: "Calendar", icon: Calendar },
+  { to: "/messages", label: "WhatsApp", icon: MessageSquare },
 ] as const;
 
 export function Sidebar({ collapsed, onToggle, mobileOpen, onCloseMobile }: SidebarProps) {
-  const { clients } = useCrm();
+  const { clients, firstSteps } = useCrm();
   const location = useLocation();
   const navigate = useNavigate();
   const [profilesOpen, setProfilesOpen] = useState(false);
   const listId = useId();
 
   const isProfileRoute = location.pathname.startsWith("/clients/");
-  const firstClientId = clients[0]?.id;
+  const firstClient = clients[0];
 
   useEffect(() => {
     if (isProfileRoute) setProfilesOpen(true);
@@ -56,11 +56,20 @@ export function Sidebar({ collapsed, onToggle, mobileOpen, onCloseMobile }: Side
   const profileClients = useMemo(() => clients.slice(0, 8), [clients]);
 
   const goToFirstProfile = () => {
-    if (firstClientId) {
-      navigate(`/clients/${firstClientId}`);
+    if (firstClient) {
+      navigate(clientProfilePath(firstClient.name));
       onCloseMobile();
     }
   };
+
+  const navClass = ({ isActive }: { isActive: boolean }) =>
+    cn(
+      "group flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors",
+      isActive
+        ? "bg-hairline font-semibold text-ink"
+        : "font-medium text-ink-muted hover:bg-sidebar hover:text-ink",
+      collapsed && "lg:justify-center lg:px-0",
+    );
 
   return (
     <>
@@ -88,7 +97,7 @@ export function Sidebar({ collapsed, onToggle, mobileOpen, onCloseMobile }: Side
             </span>
             <span
               className={cn(
-                "whitespace-nowrap text-base font-bold text-primary",
+                "whitespace-nowrap text-base font-semibold text-primary",
                 collapsed && "lg:hidden",
               )}
             >
@@ -97,7 +106,7 @@ export function Sidebar({ collapsed, onToggle, mobileOpen, onCloseMobile }: Side
           </div>
           <button
             onClick={onToggle}
-            className="hidden h-7 w-7 items-center justify-center rounded-full border border-hairline bg-surface text-ink-muted transition-colors hover:bg-hairline lg:flex"
+            className="hidden h-7 w-7 items-center justify-center rounded-lg text-ink-muted transition-colors hover:bg-hairline lg:flex"
             aria-label="Toggle sidebar"
           >
             <ChevronLeft
@@ -107,22 +116,14 @@ export function Sidebar({ collapsed, onToggle, mobileOpen, onCloseMobile }: Side
           </button>
         </div>
 
-        <nav className="flex flex-1 flex-col gap-1 overflow-y-auto px-3 py-2">
+        <nav aria-label="Primary" className="flex flex-1 flex-col gap-0.5 overflow-y-auto px-3 py-2">
           {NAV_ITEMS.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
               end={"end" in item ? item.end : undefined}
               onClick={onCloseMobile}
-              className={({ isActive }) =>
-                cn(
-                  "group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
-                  isActive
-                    ? "bg-primary text-white shadow-card"
-                    : "text-ink-muted hover:bg-hairline hover:text-ink",
-                  collapsed && "lg:justify-center lg:px-0",
-                )
-              }
+              className={navClass}
               title={collapsed ? item.label : undefined}
             >
               <item.icon size={18} className="shrink-0" />
@@ -136,16 +137,16 @@ export function Sidebar({ collapsed, onToggle, mobileOpen, onCloseMobile }: Side
             <div className="mt-1">
               <div
                 className={cn(
-                  "flex items-center rounded-xl transition-colors",
-                  isProfileRoute ? "bg-primary/5" : "hover:bg-hairline",
+                  "flex items-center rounded-lg transition-colors",
+                  isProfileRoute ? "bg-hairline" : "hover:bg-sidebar",
                 )}
               >
                 <button
                   type="button"
                   onClick={goToFirstProfile}
                   className={cn(
-                    "flex flex-1 items-center gap-3 px-3 py-2.5 text-left text-sm font-medium transition-colors",
-                    isProfileRoute ? "text-primary" : "text-ink-muted hover:text-ink",
+                    "flex flex-1 items-center gap-3 px-3 py-2 text-left text-sm font-medium transition-colors",
+                    isProfileRoute ? "text-ink" : "text-ink-muted hover:text-ink",
                   )}
                   aria-expanded={profilesOpen}
                   aria-controls={listId}
@@ -156,12 +157,7 @@ export function Sidebar({ collapsed, onToggle, mobileOpen, onCloseMobile }: Side
                 <button
                   type="button"
                   onClick={() => setProfilesOpen((v) => !v)}
-                  className={cn(
-                    "mr-2 flex h-7 w-7 items-center justify-center rounded-lg transition-colors",
-                    isProfileRoute
-                      ? "text-primary hover:bg-primary/10"
-                      : "text-ink-soft hover:bg-hairline hover:text-ink",
-                  )}
+                  className="mr-2 flex h-7 w-7 items-center justify-center rounded-md text-ink-muted hover:bg-hairline hover:text-ink"
                   aria-label={profilesOpen ? "Collapse client profiles" : "Expand client profiles"}
                   aria-expanded={profilesOpen}
                   aria-controls={listId}
@@ -182,14 +178,14 @@ export function Sidebar({ collapsed, onToggle, mobileOpen, onCloseMobile }: Side
                   {profileClients.map((client) => (
                     <li key={client.id}>
                       <NavLink
-                        to={`/clients/${client.id}`}
+                        to={clientProfilePath(client.name)}
                         onClick={onCloseMobile}
                         className={({ isActive }) =>
                           cn(
-                            "block rounded-lg px-2.5 py-2 text-sm transition-colors",
+                            "block rounded-md px-2.5 py-1.5 text-sm transition-colors",
                             isActive
-                              ? "bg-primary/5 font-medium text-primary"
-                              : "text-ink-muted hover:bg-hairline hover:text-ink",
+                              ? "bg-primary-50 font-medium text-primary"
+                              : "text-ink-muted hover:bg-sidebar hover:text-ink",
                           )
                         }
                       >
@@ -205,10 +201,10 @@ export function Sidebar({ collapsed, onToggle, mobileOpen, onCloseMobile }: Side
               type="button"
               onClick={goToFirstProfile}
               className={cn(
-                "mt-1 flex w-full items-center justify-center rounded-xl px-0 py-2.5 transition-colors lg:justify-center",
+                "mt-1 flex w-full items-center justify-center rounded-lg px-0 py-2 transition-colors",
                 isProfileRoute
-                  ? "bg-primary/5 text-primary"
-                  : "text-ink-muted hover:bg-hairline hover:text-ink",
+                  ? "bg-hairline text-ink"
+                  : "text-ink-muted hover:bg-sidebar hover:text-ink",
               )}
               title="Client Profile"
               aria-label="Open first client profile"
@@ -222,13 +218,7 @@ export function Sidebar({ collapsed, onToggle, mobileOpen, onCloseMobile }: Side
           <NavLink
             to="/help"
             onClick={onCloseMobile}
-            className={({ isActive }) =>
-              cn(
-                "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
-                isActive ? "bg-primary text-white" : "text-ink-muted hover:bg-hairline hover:text-ink",
-                collapsed && "lg:justify-center lg:px-0",
-              )
-            }
+            className={navClass}
             title={collapsed ? "Help & Support" : undefined}
           >
             <HelpCircle size={18} className="shrink-0" />
@@ -236,6 +226,7 @@ export function Sidebar({ collapsed, onToggle, mobileOpen, onCloseMobile }: Side
           </NavLink>
         </div>
 
+        <FirstStepsWidget steps={firstSteps} collapsed={collapsed} />
         <SidebarProfile collapsed={collapsed} />
       </aside>
     </>

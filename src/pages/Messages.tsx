@@ -1,209 +1,166 @@
-import { useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
-import {
-  ArrowLeft,
-  ImageIcon,
-  ListFilter,
-  Mic,
-  MoreHorizontal,
-  Phone,
-  Plus,
-  Search,
-  Send,
-  Smile,
-  VideoIcon as Video,
-} from "@/components/ui/icons";
+import { useMemo, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { Search } from "@/components/ui/icons";
 import { Avatar } from "@/components/ui/Avatar";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { useCrm } from "@/store/CrmContext";
-import { cn } from "@/lib/utils";
+import { personSlug, waHref } from "@/lib/pipeline";
+
+function templateFor(name: string, properties: { name: string; location: string; price: string }[]) {
+  const lines = properties
+    .slice(0, 3)
+    .map((p) => `• ${p.name} — ${p.location} — ${p.price}`)
+    .join("\n");
+  return `Hi ${name}, here are a few properties that match what you asked for:\n${lines || "• I’ll send options shortly."}\nShall I book a visit?`;
+}
 
 export function Messages() {
-  const { conversations, sendMessage } = useCrm();
+  const navigate = useNavigate();
+  const { clients, whatsappSends, logWhatsApp } = useCrm();
   const [searchParams] = useSearchParams();
-  const chatParam = searchParams.get("chat");
+  const focusId = searchParams.get("client");
   const [query, setQuery] = useState("");
-  const [selectedId, setSelectedId] = useState(conversations[0]?.id);
-  const [draft, setDraft] = useState("");
-  const [mobileChat, setMobileChat] = useState(false);
 
-  useEffect(() => {
-    if (!chatParam) return;
-    const match = conversations.find((c) => c.id === chatParam);
-    if (match) {
-      setSelectedId(match.id);
-      setMobileChat(true);
-    }
-  }, [chatParam, conversations]);
-
-  const filtered = useMemo(
+  const filteredClients = useMemo(
     () =>
-      conversations.filter((c) =>
-        `${c.name} ${c.preview}`.toLowerCase().includes(query.toLowerCase()),
+      clients.filter((c) =>
+        `${c.name} ${c.phone} ${c.location}`.toLowerCase().includes(query.toLowerCase()),
       ),
-    [conversations, query],
+    [clients, query],
   );
 
-  const active = useMemo(
-    () => conversations.find((c) => c.id === selectedId) ?? conversations[0],
-    [conversations, selectedId],
+  const filteredSends = useMemo(
+    () =>
+      whatsappSends.filter((s) =>
+        `${s.clientName} ${s.preview}`.toLowerCase().includes(query.toLowerCase()),
+      ),
+    [whatsappSends, query],
   );
 
-  const handleSend = () => {
-    if (!active) return;
-    sendMessage(active.id, draft);
-    setDraft("");
+  const sendTo = (clientId: string) => {
+    const client = clients.find((c) => c.id === clientId);
+    if (!client) return;
+    const text = templateFor(client.name, client.properties);
+    logWhatsApp({
+      clientId: client.id,
+      clientName: client.name,
+      phone: client.phone,
+      preview: text.slice(0, 80),
+      stage: String(client.progressStage),
+    });
+    window.open(waHref(client.phone, text), "_blank", "noopener,noreferrer");
   };
 
+  const highlighted = focusId
+    ? clients.find((c) => c.id === focusId || personSlug(c.name) === focusId)
+    : undefined;
+
   return (
-    <div className="p-section">
-      <div className="grid grid-cols-1 gap-section lg:grid-cols-[minmax(0,360px)_1fr]">
-        <div className={cn("section-card flex flex-col", mobileChat && "hidden lg:flex")}>
-          <div className="p-3">
-            <h1 className="px-1 pb-3 text-ink">Client chat</h1>
-            <div className="flex items-center gap-2">
-              <div className="relative flex-1">
-                <Search
-                  size={15}
-                  className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ink-soft"
-                />
-                <input
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Search"
-                  className="h-10 w-full rounded-[10px] border border-hairline bg-surface pl-9 pr-3 text-sm outline-none placeholder:text-ink-soft focus:border-primary/40"
-                />
-              </div>
-              <button className="icon-btn rounded-[10px]" aria-label="Filter">
-                <ListFilter size={16} />
-              </button>
+    <div className="page">
+      <div>
+        <h1 className="text-ink">WhatsApp</h1>
+        <p className="page-lede">
+          Message in WhatsApp. Accolode only logs that you sent it — no second inbox.
+        </p>
+      </div>
+
+      {highlighted && (
+        <div className="section-card flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-3">
+            <Avatar name={highlighted.name} src={highlighted.avatar} size={40} />
+            <div>
+              <p className="text-sm font-semibold text-ink">{highlighted.name}</p>
+              <p className="text-xs text-ink-muted">{highlighted.phone}</p>
             </div>
           </div>
+          <button onClick={() => sendTo(highlighted.id)} className="btn-primary">
+            Message on WhatsApp
+          </button>
+        </div>
+      )}
 
-          <div className="flex max-h-[calc(100vh-220px)] flex-col overflow-y-auto px-2 pb-2 lg:max-h-[680px]">
-            {filtered.map((conv) => {
-              const isActive = active?.id === conv.id;
-              return (
-                <button
-                  key={conv.id}
-                  onClick={() => {
-                    setSelectedId(conv.id);
-                    setMobileChat(true);
-                  }}
-                  className={cn(
-                    "flex items-center gap-3 rounded-[10px] px-2.5 py-2.5 text-left transition-colors",
-                    isActive
-                      ? "bg-primary/5 font-medium text-primary"
-                      : "text-ink-muted hover:bg-sidebar hover:text-ink",
-                  )}
-                >
-                  <Avatar name={conv.name} src={conv.avatar} size={40} />
+      <div className="grid grid-cols-1 gap-section lg:grid-cols-2">
+        <section className="section-card" aria-labelledby="pick-client">
+          <div className="border-b border-hairline p-3">
+            <h2 id="pick-client" className="text-sm font-semibold text-ink">
+              Clients
+            </h2>
+            <label htmlFor="wa-search" className="sr-only">
+              Search clients
+            </label>
+            <div className="relative mt-2">
+              <Search
+                size={15}
+                className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ink-muted"
+              />
+              <input
+                id="wa-search"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search by name or phone"
+                className="input-field pl-9"
+              />
+            </div>
+          </div>
+          <ul className="max-h-[560px] divide-y divide-hairline overflow-y-auto">
+            {filteredClients.length === 0 ? (
+              <EmptyState
+                title="No clients to message"
+                description="Add or accept a client first."
+                action={
+                  <button className="btn-primary" onClick={() => navigate("/clients")}>
+                    Client Database
+                  </button>
+                }
+              />
+            ) : (
+              filteredClients.map((c) => (
+                <li key={c.id} className="flex items-center gap-3 px-3 py-2.5">
+                  <Avatar name={c.name} src={c.avatar} size={36} />
                   <div className="min-w-0 flex-1">
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="truncate text-sm font-semibold text-ink">{conv.name}</span>
-                      <span className="shrink-0 text-xs text-ink-soft">{conv.time}</span>
-                    </div>
-                    <p className="truncate text-xs text-ink-muted">{conv.preview}</p>
+                    <p className="truncate text-sm font-medium text-ink">{c.name}</p>
+                    <p className="truncate text-xs text-ink-muted">{c.phone}</p>
                   </div>
-                </button>
-              );
-            })}
+                  <button onClick={() => sendTo(c.id)} className="btn-outline h-8 text-xs">
+                    WhatsApp
+                  </button>
+                </li>
+              ))
+            )}
+          </ul>
+        </section>
+
+        <section className="section-card" aria-labelledby="send-log">
+          <div className="border-b border-hairline p-3">
+            <h2 id="send-log" className="text-sm font-semibold text-ink">
+              Send log
+            </h2>
+            <p className="text-xs text-ink-muted">Each send is recorded with the stage at the time.</p>
           </div>
-        </div>
-
-        <div className={cn("section-card flex flex-col", !mobileChat && "hidden lg:flex")}>
-          {active ? (
-            <>
-              <div className="flex items-center justify-between border-b border-hairline p-3">
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={() => setMobileChat(false)}
-                    className="icon-btn h-8 w-8 lg:hidden"
-                    aria-label="Back"
-                  >
-                    <ArrowLeft size={16} />
-                  </button>
-                  <Avatar name={active.name} src={active.avatar} size={40} />
-                  <div>
-                    <p className="text-sm font-semibold text-ink">{active.name}</p>
-                    <p className={cn("text-xs", active.online ? "text-status-completed" : "text-ink-soft")}>
-                      {active.online ? "Online" : "Offline"}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <button className="icon-btn" aria-label="Video call">
-                    <Video size={16} />
-                  </button>
-                  <button className="icon-btn" aria-label="Voice call">
-                    <Phone size={16} />
-                  </button>
-                  <button className="icon-btn" aria-label="More">
-                    <MoreHorizontal size={16} />
-                  </button>
-                </div>
-              </div>
-
-              <div className="flex flex-1 flex-col gap-3 overflow-y-auto p-4 lg:max-h-[560px]">
-                {active.messages.map((msg) => {
-                  const mine = msg.from === "broker";
-                  return (
-                    <div
-                      key={msg.id}
-                      className={cn("flex flex-col", mine ? "items-end" : "items-start")}
-                    >
-                      <div
-                        className={cn(
-                          "max-w-[75%] rounded-[10px] px-3 py-2 text-sm",
-                          mine
-                            ? "bg-primary text-white"
-                            : "border border-hairline bg-sidebar text-ink",
-                        )}
-                      >
-                        {msg.text}
-                      </div>
-                      <span className="mt-1 text-xs text-ink-soft">{msg.time}</span>
-                    </div>
-                  );
-                })}
-              </div>
-
-              <div className="border-t border-hairline p-3">
-                <div className="flex items-center gap-2 rounded-[10px] border border-hairline px-3 py-2">
-                  <button className="text-ink-soft hover:text-ink" aria-label="Add">
-                    <Plus size={18} />
-                  </button>
-                  <button className="text-ink-soft hover:text-ink" aria-label="Emoji">
-                    <Smile size={18} />
-                  </button>
-                  <button className="text-ink-soft hover:text-ink" aria-label="Image">
-                    <ImageIcon size={18} />
-                  </button>
-                  <button className="text-ink-soft hover:text-ink" aria-label="Voice">
-                    <Mic size={18} />
-                  </button>
-                  <input
-                    value={draft}
-                    onChange={(e) => setDraft(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && handleSend()}
-                    placeholder="Enter the message"
-                    className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-ink-soft"
-                  />
-                  <button
-                    onClick={handleSend}
-                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-primary text-white transition-colors hover:bg-primary-700"
-                    aria-label="Send"
-                  >
-                    <Send size={16} />
-                  </button>
-                </div>
-              </div>
-            </>
+          {filteredSends.length === 0 ? (
+            <EmptyState
+              title="Message a client on WhatsApp"
+              description="Opens WhatsApp with a shortlist template. We only keep a log here."
+            />
           ) : (
-            <div className="flex flex-1 items-center justify-center p-10 text-sm text-ink-soft">
-              Select a conversation to start messaging.
-            </div>
+            <ul className="divide-y divide-hairline">
+              {filteredSends.map((s) => (
+                <li key={s.id} className="px-4 py-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-sm font-medium text-ink">{s.clientName}</p>
+                    <span className="text-xs text-ink-muted">
+                      {new Date(s.sentAt).toLocaleString()}
+                    </span>
+                  </div>
+                  <p className="mt-1 text-xs text-ink-muted">
+                    {s.stage ? `Stage: ${s.stage} · ` : ""}
+                    {s.preview}
+                  </p>
+                </li>
+              ))}
+            </ul>
           )}
-        </div>
+        </section>
       </div>
     </div>
   );

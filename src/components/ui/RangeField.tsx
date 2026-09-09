@@ -41,12 +41,12 @@ export function RangeField({
           onChange={(e) => onChange(Number(e.target.value))}
           className="h-2 w-full cursor-pointer appearance-none rounded-full bg-hairline accent-primary"
           style={{
-            background: `linear-gradient(to right, #124553 0%, #124553 ${pct}%, #F3F2F2 ${pct}%, #F3F2F2 100%)`,
+            background: `linear-gradient(to right, #124553 0%, #124553 ${pct}%, #E5E7EB ${pct}%, #E5E7EB 100%)`,
           }}
         />
       </div>
       {ticks && (
-        <div className="flex justify-between text-xs text-ink-soft">
+        <div className="flex justify-between text-xs text-ink-muted">
           {ticks.map((t) => (
             <span key={t}>{t}</span>
           ))}

@@ -9,7 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "iconsax-reactjs": "^0.0.8",
+    "@hugeicons/core-free-icons": "^4.3.2",
+    "@hugeicons/react": "^1.1.10",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.25.1",

@@ -45,7 +45,7 @@ interface AddEventModalProps {
 }
 
 export function AddEventModal({ open, onClose, onSubmit, defaultDate }: AddEventModalProps) {
-  const { clients } = useCrm();
+  const { clients, setProgressStage } = useCrm();
   const [form, setForm] = useState({ ...INITIAL, date: defaultDate ?? "" });
   const [toast, setToast] = useState<string | null>(null);
 
@@ -85,6 +85,10 @@ export function AddEventModal({ open, onClose, onSubmit, defaultDate }: AddEvent
       type: form.type,
       location: form.location.trim(),
     });
+    if (form.type === "Tour") {
+      const match = clients.find((c) => c.name === form.client);
+      if (match) setProgressStage(match.id, "Site Visit");
+    }
     setToast("Event added to your calendar");
     setTimeout(() => onClose(), 900);
   };

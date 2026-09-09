@@ -1,9 +1,10 @@
 import { useMemo, useState } from "react";
-import { Building2, MapPin, Plus, Search, SlidersHorizontal } from "@/components/ui/icons";
+import { MapPin, Plus, Search, SlidersHorizontal } from "@/components/ui/icons";
 import { StatCard } from "@/components/ui/StatCard";
 import { LISTED_PROPERTIES } from "@/data/listings";
 import type { ListingStatus } from "@/types";
-import { LISTING_CHIP } from "@/lib/theme";
+import { TypeChip } from "@/components/ui/StatusBadge";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { cn } from "@/lib/utils";
 
 const TYPE_TABS = ["All", "Rent", "Sale"] as const;
@@ -37,11 +38,11 @@ export function ListedProperties() {
   }, [typeTab, query]);
 
   return (
-    <div className="space-y-section p-section">
+    <div className="page">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h1 className="text-ink">Listed Properties</h1>
-          <p className="mt-1 text-ink-muted">
+          <p className="page-lede">
             Manage your active listings, track offers, and monitor rent vs sale inventory
           </p>
         </div>
@@ -59,32 +60,31 @@ export function ListedProperties() {
 
       <div className="section-card p-4">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center gap-1">
             {TYPE_TABS.map((tab) => (
               <button
                 key={tab}
                 onClick={() => setTypeTab(tab)}
-                className={cn(
-                  "rounded-[10px] px-3 py-2 text-sm font-medium transition-colors",
-                  typeTab === tab
-                    ? "bg-primary text-white"
-                    : "bg-sidebar text-ink-muted hover:bg-hairline hover:text-ink",
-                )}
+                className={cn("tab-underline", typeTab === tab && "tab-underline-active")}
               >
                 {tab === "Sale" ? "For Sale" : tab === "Rent" ? "For Rent" : tab}
               </button>
             ))}
           </div>
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-            <label className="relative flex-1">
-              <Search size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ink-soft" />
+            <label htmlFor="listing-search" className="sr-only">
+              Search listings
+            </label>
+            <div className="relative flex-1">
+              <Search size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ink-muted" />
               <input
+                id="listing-search"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search by property, city, or broker"
-                className="h-10 w-full rounded-[10px] border border-hairline bg-sidebar pl-9 pr-3 text-sm text-ink outline-none transition-colors focus:border-primary/30 focus:bg-surface"
+                className="input-field pl-9"
               />
-            </label>
+            </div>
             <button className="btn-outline shrink-0">
               Filters <SlidersHorizontal size={16} />
             </button>
@@ -104,16 +104,11 @@ export function ListedProperties() {
                   className="h-40 w-full rounded-lg object-cover"
                   loading="lazy"
                 />
-                <span
-                  className="absolute left-3 top-3 pill font-medium"
-                  style={{
-                    backgroundColor:
-                      property.type === "Rent" ? LISTING_CHIP.rent.bg : LISTING_CHIP.sold.bg,
-                    color: property.type === "Rent" ? LISTING_CHIP.rent.text : LISTING_CHIP.sold.text,
-                  }}
-                >
-                  {property.type === "Rent" ? "For Rent" : "For Sale"}
-                </span>
+                <TypeChip
+                  type={property.type}
+                  label={property.type === "Rent" ? "For Rent" : "For Sale"}
+                  className="absolute left-3 top-3"
+                />
               </div>
               <div className="space-y-2 px-3 pb-4">
                 <div className="flex items-start justify-between gap-2">
@@ -124,7 +119,7 @@ export function ListedProperties() {
                       {property.location}, {property.city}
                     </p>
                   </div>
-                  <span className="shrink-0 text-sm font-bold text-primary">{property.price}</span>
+                  <span className="shrink-0 text-sm font-semibold text-primary">{property.price}</span>
                 </div>
                 <div className="flex flex-wrap items-center gap-2 text-xs text-ink-muted">
                   <span className="pill bg-sidebar text-ink-muted">{property.bhk}</span>
@@ -133,7 +128,7 @@ export function ListedProperties() {
                 </div>
                 <div className="flex items-center justify-between gap-2 border-t border-hairline pt-2">
                   <span className={cn("pill", STATUS_STYLES[property.status])}>{property.status}</span>
-                  <span className="truncate text-xs text-ink-soft">Listed {property.listedDate}</span>
+                  <span className="truncate text-xs text-ink-muted">Listed {property.listedDate}</span>
                 </div>
                 {property.brokerName && (
                   <p className="text-xs text-ink-muted">
@@ -146,13 +141,21 @@ export function ListedProperties() {
         </div>
 
         {rows.length === 0 && (
-          <div className="flex flex-col items-center justify-center gap-2 py-16 text-center">
-            <span className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/5 text-primary">
-              <Building2 size={22} />
-            </span>
-            <p className="font-semibold text-ink">No properties match your filters</p>
-            <p className="text-sm text-ink-muted">Try adjusting the search or type filter.</p>
-          </div>
+          <EmptyState
+            title="No properties match your filters"
+            description="Clear search or switch type to see listings again."
+            action={
+              <button
+                className="btn-outline"
+                onClick={() => {
+                  setQuery("");
+                  setTypeTab("All");
+                }}
+              >
+                Clear filters
+              </button>
+            }
+          />
         )}
       </div>
     </div>

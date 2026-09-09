@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight, Clock, MapPin, Plus } from "@/components/ui/icons";
 import { AddEventModal, type CalEvent, type EventType } from "@/components/modals/AddEventModal";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { cn } from "@/lib/utils";
 
 const TYPE_STYLES: Record<EventType, { chip: string; dot: string }> = {
@@ -90,11 +91,11 @@ export function CalendarPage() {
   };
 
   return (
-    <div className="space-y-section p-section">
+    <div className="page">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h1 className="text-ink">Calendar</h1>
-          <p className="mt-1 text-sm text-ink-muted">Track tours, calls and meetings with your clients</p>
+          <p className="page-lede">Track tours, calls and meetings with your clients</p>
         </div>
         <button onClick={() => setAddOpen(true)} className="btn-primary">
           Add Event <Plus size={16} />
@@ -124,7 +125,7 @@ export function CalendarPage() {
             </div>
           </div>
 
-          <div className="mt-4 grid grid-cols-7 border-b border-hairline pb-2 text-center text-xs font-medium text-ink-soft">
+          <div className="mt-4 grid grid-cols-7 border-b border-hairline pb-2 text-center text-xs font-medium text-ink-muted">
             {WEEKDAYS.map((d) => (
               <div key={d}>{d}</div>
             ))}
@@ -218,7 +219,16 @@ export function CalendarPage() {
               </div>
             ))}
             {selectedEvents.length === 0 && upcoming.length === 0 && (
-              <p className="py-8 text-center text-sm text-ink-soft">No upcoming events.</p>
+              <EmptyState
+                title="No upcoming events"
+                description="Add a tour or call so the week is not empty."
+                className="py-8"
+                action={
+                  <button onClick={() => setAddOpen(true)} className="btn-primary">
+                    Add event
+                  </button>
+                }
+              />
             )}
           </div>
         </div>

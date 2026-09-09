@@ -1,11 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   ArrowLeft,
   Download,
   FileText,
-  MessageSquare,
   MoreHorizontal,
   Plus,
   Share2,
@@ -14,14 +13,10 @@ import { Avatar } from "@/components/ui/Avatar";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { PillDropdown } from "@/components/ui/PillDropdown";
 import { PropertyCard } from "@/components/ui/PropertyCard";
+import { StageBadge, StatusBadge } from "@/components/ui/StatusBadge";
 import { useCrm } from "@/store/CrmContext";
-import { messagesPathForClient } from "@/lib/clientChat";
-import {
-  CONVERSION_STATUS_OPTIONS,
-  PROGRESS_STAGE_OPTIONS,
-  type ConversionStatus,
-  type ProgressStage,
-} from "@/types";
+import { clientProfilePath, mismatchLines, personSlug, relativeTime } from "@/lib/pipeline";
+import { PROGRESS_STAGE_OPTIONS, type ProgressStage } from "@/types";
 import {
   APPOINTMENTS,
   CLIENT_NOTES,
@@ -30,7 +25,6 @@ import {
   LOG_HISTORY,
   PROGRESS_HISTORY,
   activityForClient,
-  tasksForClient,
 } from "@/data/clientProfileContent";
 import { cn } from "@/lib/utils";
 
@@ -63,11 +57,14 @@ const PINNED_DOCS = [
   },
 ];
 
-function InfoRow({ label, value }: { label: string; value: string }) {
+function InfoRow({ label, value, hint }: { label: string; value: string; hint?: string | null }) {
   return (
     <div className="grid grid-cols-[125px_1fr] gap-2 py-[7px] text-sm">
-      <span className="text-ink-soft">{label}</span>
-      <span className="font-medium text-ink">: {value}</span>
+      <span className="text-ink-muted">{label}</span>
+      <span>
+        <span className="font-medium text-ink">{value}</span>
+        {hint && <span className="ml-2 text-xs text-ink-muted">{hint}</span>}
+      </span>
     </div>
   );
 }
@@ -89,7 +86,7 @@ function BadgeRow({
 }) {
   return (
     <div className="grid grid-cols-[125px_1fr] items-center gap-2 py-[7px] text-sm">
-      <span className="text-ink-soft">{label}</span>
+      <span className="text-ink-muted">{label}</span>
       <PillDropdown
         value={value}
         options={options}
@@ -100,13 +97,6 @@ function BadgeRow({
     </div>
   );
 }
-
-const STATUS_PILL_STYLES: Record<string, string> = {
-  "Awaiting Action": "bg-status-awaitingBg text-status-awaiting",
-  "Active Lead": "bg-status-activeBg text-status-active",
-  "Completed Client": "bg-status-completedBg text-status-completed",
-  Completed: "bg-status-completedBg text-status-completed",
-};
 
 function SectionTitle({ children }: { children: ReactNode }) {
   return <h3 className="text-ink">{children}</h3>;
@@ -119,10 +109,19 @@ function TabPanel({ children }: { children: ReactNode }) {
 export function ClientProfile() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { getClient, conversations, updateClient } = useCrm();
+  const { getClient, setProgressStage, completeStep, tasks, toggleTask } = useCrm();
   const client = id ? getClient(id) : undefined;
   const [tab, setTab] = useState<Tab>("Overview");
-  const [doneTasks, setDoneTasks] = useState<Set<number>>(new Set());
+
+  useEffect(() => {
+    if (client) completeStep("saidDoing");
+  }, [client, completeStep]);
+
+  useEffect(() => {
+    if (client && id && id !== personSlug(client.name)) {
+      navigate(clientProfilePath(client.name), { replace: true });
+    }
+  }, [client, id, navigate]);
 
   if (!client) {
     return (
@@ -137,11 +136,13 @@ export function ClientProfile() {
     );
   }
 
-  const tasks = tasksForClient(client.name);
+  const clientTasks = tasks.filter((t) => t.clientId === client.id);
   const activity = activityForClient(client.name, client.location);
+  const mismatches = mismatchLines(client);
+  const budgetHint = relativeTime(client.onboarding.updatedAt?.budget);
 
   return (
-    <div className="space-y-section p-section">
+    <div className="page flex min-h-0 flex-1 flex-col lg:overflow-hidden">
       <Breadcrumb
         items={[
           { label: "Client Database", to: "/clients" },
@@ -149,27 +150,33 @@ export function ClientProfile() {
         ]}
       />
 
-      <div className="section-card flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="section-card flex shrink-0 flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
           <button onClick={() => navigate("/clients")} className="icon-btn" aria-label="Back to Client Database">
             <ArrowLeft size={18} />
           </button>
           <Avatar name={client.name} src={client.avatar} size={48} />
           <div>
-            <h1 className="text-ink">{client.name}</h1>
-            <p className="text-sm text-ink-muted">Client ID: {client.clientId}</p>
+            <h1 className="text-[18px] font-semibold leading-snug text-ink">{client.name}</h1>
+            <div className="mt-1 flex flex-wrap items-center gap-2">
+              <p className="text-sm text-ink-muted">Client ID: {client.clientId}</p>
+              <StageBadge stage={client.progressStage} />
+            </div>
           </div>
         </div>
         <button
-          onClick={() => navigate(messagesPathForClient(client.name, conversations))}
+          onClick={() => navigate(`/messages?client=${personSlug(client.name)}`)}
           className="btn-primary"
         >
-          messages <MessageSquare size={16} />
+          Message on WhatsApp
         </button>
       </div>
 
-      <div className="flex w-full min-w-0 flex-col gap-section lg:flex-row lg:items-stretch">
-        <div className="flex min-w-0 flex-col gap-section lg:w-[35%] lg:shrink-0 lg:grow-0">
+      <div className="flex min-h-0 w-full min-w-0 flex-1 flex-col gap-4 lg:flex-row lg:overflow-hidden">
+        <aside
+          className="flex min-h-0 flex-col gap-4 overflow-y-auto overscroll-contain lg:w-[35%] lg:shrink-0 lg:grow-0"
+          aria-label="Client information"
+        >
           <div className="section-card p-4">
             <SectionTitle>Personal Information</SectionTitle>
             <div className="mt-2 divide-y divide-hairline">
@@ -177,24 +184,18 @@ export function ClientProfile() {
               <InfoRow label="Email Address" value={client.email} />
               <InfoRow label="Phone Number" value={client.phone} />
               <InfoRow label="Current City" value={client.city} />
-              <BadgeRow
-                label="Conversion Status"
-                value={client.status}
-                options={[...CONVERSION_STATUS_OPTIONS]}
-                className={STATUS_PILL_STYLES[client.status] ?? "bg-hairline text-ink-muted"}
-                ariaLabel="Conversion status"
-                onChange={(status) =>
-                  updateClient(client.id, { status: status as ConversionStatus })
-                }
-              />
+              <div className="grid grid-cols-[125px_1fr] items-center gap-2 py-[7px] text-sm">
+                <span className="text-ink-muted">Conversion</span>
+                <StatusBadge status={client.status} />
+              </div>
               <BadgeRow
                 label="Progress Stage"
-                value={client.progressStage}
-                options={[...PROGRESS_STAGE_OPTIONS]}
-                className="bg-doc-cream text-primary"
+                value={String(client.progressStage)}
+                options={[...PROGRESS_STAGE_OPTIONS.filter((s) => s !== "Inquiry")]}
+                className="bg-status-activeBg text-status-active"
                 ariaLabel="Progress stage"
                 onChange={(progressStage) =>
-                  updateClient(client.id, { progressStage: progressStage as ProgressStage })
+                  setProgressStage(client.id, progressStage as ProgressStage)
                 }
               />
             </div>
@@ -208,9 +209,44 @@ export function ClientProfile() {
               <InfoRow label="Property Type" value={client.onboarding.propertyType} />
               <InfoRow label="Bedrooms" value={client.onboarding.bedrooms} />
               <InfoRow label="Furnishing" value={client.onboarding.furnishing} />
-              <InfoRow label="Budget" value={client.onboarding.budget} />
+              <InfoRow
+                label="Budget"
+                value={client.onboarding.budget}
+                hint={budgetHint ? `changed ${budgetHint}` : null}
+              />
               <InfoRow label="Shifting Timeline" value={client.onboarding.shiftingTimeline} />
             </div>
+          </div>
+
+          <div className="section-card p-4">
+            <SectionTitle>Preference Signals</SectionTitle>
+            <p className="mt-0.5 text-xs text-ink-muted">Said on the left. Doing on the right.</p>
+            <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
+              <div>
+                <p className="text-xs font-medium text-ink-muted">Said</p>
+                <p className="mt-1 text-ink">{client.onboarding.budget}</p>
+                <p className="text-ink">{client.onboarding.preferredLocation}</p>
+              </div>
+              <div>
+                <p className="text-xs font-medium text-ink-muted">Doing</p>
+                <p className="mt-1 text-ink">{client.observed?.browsingBudget ?? "—"}</p>
+                <p className="text-ink">
+                  {(client.observed?.browsingLocations ?? []).join(", ") || "—"}
+                </p>
+              </div>
+            </div>
+            {mismatches.length > 0 && (
+              <ul className="mt-3 space-y-1">
+                {mismatches.map((line) => (
+                  <li
+                    key={line}
+                    className="rounded-md bg-status-warningBg px-2 py-1.5 text-xs text-status-warning"
+                  >
+                    {line}
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
 
           <div className="section-card p-4">
@@ -240,21 +276,16 @@ export function ClientProfile() {
               ))}
             </div>
           </div>
-        </div>
+        </aside>
 
-        <div className="section-card flex min-h-[640px] min-w-0 flex-1 flex-col overflow-hidden lg:min-h-[720px]">
+        <div className="section-card flex min-h-[480px] min-w-0 flex-1 flex-col overflow-hidden lg:min-h-0">
           <div className="flex shrink-0 items-center gap-2 border-b border-hairline p-3">
             <div className="flex flex-1 items-center gap-1 overflow-x-auto">
               {TABS.map((t) => (
                 <button
                   key={t}
                   onClick={() => setTab(t)}
-                  className={cn(
-                    "whitespace-nowrap rounded-[10px] px-3 py-2 text-sm font-medium transition-colors",
-                    tab === t
-                      ? "bg-primary/5 text-primary"
-                      : "text-ink-muted hover:bg-sidebar hover:text-ink",
-                  )}
+                  className={cn("tab-underline", tab === t && "tab-underline-active")}
                 >
                   {t}
                 </button>
@@ -296,30 +327,28 @@ export function ClientProfile() {
               <div>
                 <SectionTitle>Latest Tasks</SectionTitle>
                 <div className="mt-2 space-y-1">
-                  {tasks.map((task, i) => (
+                  {clientTasks.length === 0 && (
+                    <p className="text-sm text-ink-muted">No follow-ups yet. Accept a lead with a date to add one.</p>
+                  )}
+                  {clientTasks.map((task) => (
                     <button
-                      key={task}
-                      onClick={() =>
-                        setDoneTasks((prev) => {
-                          const next = new Set(prev);
-                          next.has(i) ? next.delete(i) : next.add(i);
-                          return next;
-                        })
-                      }
+                      key={task.id}
+                      onClick={() => toggleTask(task.id)}
                       className="flex w-full items-center gap-2.5 py-1.5 text-left text-sm"
                     >
                       <span
                         className={cn(
                           "flex h-4 w-4 shrink-0 items-center justify-center rounded-full border",
-                          doneTasks.has(i)
+                          task.done
                             ? "border-primary bg-primary text-white"
                             : "border-ink-soft",
                         )}
                       >
-                        {doneTasks.has(i) && <span className="text-[10px] leading-none">✓</span>}
+                        {task.done && <span className="text-[10px] leading-none">✓</span>}
                       </span>
-                      <span className={cn("text-ink", doneTasks.has(i) && "line-through text-ink-soft")}>
-                        {task}
+                      <span className={cn("text-ink", task.done && "text-ink-muted line-through")}>
+                        {task.text}
+                        <span className="ml-2 text-xs text-ink-muted">Due {task.dueDate}</span>
                       </span>
                     </button>
                   ))}
