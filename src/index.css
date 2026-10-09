@@ -34,9 +34,19 @@
     @apply text-[13px] font-semibold leading-snug text-ink;
   }
 
-  :focus-visible {
+  :focus-visible:not(input):not(textarea):not(select) {
     outline: 2px solid #124553;
     outline-offset: 2px;
+  }
+
+  input:focus,
+  input:focus-visible,
+  textarea:focus,
+  textarea:focus-visible,
+  select:focus,
+  select:focus-visible {
+    outline: none;
+    box-shadow: none;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -95,7 +105,7 @@
   }
 
   .pill {
-    @apply inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[11px] font-medium leading-none;
+    @apply inline-flex w-fit max-w-full shrink-0 justify-self-start items-center gap-1 rounded-md p-1.5 text-[11px] font-medium leading-none;
   }
 
   .btn {
@@ -119,7 +129,7 @@
   }
 
   .input-field {
-    @apply h-10 w-full rounded-md border border-hairline bg-surface px-3 text-sm text-ink placeholder:text-ink-muted focus:border-primary;
+    @apply h-10 w-full rounded-md border border-hairline bg-surface px-3 text-sm text-ink outline-none ring-0 placeholder:text-ink-muted focus:border-primary focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0;
   }
 
   .tab-underline {

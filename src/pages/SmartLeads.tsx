@@ -22,6 +22,7 @@ import { useUi } from "@/store/UiContext";
 import { addDaysISO, personSlug } from "@/lib/pipeline";
 import type { DealType, Intent, Lead } from "@/types";
 import { cn } from "@/lib/utils";
+import { ConfirmDialog, useConfirmAction } from "@/components/ui/ConfirmDialog";
 
 function DealBadge({ type }: { type: DealType }) {
   return <TypeChip type={type} />;
@@ -247,6 +248,7 @@ export function SmartLeads() {
   const [mobileDetail, setMobileDetail] = useState(false);
   const [followUpDate, setFollowUpDate] = useState(addDaysISO(1));
   const [toast, setToast] = useState<{ message: string; undoId?: string } | null>(null);
+  const { confirmRequest, askConfirm, closeConfirm } = useConfirmAction();
 
   const sources = useMemo(
     () => [...new Set(leads.map((l) => l.source))].sort(),
@@ -314,6 +316,23 @@ export function SmartLeads() {
   const handleDeprioritise = (lead: Lead) => {
     deprioritiseLead(lead.id);
     setToast({ message: `${lead.name} moved to Deprioritised` });
+  };
+
+  const confirmLeadSelection = (lead: Lead) => {
+    const isSelected = checked.has(lead.id);
+    askConfirm({
+      title: isSelected ? "Deselect lead?" : "Select lead?",
+      message: isSelected
+        ? `Remove ${lead.name} from bulk selection?`
+        : `Select ${lead.name} for bulk Accept or Deprioritise?`,
+      confirmLabel: isSelected ? "Deselect" : "Select",
+      onConfirm: () =>
+        setChecked((prev) => {
+          const next = new Set(prev);
+          next.has(lead.id) ? next.delete(lead.id) : next.add(lead.id);
+          return next;
+        }),
+    });
   };
 
   const intentCounts = useMemo(
@@ -523,13 +542,7 @@ export function SmartLeads() {
                   lead={lead}
                   active={selected?.id === lead.id}
                   selected={checked.has(lead.id)}
-                  onSelect={() =>
-                    setChecked((prev) => {
-                      const next = new Set(prev);
-                      next.has(lead.id) ? next.delete(lead.id) : next.add(lead.id);
-                      return next;
-                    })
-                  }
+                  onSelect={() => confirmLeadSelection(lead)}
                   onClick={() => {
                     setSelectedId(lead.id);
                     setMobileDetail(true);
@@ -563,6 +576,8 @@ export function SmartLeads() {
           )}
         </div>
       </div>
+
+      <ConfirmDialog request={confirmRequest} onClose={closeConfirm} />
 
       {toast && (
         <Snackbar

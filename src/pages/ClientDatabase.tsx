@@ -11,6 +11,7 @@ import { computeClientDatabaseStats } from "@/lib/dashboardMetrics";
 import { PIPELINE_TABS, clientProfilePath, normalizeStage, type PipelineTab } from "@/lib/pipeline";
 import type { ClientCategory } from "@/types";
 import { cn } from "@/lib/utils";
+import { ConfirmDialog, useConfirmAction } from "@/components/ui/ConfirmDialog";
 
 export function ClientDatabase() {
   const navigate = useNavigate();
@@ -20,6 +21,7 @@ export function ClientDatabase() {
   const [tab, setTab] = useState<PipelineTab>("All");
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const { confirmRequest, askConfirm, closeConfirm } = useConfirmAction();
 
   const rows = useMemo(() => {
     return clients
@@ -36,18 +38,42 @@ export function ClientDatabase() {
   const allSelected = rows.length > 0 && rows.every((r) => selected.has(r.id));
   const filtersActive = query.length > 0 || tab !== "All";
 
-  const toggleAll = () => {
+  const applyToggleAll = () => {
     setSelected((prev) => {
       if (rows.every((r) => prev.has(r.id))) return new Set();
       return new Set(rows.map((r) => r.id));
     });
   };
 
-  const toggleOne = (id: string) => {
+  const applyToggleOne = (id: string) => {
     setSelected((prev) => {
       const next = new Set(prev);
       next.has(id) ? next.delete(id) : next.add(id);
       return next;
+    });
+  };
+
+  const confirmToggleAll = () => {
+    const clearing = allSelected;
+    askConfirm({
+      title: clearing ? "Clear selection?" : "Select all clients?",
+      message: clearing
+        ? "Remove selection from every client in this view?"
+        : `Select all ${rows.length} client${rows.length === 1 ? "" : "s"} in this view?`,
+      confirmLabel: clearing ? "Clear" : "Select all",
+      onConfirm: applyToggleAll,
+    });
+  };
+
+  const confirmToggleOne = (id: string, name: string) => {
+    const isSelected = selected.has(id);
+    askConfirm({
+      title: isSelected ? "Deselect client?" : "Select client?",
+      message: isSelected
+        ? `Remove ${name} from the current selection?`
+        : `Add ${name} to the current selection?`,
+      confirmLabel: isSelected ? "Deselect" : "Select",
+      onConfirm: () => applyToggleOne(id),
     });
   };
 
@@ -121,7 +147,7 @@ export function ClientDatabase() {
             <thead>
               <tr className="text-xs font-medium text-ink-muted">
                 <th className="w-10 px-4 py-3">
-                  <button onClick={toggleAll} aria-label="Select all">
+                  <button type="button" onClick={confirmToggleAll} aria-label="Select all">
                     <span
                       className={cn(
                         "flex h-4 w-4 items-center justify-center rounded border",
@@ -181,7 +207,11 @@ export function ClientDatabase() {
                     className="cursor-pointer border-t border-hairline text-sm transition-colors hover:bg-sidebar"
                   >
                     <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
-                      <button onClick={() => toggleOne(client.id)} aria-label={`Select ${client.name}`}>
+                      <button
+                        type="button"
+                        onClick={() => confirmToggleOne(client.id, client.name)}
+                        aria-label={`Select ${client.name}`}
+                      >
                         <span
                           className={cn(
                             "flex h-4 w-4 items-center justify-center rounded border",
@@ -246,6 +276,7 @@ export function ClientDatabase() {
           )}
         </div>
       </div>
+      <ConfirmDialog request={confirmRequest} onClose={closeConfirm} />
     </div>
   );
 }

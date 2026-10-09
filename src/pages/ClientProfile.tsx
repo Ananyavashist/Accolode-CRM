@@ -27,6 +27,7 @@ import {
   activityForClient,
 } from "@/data/clientProfileContent";
 import { cn } from "@/lib/utils";
+import { ConfirmDialog, useConfirmAction } from "@/components/ui/ConfirmDialog";
 
 const TABS = [
   "Overview",
@@ -112,6 +113,7 @@ export function ClientProfile() {
   const { getClient, setProgressStage, completeStep, tasks, toggleTask } = useCrm();
   const client = id ? getClient(id) : undefined;
   const [tab, setTab] = useState<Tab>("Overview");
+  const { confirmRequest, askConfirm, closeConfirm } = useConfirmAction();
 
   useEffect(() => {
     if (client) completeStep("saidDoing");
@@ -333,7 +335,16 @@ export function ClientProfile() {
                   {clientTasks.map((task) => (
                     <button
                       key={task.id}
-                      onClick={() => toggleTask(task.id)}
+                      onClick={() =>
+                        askConfirm({
+                          title: task.done ? "Mark task incomplete?" : "Mark task complete?",
+                          message: task.done
+                            ? `Reopen "${task.text}" on the follow-up list?`
+                            : `Mark "${task.text}" as done?`,
+                          confirmLabel: task.done ? "Mark incomplete" : "Mark done",
+                          onConfirm: () => toggleTask(task.id),
+                        })
+                      }
                       className="flex w-full items-center gap-2.5 py-1.5 text-left text-sm"
                     >
                       <span
@@ -508,6 +519,7 @@ export function ClientProfile() {
           </div>
         </div>
       </div>
+      <ConfirmDialog request={confirmRequest} onClose={closeConfirm} />
     </div>
   );
 }

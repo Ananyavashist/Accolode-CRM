@@ -45,8 +45,8 @@ export function PropertiesBarChart({ data }: { data: PropertiesPoint[] }) {
         />
         <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 12, fill: CHART.tick }} />
         <Tooltip content={<BarTooltip />} shared={false} cursor={{ fill: "rgba(18,69,83,0.06)" }} />
-        <Bar dataKey="rent" fill={BAR_COLORS.rent} radius={[6, 6, 0, 0]} maxBarSize={36} />
-        <Bar dataKey="sold" fill={BAR_COLORS.sold} radius={[6, 6, 0, 0]} maxBarSize={36} />
+        <Bar dataKey="rent" fill={BAR_COLORS.rent} radius={[6, 6, 0, 0]} barSize={40} />
+        <Bar dataKey="sold" fill={BAR_COLORS.sold} radius={[6, 6, 0, 0]} barSize={40} />
       </BarChart>
     </ResponsiveContainer>
   );

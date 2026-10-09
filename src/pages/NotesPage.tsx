@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { ConfirmDialog, useConfirmAction } from "@/components/ui/ConfirmDialog";
 import type { ReactNode } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCrm } from "@/store/CrmContext";
@@ -12,7 +13,17 @@ import type { DealType } from "@/types";
 export function NotesPage() {
   const navigate = useNavigate();
   const { tasks, clients, leads, toggleTask } = useCrm();
+  const { confirmRequest, askConfirm, closeConfirm } = useConfirmAction();
   const today = todayISO();
+
+  const confirmToggleTask = (taskId: string, text: string) => {
+    askConfirm({
+      title: "Mark task complete?",
+      message: `Mark "${text}" as done?`,
+      confirmLabel: "Mark done",
+      onConfirm: () => toggleTask(taskId),
+    });
+  };
 
   const { overdue, dueToday, untouched } = useMemo(() => {
     const open = tasks.filter((t) => !t.done);
@@ -62,7 +73,7 @@ export function NotesPage() {
                     tone="danger"
                     dealType={client?.category === "Buyer" ? "Buy" : "Rent"}
                     profileTo={client ? clientProfilePath(client.name) : undefined}
-                    onToggle={() => toggleTask(t.id)}
+                    onToggle={() => confirmToggleTask(t.id, t.text)}
                   />
                 );
               })}
@@ -82,7 +93,7 @@ export function NotesPage() {
                     tone="warning"
                     dealType={client?.category === "Buyer" ? "Buy" : "Rent"}
                     profileTo={client ? clientProfilePath(client.name) : undefined}
-                    onToggle={() => toggleTask(t.id)}
+                    onToggle={() => confirmToggleTask(t.id, t.text)}
                   />
                 );
               })}
@@ -115,6 +126,7 @@ export function NotesPage() {
           )}
         </div>
       )}
+      <ConfirmDialog request={confirmRequest} onClose={closeConfirm} />
     </div>
   );
 }

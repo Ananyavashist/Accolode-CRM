@@ -30,7 +30,7 @@ export function PillDropdown({
   }, []);
 
   return (
-    <div ref={ref} className="relative inline-block">
+    <div ref={ref} className="relative inline-block w-fit max-w-full justify-self-start">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}

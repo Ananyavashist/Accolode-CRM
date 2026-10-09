@@ -127,7 +127,7 @@ export function AddEventModal({ open, onClose, onSubmit, defaultDate }: AddEvent
               value={form.title}
               onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
               placeholder="e.g. Property tour - Emerald Park"
-              className="mt-1.5 h-10 w-full rounded-[10px] border border-hairline bg-surface px-3 text-sm outline-none placeholder:text-ink-soft focus:border-primary/40"
+              className="input-field mt-1.5"
             />
           </label>
 
@@ -146,7 +146,7 @@ export function AddEventModal({ open, onClose, onSubmit, defaultDate }: AddEvent
                 type="date"
                 value={form.date}
                 onChange={(e) => setForm((f) => ({ ...f, date: e.target.value }))}
-                className="mt-1.5 h-10 w-full rounded-[10px] border border-hairline bg-surface px-3 text-sm outline-none focus:border-primary/40"
+                className="input-field mt-1.5"
               />
             </label>
             <SelectDropdown
@@ -183,7 +183,7 @@ export function AddEventModal({ open, onClose, onSubmit, defaultDate }: AddEvent
               value={form.location}
               onChange={(e) => setForm((f) => ({ ...f, location: e.target.value }))}
               placeholder="Office, phone, or property address"
-              className="mt-1.5 h-10 w-full rounded-[10px] border border-hairline bg-surface px-3 text-sm outline-none placeholder:text-ink-soft focus:border-primary/40"
+              className="input-field mt-1.5"
             />
           </label>
         </div>
