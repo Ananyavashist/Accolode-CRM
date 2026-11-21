@@ -5,6 +5,7 @@ import { LISTED_PROPERTIES } from "@/data/listings";
 import type { ListingStatus } from "@/types";
 import { TypeChip } from "@/components/ui/StatusBadge";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { cn } from "@/lib/utils";
 
 const TYPE_TABS = ["All", "Rent", "Sale"] as const;
@@ -39,17 +40,15 @@ export function ListedProperties() {
 
   return (
     <div className="page">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <h1 className="text-ink">Listed Properties</h1>
-          <p className="page-lede">
-            Manage your active listings, track offers, and monitor rent vs sale inventory
-          </p>
-        </div>
-        <button className="btn-primary">
-          Add Property <Plus size={16} />
-        </button>
-      </div>
+      <PageHeader
+        title="Properties"
+        description="Manage your active listings, track offers, and monitor rent vs sale inventory"
+        trailing={
+          <button type="button" className="btn-primary">
+            Add Property <Plus size={16} />
+          </button>
+        }
+      />
 
       <div className="grid grid-cols-1 gap-section sm:grid-cols-2 xl:grid-cols-4">
         <StatCard title="Total Listed" value={stats.total} trend="4.2%" subtitle="across all cities" />

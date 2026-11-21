@@ -1,4 +1,4 @@
-/** Cool analogous data palette that sits next to Accolode teal. */
+/** Cool analogous data palette that sits next to Accolade teal. */
 export const DATA_PALETTE = {
   teal: "#124553",
   cyan: "#2A9D8F",
@@ -46,6 +46,22 @@ export const BAR_COLORS = {
   rent: DATA_PALETTE.teal,
   sold: DATA_PALETTE.seafoam,
 } as const;
+
+/** Stacked property overview — dark base + light top (payroll-style chart). */
+export const PROPERTY_OVERVIEW_COLORS = {
+  rent: "#3F6F56",
+  sold: "#B7E4C7",
+} as const;
+
+/** Swatch stack (charcoal → forest → light mint), bottom to top in capacity chart. */
+export const CLIENT_CAPACITY_COLORS = {
+  activeClients: "#292929",
+  leadAccepted: "#4E8054",
+  dealClosed: "#B8D4BC",
+} as const;
+
+/** Placeholder month (no data yet) — full stack reads as one light bar. */
+export const CLIENT_CAPACITY_UPCOMING_FILL = "#E5E7EB";
 
 /** Rent / Buy / Sale must not share a teal wash — brokers scan these first. */
 export const TYPE_CHIP = {

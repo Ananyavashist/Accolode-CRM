@@ -5,12 +5,12 @@ export default {
     extend: {
       colors: {
         primary: {
-          DEFAULT: "#124553",
-          50: "#EEF5F7",
-          100: "#d3e3e8",
-          600: "#124553",
-          700: "#0E3743",
-          800: "#0a2932",
+          DEFAULT: "#4E8054",
+          50: "#F3FAF4",
+          100: "#DCEEDE",
+          600: "#4E8054",
+          700: "#427048",
+          800: "#365C3B",
         },
         sidebar: "#F9FAFB",
         surface: "#FFFFFF",
@@ -38,6 +38,15 @@ export default {
           indigo: "#EEF0FE",
           cream: "#FFFBEB",
         },
+        leadsBar: {
+          /** Light sage wash — green-tinted, not yellow */
+          bg: "#F2F8F3",
+        },
+        swatch: {
+          charcoal: "#292929",
+          forest: "#4E8054",
+          mint: "#B8D4BC",
+        },
         chart: {
           primary: "#124553",
           lavender: "#3D5A80",
@@ -49,14 +58,13 @@ export default {
       },
       fontFamily: {
         sans: [
-          "Inter",
+          "Helvetica",
+          "Helvetica Neue",
+          "Arial",
           "ui-sans-serif",
           "system-ui",
           "-apple-system",
           "Segoe UI",
-          "Roboto",
-          "Helvetica Neue",
-          "Arial",
           "sans-serif",
         ],
       },

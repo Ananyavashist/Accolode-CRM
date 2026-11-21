@@ -6,11 +6,11 @@ import { cn } from "@/lib/utils";
 
 const STEPS: { id: FirstStepId; label: string; to: string }[] = [
   { id: "triage", label: "Triage a lead", to: "/client-leads" },
-  { id: "followUp", label: "Set a follow-up", to: "/notes" },
+  { id: "followUp", label: "Set a follow up", to: "/notes" },
   { id: "saidDoing", label: "Read Said vs Doing", to: "/clients" },
   { id: "siteVisit", label: "Move a deal to Site Visit", to: "/clients" },
-  { id: "walkIn", label: "Add a walk-in client", to: "/clients" },
-  { id: "whatsapp", label: "Message on WhatsApp", to: "/messages" },
+  { id: "walkIn", label: "Add a walk in client", to: "/clients" },
+  { id: "whatsapp", label: "Open Inbox", to: "/inbox" },
 ];
 
 export function FirstStepsWidget({

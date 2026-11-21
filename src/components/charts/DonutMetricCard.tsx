@@ -34,7 +34,7 @@ export function DonutMetricCard({
   return (
     <div className={cn("section-card flex min-h-0 flex-col p-4", className)}>
       <div className="flex shrink-0 items-center justify-between gap-2">
-        <h2 className="text-base font-semibold leading-snug text-ink">{title}</h2>
+        <h2 className="text-base font-bold leading-snug text-ink">{title}</h2>
         {onPeriodChange && (
           <PeriodDropdown
             value={period}

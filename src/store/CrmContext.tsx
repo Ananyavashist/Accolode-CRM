@@ -43,6 +43,7 @@ interface CrmContextValue extends CrmState {
   acceptLead: (leadId: string, followUpDate?: string) => string | undefined;
   undoAccept: (clientId: string) => void;
   deprioritiseLead: (leadId: string) => string | undefined;
+  rejectLead: (leadId: string) => string | undefined;
   refreshLeadActivity: () => void;
   addClient: (input: AddClientInput) => string;
   updateClient: (id: string, patch: Partial<Client>) => void;
@@ -56,7 +57,7 @@ interface CrmContextValue extends CrmState {
   newLeadCount: number;
 }
 
-const STORAGE_KEY = "accolode-crm-v3";
+const STORAGE_KEY = "accolode-crm-v5";
 
 const EMPTY_STEPS: FirstSteps = {
   triage: false,
@@ -320,6 +321,25 @@ export function CrmProvider({ children }: { children: ReactNode }) {
     return leadName;
   }, []);
 
+  const rejectLead = useCallback((leadId: string) => {
+    let leadName: string | undefined;
+    setState((prev) => {
+      const lead = prev.leads.find((l) => l.id === leadId);
+      if (!lead) return prev;
+      leadName = lead.name;
+      return {
+        ...prev,
+        leads: prev.leads.map((l) =>
+          l.id === leadId
+            ? { ...l, status: "rejected" as const, returnedReason: undefined }
+            : l,
+        ),
+        firstSteps: { ...prev.firstSteps, triage: true },
+      };
+    });
+    return leadName;
+  }, []);
+
   const refreshLeadActivity = useCallback(() => {
     setState((prev) => ({
       ...prev,
@@ -349,7 +369,7 @@ export function CrmProvider({ children }: { children: ReactNode }) {
       propertyType: `${input.houseType}, ${input.bedrooms}`,
       location: input.locality,
       budget: budgetLabel,
-      email: input.email || "—",
+      email: input.email || "None",
       phone: input.phone,
       city: `${input.locality}, ${input.city}`,
       progressStage: "New",
@@ -478,6 +498,7 @@ export function CrmProvider({ children }: { children: ReactNode }) {
       acceptLead,
       undoAccept,
       deprioritiseLead,
+      rejectLead,
       refreshLeadActivity,
       addClient,
       updateClient,
@@ -495,6 +516,7 @@ export function CrmProvider({ children }: { children: ReactNode }) {
       acceptLead,
       undoAccept,
       deprioritiseLead,
+      rejectLead,
       refreshLeadActivity,
       addClient,
       updateClient,

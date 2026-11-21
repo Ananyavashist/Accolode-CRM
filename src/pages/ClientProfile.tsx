@@ -1,19 +1,18 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   ArrowLeft,
-  Download,
   FileText,
+  Messages,
   MoreHorizontal,
+  Pencil,
   Plus,
-  Share2,
 } from "@/components/ui/icons";
-import { Avatar } from "@/components/ui/Avatar";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { PillDropdown } from "@/components/ui/PillDropdown";
 import { PropertyCard } from "@/components/ui/PropertyCard";
-import { StageBadge, StatusBadge } from "@/components/ui/StatusBadge";
+import { StatusBadge } from "@/components/ui/StatusBadge";
 import { useCrm } from "@/store/CrmContext";
 import { clientProfilePath, mismatchLines, personSlug, relativeTime } from "@/lib/pipeline";
 import { PROGRESS_STAGE_OPTIONS, type ProgressStage } from "@/types";
@@ -26,7 +25,7 @@ import {
   PROGRESS_HISTORY,
   activityForClient,
 } from "@/data/clientProfileContent";
-import { cn } from "@/lib/utils";
+import { cn, formatDisplayCopy } from "@/lib/utils";
 import { ConfirmDialog, useConfirmAction } from "@/components/ui/ConfirmDialog";
 
 const TABS = [
@@ -44,27 +43,33 @@ const PINNED_DOCS = [
   {
     title: "Renter Agreement Guidelines",
     sub: "Delivered By: 9th January 2026",
-    bg: "bg-doc-rose",
   },
   {
-    title: "Mortgage Pre- Approval Letter",
+    title: "Mortgage Pre Approval Letter",
     sub: "Approved By: 29th March 2026",
-    bg: "bg-doc-indigo",
   },
   {
     title: "ID & Verification Documents",
     sub: "Verified By: 30th March 2026",
-    bg: "bg-doc-cream",
   },
 ];
+
+const OVERVIEW_MORE_ITEMS = [
+  { id: "edit", label: "Edit" },
+  { id: "share", label: "Share" },
+  { id: "download", label: "Download" },
+  { id: "notes", label: "Add notes" },
+] as const;
+
+type OverviewMoreActionId = (typeof OVERVIEW_MORE_ITEMS)[number]["id"];
 
 function InfoRow({ label, value, hint }: { label: string; value: string; hint?: string | null }) {
   return (
     <div className="grid grid-cols-[125px_1fr] gap-2 py-[7px] text-sm">
-      <span className="text-ink-muted">{label}</span>
+      <span className="text-ink-muted">{formatDisplayCopy(label)}</span>
       <span>
-        <span className="font-medium text-ink">{value}</span>
-        {hint && <span className="ml-2 text-xs text-ink-muted">{hint}</span>}
+        <span className="font-medium text-ink">{formatDisplayCopy(value)}</span>
+        {hint && <span className="ml-2 text-xs text-ink-muted">{formatDisplayCopy(hint)}</span>}
       </span>
     </div>
   );
@@ -100,7 +105,56 @@ function BadgeRow({
 }
 
 function SectionTitle({ children }: { children: ReactNode }) {
-  return <h3 className="text-ink">{children}</h3>;
+  return <h3 className="text-base font-semibold text-ink">{children}</h3>;
+}
+
+function OverviewMoreMenu({
+  onAction,
+}: {
+  onAction: (id: OverviewMoreActionId) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        type="button"
+        className="icon-btn"
+        aria-label="More"
+        aria-expanded={open}
+        onClick={() => setOpen((v) => !v)}
+      >
+        <MoreHorizontal size={16} />
+      </button>
+      {open && (
+        <ul className="absolute right-0 z-50 mt-1 min-w-[160px] overflow-hidden rounded-[10px] border border-hairline bg-surface py-1 shadow-pop">
+          {OVERVIEW_MORE_ITEMS.map((item) => (
+            <li key={item.id}>
+              <button
+                type="button"
+                onClick={() => {
+                  onAction(item.id);
+                  setOpen(false);
+                }}
+                className="w-full px-3 py-2 text-left text-sm text-ink hover:bg-sidebar"
+              >
+                {item.label}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
 }
 
 function TabPanel({ children }: { children: ReactNode }) {
@@ -131,7 +185,7 @@ export function ClientProfile() {
         <div className="section-card flex flex-col items-center justify-center gap-3 px-6 py-24 text-center">
           <p className="font-semibold text-ink">Client not found</p>
           <button onClick={() => navigate("/clients")} className="btn-primary">
-            Back to Client Database
+            Back to Database
           </button>
         </div>
       </div>
@@ -143,35 +197,52 @@ export function ClientProfile() {
   const mismatches = mismatchLines(client);
   const budgetHint = relativeTime(client.onboarding.updatedAt?.budget);
 
+  const handleOverviewMore = (action: OverviewMoreActionId) => {
+    if (action === "edit" || action === "notes") setTab("Client Notes");
+    if (action === "share" && typeof navigator.share === "function") {
+      void navigator.share({ title: client.name, url: window.location.href }).catch(() => {});
+    }
+  };
+
+  const inboxPath = `/inbox?client=${personSlug(client.name)}`;
+
   return (
     <div className="page flex min-h-0 flex-1 flex-col lg:overflow-hidden">
-      <Breadcrumb
-        items={[
-          { label: "Client Database", to: "/clients" },
-          { label: client.name },
-        ]}
-      />
-
-      <div className="section-card flex shrink-0 flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-3">
-          <button onClick={() => navigate("/clients")} className="icon-btn" aria-label="Back to Client Database">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex min-w-0 items-center gap-2">
+          <button
+            type="button"
+            onClick={() => navigate("/clients")}
+            className="icon-btn shrink-0"
+            aria-label="Back to Database"
+          >
             <ArrowLeft size={18} />
           </button>
-          <Avatar name={client.name} src={client.avatar} size={48} />
-          <div>
-            <h1 className="text-[18px] font-semibold leading-snug text-ink">{client.name}</h1>
-            <div className="mt-1 flex flex-wrap items-center gap-2">
-              <p className="text-sm text-ink-muted">Client ID: {client.clientId}</p>
-              <StageBadge stage={client.progressStage} />
-            </div>
-          </div>
+          <Breadcrumb
+            items={[
+              { label: "Database", to: "/clients" },
+              { label: client.name },
+            ]}
+          />
         </div>
-        <button
-          onClick={() => navigate(`/messages?client=${personSlug(client.name)}`)}
-          className="btn-primary"
-        >
-          Message on WhatsApp
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setTab("Client Notes")}
+            className="icon-btn"
+            aria-label="Edit client"
+          >
+            <Pencil size={18} />
+          </button>
+          <button
+            type="button"
+            onClick={() => navigate(inboxPath)}
+            className="icon-btn"
+            aria-label="Message client"
+          >
+            <Messages size={18} />
+          </button>
+        </div>
       </div>
 
       <div className="flex min-h-0 w-full min-w-0 flex-1 flex-col gap-4 lg:flex-row lg:overflow-hidden">
@@ -182,6 +253,8 @@ export function ClientProfile() {
           <div className="section-card p-4">
             <SectionTitle>Personal Information</SectionTitle>
             <div className="mt-2 divide-y divide-hairline">
+              <InfoRow label="Name" value={client.name} />
+              <InfoRow label="Client ID" value={client.clientId} />
               <InfoRow label="Client Type" value={client.category} />
               <InfoRow label="Email Address" value={client.email} />
               <InfoRow label="Phone Number" value={client.phone} />
@@ -214,7 +287,7 @@ export function ClientProfile() {
               <InfoRow
                 label="Budget"
                 value={client.onboarding.budget}
-                hint={budgetHint ? `changed ${budgetHint}` : null}
+                hint={budgetHint ? `updated ${budgetHint}` : null}
               />
               <InfoRow label="Shifting Timeline" value={client.onboarding.shiftingTimeline} />
             </div>
@@ -222,27 +295,26 @@ export function ClientProfile() {
 
           <div className="section-card p-4">
             <SectionTitle>Preference Signals</SectionTitle>
-            <p className="mt-0.5 text-xs text-ink-muted">Said on the left. Doing on the right.</p>
             <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
               <div>
-                <p className="text-xs font-medium text-ink-muted">Said</p>
+                <p className="text-xs font-medium text-ink-muted">Budget preference</p>
                 <p className="mt-1 text-ink">{client.onboarding.budget}</p>
                 <p className="text-ink">{client.onboarding.preferredLocation}</p>
               </div>
               <div>
-                <p className="text-xs font-medium text-ink-muted">Doing</p>
-                <p className="mt-1 text-ink">{client.observed?.browsingBudget ?? "—"}</p>
+                <p className="text-xs font-medium text-ink-muted">Recently viewed</p>
+                <p className="mt-1 text-ink">{client.observed?.browsingBudget ?? "None"}</p>
                 <p className="text-ink">
-                  {(client.observed?.browsingLocations ?? []).join(", ") || "—"}
+                  {(client.observed?.browsingLocations ?? []).join(", ") || "None"}
                 </p>
               </div>
             </div>
             {mismatches.length > 0 && (
-              <ul className="mt-3 space-y-1">
+              <ul className="mt-3 flex flex-col items-start gap-1">
                 {mismatches.map((line) => (
                   <li
                     key={line}
-                    className="rounded-md bg-status-warningBg px-2 py-1.5 text-xs text-status-warning"
+                    className="w-fit rounded-md bg-status-warningBg px-2 py-1.5 text-xs text-status-warning"
                   >
                     {line}
                   </li>
@@ -254,7 +326,7 @@ export function ClientProfile() {
           <div className="section-card p-4">
             <div className="flex items-center justify-between">
               <SectionTitle>Pinned Documents</SectionTitle>
-              <button className="text-xs font-semibold text-primary hover:underline">
+              <button type="button" className="text-sm font-semibold text-ink underline">
                 View all
               </button>
             </div>
@@ -262,10 +334,7 @@ export function ClientProfile() {
               {PINNED_DOCS.map((doc) => (
                 <div
                   key={doc.title}
-                  className={cn(
-                    "flex items-center gap-3 rounded-[10px] border border-hairline p-3",
-                    doc.bg,
-                  )}
+                  className="flex items-center gap-3 rounded-[10px] border border-hairline bg-sidebar p-3"
                 >
                   <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-surface text-ink-muted">
                     <FileText size={16} />
@@ -294,7 +363,8 @@ export function ClientProfile() {
               ))}
             </div>
             <button
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-primary text-white transition-colors hover:bg-primary-700"
+              type="button"
+              className="icon-btn border-primary bg-primary text-white hover:bg-primary-700 hover:text-white"
               aria-label="Add"
             >
               <Plus size={18} />
@@ -310,17 +380,7 @@ export function ClientProfile() {
                     <SectionTitle>Documented Report</SectionTitle>
                     <p className="mt-0.5 text-sm text-ink-muted">Last Updated: 12th February 2026</p>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <button className="btn-outline">
-                      Download <Download size={16} />
-                    </button>
-                    <button className="icon-btn rounded-[10px]" aria-label="Share">
-                      <Share2 size={16} />
-                    </button>
-                    <button className="icon-btn rounded-[10px]" aria-label="More">
-                      <MoreHorizontal size={16} />
-                    </button>
-                  </div>
+                  <OverviewMoreMenu onAction={handleOverviewMore} />
                 </div>
               </div>
 
@@ -330,7 +390,9 @@ export function ClientProfile() {
                 <SectionTitle>Latest Tasks</SectionTitle>
                 <div className="mt-2 space-y-1">
                   {clientTasks.length === 0 && (
-                    <p className="text-sm text-ink-muted">No follow-ups yet. Accept a lead with a date to add one.</p>
+                    <p className="text-[14px] text-ink-muted">
+                      No follow ups yet. Accept a lead with a date to add one.
+                    </p>
                   )}
                   {clientTasks.map((task) => (
                     <button
@@ -339,7 +401,7 @@ export function ClientProfile() {
                         askConfirm({
                           title: task.done ? "Mark task incomplete?" : "Mark task complete?",
                           message: task.done
-                            ? `Reopen "${task.text}" on the follow-up list?`
+                            ? `Reopen "${task.text}" on the follow up list?`
                             : `Mark "${task.text}" as done?`,
                           confirmLabel: task.done ? "Mark incomplete" : "Mark done",
                           onConfirm: () => toggleTask(task.id),
@@ -369,7 +431,7 @@ export function ClientProfile() {
               <div>
                 <div className="flex items-center justify-between">
                   <SectionTitle>Property Preferences</SectionTitle>
-                  <button className="text-xs font-semibold text-primary hover:underline">
+                  <button type="button" className="text-sm font-semibold text-ink underline">
                     View all
                   </button>
                 </div>

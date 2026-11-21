@@ -2,6 +2,19 @@ export function cn(...classes: Array<string | false | null | undefined>): string
   return classes.filter(Boolean).join(" ");
 }
 
+/** User facing copy: no hyphen or dash punctuation (ranges use “to”). */
+export function formatDisplayCopy(text: string): string {
+  if (!text) return text;
+  return text
+    .replace(/\u2014/g, ", ")
+    .replace(/\u2013/g, " to ")
+    .replace(/\s+-\s+/g, " to ")
+    .replace(/(\d)-(\d)/g, "$1 to $2")
+    .replace(/([A-Za-zÀ-ÖØ-öø-ÿ])-([A-Za-zÀ-ÖØ-öø-ÿ])/g, "$1 $2")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+}
+
 export function initials(name: string): string {
   return name
     .split(" ")
