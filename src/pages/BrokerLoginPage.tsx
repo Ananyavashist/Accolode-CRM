@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Navigation } from "@/components/ui/icons";
+import { AccoladeLogo } from "@/components/ui/AccoladeLogo";
 import { useBroker } from "@/store/BrokerContext";
 import { cn } from "@/lib/utils";
 
 export function BrokerLoginPage() {
   const navigate = useNavigate();
-  const { login } = useBroker();
+  const { login, enterDemoDashboard } = useBroker();
   const [mode, setMode] = useState<"signin" | "signup">("signup");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -30,152 +30,126 @@ export function BrokerLoginPage() {
     navigate(ready ? "/" : "/onboarding", { replace: true });
   };
 
+  const skipToDashboard = () => {
+    enterDemoDashboard();
+    navigate("/", { replace: true });
+  };
+
   return (
-    <div className="flex min-h-screen flex-col lg:flex-row">
-      <section className="flex flex-1 flex-col justify-center px-6 py-10 lg:px-16">
-        <div className="mx-auto w-full max-w-md">
-          <div className="mb-8 flex items-center gap-2">
-            <span className="icon-btn border-primary/20 bg-primary/5 text-primary">
-              <Navigation size={18} />
-            </span>
-            <span className="text-lg font-semibold text-swatch-charcoal">Accolade</span>
-          </div>
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-primary via-primary-800 to-swatch-charcoal px-6 py-10">
+      <div
+        className="pointer-events-none absolute inset-0 opacity-20"
+        style={{
+          backgroundImage:
+            "linear-gradient(to right, rgba(255,255,255,.15) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,.15) 1px, transparent 1px)",
+          backgroundSize: "32px 32px",
+        }}
+        aria-hidden
+      />
 
-          <h1 className="text-2xl font-bold text-ink">
-            {mode === "signup" ? "Create an account" : "Sign in"}
-          </h1>
-          <p className="page-lede mt-1">
-            Broker workspace for leads, clients, and pipeline in one place.
-          </p>
+      <div className="relative z-10 w-full max-w-md rounded-2xl border border-white/10 bg-surface p-8 shadow-pop">
+        <div className="mb-8 flex items-center gap-2">
+          <AccoladeLogo size={32} />
+          <span className="text-lg font-semibold text-swatch-charcoal">Accolade</span>
+        </div>
 
-          <div className="mt-6 flex gap-2 rounded-lg border border-hairline bg-sidebar p-1">
-            {(
-              [
-                ["signup", "Sign up"],
-                ["signin", "Sign in"],
-              ] as const
-            ).map(([id, label]) => (
-              <button
-                key={id}
-                type="button"
-                onClick={() => setMode(id)}
-                className={cn(
-                  "flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors",
-                  mode === id ? "bg-surface text-ink shadow-sm" : "text-ink-muted hover:text-ink",
-                )}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
+        <h1 className="text-2xl font-bold text-ink">
+          {mode === "signup" ? "Create an account" : "Sign in"}
+        </h1>
+        <p className="page-lede mt-1">
+          Broker workspace for leads, clients, and pipeline in one place.
+        </p>
 
-          <form onSubmit={submit} className="mt-6 space-y-4" noValidate>
-            <label className="block">
-              <span className="text-sm font-medium text-ink">Email</span>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                onBlur={() => setTouched((t) => ({ ...t, email: true }))}
-                className={cn(
-                  "input-field mt-1.5",
-                  (touched.email || errors.email) && !email.trim() && "border-status-awaiting",
-                )}
-                aria-invalid={Boolean(errors.email)}
-                autoComplete="email"
-              />
-              {errors.email && touched.email && (
-                <p className="mt-1 text-xs text-status-awaiting" role="alert">
-                  {errors.email}
-                </p>
+        <div className="mt-6 flex gap-2 rounded-lg border border-hairline bg-sidebar p-1">
+          {(
+            [
+              ["signup", "Sign up"],
+              ["signin", "Sign in"],
+            ] as const
+          ).map(([id, label]) => (
+            <button
+              key={id}
+              type="button"
+              onClick={() => setMode(id)}
+              className={cn(
+                "flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                mode === id ? "bg-surface text-ink shadow-sm" : "text-ink-muted hover:text-ink",
               )}
-            </label>
-
-            <label className="block">
-              <span className="text-sm font-medium text-ink">Password</span>
-              <div className="relative mt-1.5">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  onBlur={() => setTouched((t) => ({ ...t, password: true }))}
-                  className={cn(
-                    "input-field pr-16",
-                    (touched.password || errors.password) && !password.trim() && "border-status-awaiting",
-                  )}
-                  aria-invalid={Boolean(errors.password)}
-                  autoComplete={mode === "signup" ? "new-password" : "current-password"}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((v) => !v)}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded px-2 py-1 text-xs font-medium text-ink-muted hover:text-ink"
-                >
-                  {showPassword ? "Hide" : "Show"}
-                </button>
-              </div>
-              {errors.password && touched.password && (
-                <p className="mt-1 text-xs text-status-awaiting" role="alert">
-                  {errors.password}
-                </p>
-              )}
-            </label>
-
-            <button type="submit" className="btn-primary w-full">
-              {mode === "signup" ? "Continue" : "Sign in"}
+            >
+              {label}
             </button>
-          </form>
-
-          <p className="mt-6 text-center text-xs text-ink-muted">
-            By continuing, you agree to our Terms of Service and Privacy Policy.
-          </p>
+          ))}
         </div>
-      </section>
 
-      <aside className="relative flex min-h-[320px] flex-1 flex-col overflow-hidden bg-gradient-to-br from-primary via-primary-800 to-swatch-charcoal text-white lg:min-h-0 lg:max-w-[48%]">
-        <div
-          className="pointer-events-none absolute inset-0 opacity-20"
-          style={{
-            backgroundImage:
-              "linear-gradient(to right, rgba(255,255,255,.15) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,.15) 1px, transparent 1px)",
-            backgroundSize: "32px 32px",
-          }}
-          aria-hidden
-        />
-        <div className="relative flex min-h-0 flex-1 flex-col px-8 pt-8">
-          <div className="relative max-w-md shrink-0">
-            <p className="text-lg leading-relaxed text-white/95">
-              My experience with Accolade has made client capacity easy. Scheduling visits,
-              negotiation, and lead management stay in one flow.
-            </p>
-            <div className="mt-6 flex items-center gap-3">
-              <span
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white/20 text-lg font-serif text-white"
-                aria-hidden
-              >
-                “
-              </span>
-              <div>
-                <p className="text-sm font-semibold">Bettie Porter</p>
-                <p className="text-sm text-white/75">Senior Marketing Manager</p>
-              </div>
-            </div>
-          </div>
+        <form onSubmit={submit} className="mt-6 space-y-4" noValidate>
+          <label className="block">
+            <span className="text-sm font-medium text-ink">Email</span>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              onBlur={() => setTouched((t) => ({ ...t, email: true }))}
+              className={cn(
+                "input-field mt-1.5",
+                (touched.email || errors.email) && !email.trim() && "border-status-awaiting",
+              )}
+              aria-invalid={Boolean(errors.email)}
+              autoComplete="email"
+            />
+            {errors.email && touched.email && (
+              <p className="mt-1 text-xs text-status-awaiting" role="alert">
+                {errors.email}
+              </p>
+            )}
+          </label>
 
-          <div className="relative mt-6 flex min-h-[200px] flex-1 items-end justify-center lg:min-h-[280px]">
-            <div className="w-[min(100%,620px)] translate-y-6 overflow-hidden rounded-t-2xl border border-white/25 bg-white/95 p-1.5 shadow-[0_-8px_40px_rgba(0,0,0,0.35)] lg:translate-y-10">
-              <img
-                src="/marketing/overview-dashboard-preview.png"
-                alt="Accolade broker overview with client capacity, metrics, and deal pipeline"
-                className="block w-full rounded-t-xl"
-                loading="lazy"
-                decoding="async"
+          <label className="block">
+            <span className="text-sm font-medium text-ink">Password</span>
+            <div className="relative mt-1.5">
+              <input
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                onBlur={() => setTouched((t) => ({ ...t, password: true }))}
+                className={cn(
+                  "input-field pr-16",
+                  (touched.password || errors.password) && !password.trim() && "border-status-awaiting",
+                )}
+                aria-invalid={Boolean(errors.password)}
+                autoComplete={mode === "signup" ? "new-password" : "current-password"}
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword((v) => !v)}
+                className="absolute right-2 top-1/2 -translate-y-1/2 rounded px-2 py-1 text-xs font-medium text-ink-muted hover:text-ink"
+              >
+                {showPassword ? "Hide" : "Show"}
+              </button>
             </div>
-          </div>
-        </div>
-        <p className="relative z-10 px-8 pb-6 text-xs text-white/60">Broker onboarding · November 2026</p>
-      </aside>
+            {errors.password && touched.password && (
+              <p className="mt-1 text-xs text-status-awaiting" role="alert">
+                {errors.password}
+              </p>
+            )}
+          </label>
+
+          <button type="submit" className="btn-primary w-full">
+            {mode === "signup" ? "Continue" : "Sign in"}
+          </button>
+        </form>
+
+        <p className="mt-6 text-center text-xs text-ink-muted">
+          By continuing, you agree to our Terms of Service and Privacy Policy.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        onClick={skipToDashboard}
+        className="fixed bottom-6 right-6 z-50 rounded-lg border border-white/20 bg-surface px-4 py-2.5 text-sm font-medium text-ink shadow-pop transition-colors hover:bg-sidebar"
+      >
+        Skip to dashboard
+      </button>
     </div>
   );
 }

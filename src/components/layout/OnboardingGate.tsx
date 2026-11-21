@@ -6,7 +6,14 @@ export function OnboardingGate() {
   const location = useLocation();
 
   if (!session) {
-    return <Navigate to="/login" replace state={{ from: location.pathname }} />;
+    const isRoot = location.pathname === "/";
+    return (
+      <Navigate
+        to="/login"
+        replace
+        state={isRoot ? undefined : { from: location.pathname }}
+      />
+    );
   }
 
   if (!isOnboardingComplete) {

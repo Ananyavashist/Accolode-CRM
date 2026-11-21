@@ -8,7 +8,9 @@ import { DashboardPeriodProvider } from "./store/DashboardPeriodContext";
 import { UiProvider } from "./store/UiContext";
 import { startRevealScrollbar } from "./lib/revealScrollbar";
 import "./index.css";
+import { bootstrapDemoOnPageLoad } from "./lib/demoBootstrap";
 
+bootstrapDemoOnPageLoad();
 startRevealScrollbar();
 
 createRoot(document.getElementById("root")!).render(
