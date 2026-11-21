@@ -7,6 +7,7 @@ import { clientProfilePath, personSlug, todayISO } from "@/lib/pipeline";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { TypeChip } from "@/components/ui/StatusBadge";
 import { Avatar } from "@/components/ui/Avatar";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { cn } from "@/lib/utils";
 import type { DealType } from "@/types";
 
@@ -38,18 +39,16 @@ export function NotesPage() {
 
   return (
     <div className="page">
-      <div>
-        <h1 className="text-ink">Notes</h1>
-        <p className="page-lede">
-          Follow-ups and leads that have gone quiet — open a profile from the name.
-        </p>
-      </div>
+      <PageHeader
+        title="Notes"
+        description="Follow ups and leads that have gone quiet. Open a profile from the name."
+      />
 
       {empty ? (
         <div className="section-card">
           <EmptyState
             title="Nothing on the list"
-            description="Accept a lead and set a follow-up so Notes fills itself."
+            description="Accept a lead and set a follow up so Notes fills itself."
             action={
               <button onClick={() => navigate("/client-leads")} className="btn-primary">
                 Go to Client Leads
@@ -203,7 +202,7 @@ function NotesRow({
       {profileTo && (
         <Link
           to={profileTo}
-          className="btn-outline ml-auto h-8 shrink-0 px-2.5 text-xs"
+          className="btn-outline ml-auto shrink-0"
         >
           View profile
         </Link>

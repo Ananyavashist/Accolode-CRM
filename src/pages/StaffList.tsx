@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Plus, Search } from "@/components/ui/icons";
 import { Avatar } from "@/components/ui/Avatar";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { PageHeader } from "@/components/ui/PageHeader";
 
 const STAFF = [
   { id: "s1", name: "Priya Nair", role: "Senior Broker", phone: "+91 98110 11220", activeClients: 18, location: "Connaught Place" },
@@ -29,15 +30,15 @@ export function StaffList() {
 
   return (
     <div className="page">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <h1 className="text-ink">Staff List</h1>
-          <p className="page-lede">Manage brokers and field agents on your team</p>
-        </div>
-        <button className="btn-primary">
-          Add Staff <Plus size={16} />
-        </button>
-      </div>
+      <PageHeader
+        title="Staff List"
+        description="Manage brokers and field agents on your team"
+        trailing={
+          <button type="button" className="btn-primary">
+            Add Staff <Plus size={16} />
+          </button>
+        }
+      />
 
       <div className="section-card">
         <div className="border-b border-hairline p-4">

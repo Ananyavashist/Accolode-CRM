@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight, Clock, MapPin, Plus } from "@/components/ui/icons";
 import { AddEventModal, type CalEvent, type EventType } from "@/components/modals/AddEventModal";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { cn } from "@/lib/utils";
 
 const TYPE_STYLES: Record<EventType, { chip: string; dot: string }> = {
@@ -12,13 +13,13 @@ const TYPE_STYLES: Record<EventType, { chip: string; dot: string }> = {
 };
 
 const SEED_EVENTS: CalEvent[] = [
-  { date: "2026-06-18", time: "10:00 AM", title: "Property tour - Emerald Park", client: "Aman Verma", location: "Chandni Chowk", type: "Tour" },
+  { date: "2026-06-18", time: "10:00 AM", title: "Property tour, Emerald Park", client: "Aman Verma", location: "Chandni Chowk", type: "Tour" },
   { date: "2026-06-19", time: "02:30 PM", title: "Budget revision call", client: "Shaurya Sharma", location: "Phone", type: "Call" },
-  { date: "2026-06-21", time: "11:00 AM", title: "Site visit - Lakeside Villa", client: "Rohit Verma", location: "South Delhi", type: "Tour" },
+  { date: "2026-06-21", time: "11:00 AM", title: "Site visit, Lakeside Villa", client: "Rohit Verma", location: "South Delhi", type: "Tour" },
   { date: "2026-06-21", time: "04:00 PM", title: "Documentation handover", client: "Kritika Ahuja", location: "Office", type: "Documentation" },
   { date: "2026-06-23", time: "01:00 PM", title: "Negotiation meeting", client: "Noopur Divekar", location: "Guru Nanak Chowk", type: "Meeting" },
-  { date: "2026-06-24", time: "10:30 AM", title: "Follow-up call", client: "Krishna Desai", location: "Phone", type: "Call" },
-  { date: "2026-06-26", time: "03:00 PM", title: "Property tour - Maple Street", client: "Akshay Kumar", location: "Near Saket Mall", type: "Tour" },
+  { date: "2026-06-24", time: "10:30 AM", title: "Follow up call", client: "Krishna Desai", location: "Phone", type: "Call" },
+  { date: "2026-06-26", time: "03:00 PM", title: "Property tour, Maple Street", client: "Akshay Kumar", location: "Near Saket Mall", type: "Tour" },
   { date: "2026-06-29", time: "12:00 PM", title: "Closing meeting", client: "Ananyaa Panday", location: "Office", type: "Meeting" },
 ];
 
@@ -92,27 +93,27 @@ export function CalendarPage() {
 
   return (
     <div className="page">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <h1 className="text-ink">Calendar</h1>
-          <p className="page-lede">Track tours, calls and meetings with your clients</p>
-        </div>
-        <button onClick={() => setAddOpen(true)} className="btn-primary">
-          Add Event <Plus size={16} />
-        </button>
-      </div>
+      <PageHeader
+        title="Calendar"
+        description="Track tours, calls and meetings with your clients"
+        trailing={
+          <button type="button" onClick={() => setAddOpen(true)} className="btn-primary">
+            Add Event <Plus size={16} />
+          </button>
+        }
+      />
 
       <div className="grid grid-cols-1 gap-section lg:grid-cols-[1fr_330px]">
         <div className="section-card flex flex-col p-4">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-2">
-              <button onClick={goPrev} className="icon-btn rounded-[10px]" aria-label="Previous month">
+              <button type="button" onClick={goPrev} className="icon-btn" aria-label="Previous month">
                 <ChevronLeft size={16} />
               </button>
               <h2 className="min-w-[150px] text-center text-ink">
                 {MONTHS[view.month]} {view.year}
               </h2>
-              <button onClick={goNext} className="icon-btn rounded-[10px]" aria-label="Next month">
+              <button type="button" onClick={goNext} className="icon-btn" aria-label="Next month">
                 <ChevronRight size={16} />
               </button>
             </div>

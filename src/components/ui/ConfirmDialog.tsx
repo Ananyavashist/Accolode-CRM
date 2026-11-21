@@ -35,7 +35,7 @@ export function ConfirmDialog({ request, onClose }: ConfirmDialogProps) {
         aria-describedby="confirm-dialog-desc"
         className="fixed left-1/2 top-1/2 z-[70] w-[min(400px,calc(100vw-2rem))] -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-hairline bg-surface p-5 shadow-pop"
       >
-        <h2 id="confirm-dialog-title" className="text-base font-semibold text-ink">
+        <h2 id="confirm-dialog-title" className="text-base font-bold text-ink">
           {request.title}
         </h2>
         <p id="confirm-dialog-desc" className="mt-2 text-sm text-ink-muted">

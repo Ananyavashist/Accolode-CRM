@@ -7,11 +7,9 @@ import {
   ChevronLeft,
   HelpCircle,
   LayoutGrid,
-  MessageSquare,
+  DirectInboxIcon,
   Navigation,
-  Notes,
   Sparkles,
-  Staff,
   UserCircle,
   Users,
 } from "@/components/ui/icons";
@@ -29,14 +27,12 @@ interface SidebarProps {
 }
 
 const NAV_ITEMS = [
-  { to: "/", label: "Dashboard", icon: LayoutGrid, end: true },
-  { to: "/notes", label: "Notes", icon: Notes },
-  { to: "/clients", label: "Client Database", icon: Users, end: true },
-  { to: "/client-leads", label: "Client Leads", icon: Sparkles },
-  { to: "/listed-properties", label: "Listed Properties", icon: Building2 },
-  { to: "/staff", label: "Staff List", icon: Staff },
+  { to: "/", label: "Home", icon: LayoutGrid, end: true },
+  { to: "/clients", label: "Database", icon: Users, end: true },
+  { to: "/client-leads", label: "Lead Management", icon: Sparkles },
+  { to: "/listed-properties", label: "Properties", icon: Building2 },
   { to: "/calendar", label: "Calendar", icon: Calendar },
-  { to: "/messages", label: "WhatsApp", icon: MessageSquare },
+  { to: "/inbox", label: "Inbox", icon: DirectInboxIcon },
 ] as const;
 
 export function Sidebar({ collapsed, onToggle, mobileOpen, onCloseMobile }: SidebarProps) {
@@ -64,10 +60,10 @@ export function Sidebar({ collapsed, onToggle, mobileOpen, onCloseMobile }: Side
 
   const navClass = ({ isActive }: { isActive: boolean }) =>
     cn(
-      "group flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors",
+      "group flex items-center gap-3 rounded-lg px-3 py-[8px] text-sm transition-colors",
       isActive
-        ? "bg-hairline font-semibold text-ink"
-        : "font-medium text-ink-muted hover:bg-sidebar hover:text-ink",
+        ? "border border-hairline bg-surface font-semibold text-ink"
+        : "font-medium text-ink-muted hover:bg-surface hover:text-ink",
       collapsed && "lg:justify-center lg:px-0",
     );
 
@@ -90,23 +86,29 @@ export function Sidebar({ collapsed, onToggle, mobileOpen, onCloseMobile }: Side
           mobileOpen ? "translate-x-0" : "-translate-x-full",
         )}
       >
-        <div className="flex h-16 items-center justify-between px-4">
-          <div className={cn("flex items-center gap-2 overflow-hidden", collapsed && "lg:w-0")}>
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-primary/20 bg-primary/5">
-              <Navigation size={16} className="text-primary" />
+        <div
+          className={cn(
+            "flex h-16 items-center px-4",
+            collapsed ? "lg:justify-center lg:px-2" : "justify-between",
+          )}
+        >
+          <div className={cn("flex items-center gap-2 overflow-hidden", collapsed && "lg:hidden")}>
+            <span className="icon-btn h-8 w-8 border-primary/20 bg-primary/5 text-primary">
+              <Navigation size={16} />
             </span>
             <span
               className={cn(
-                "whitespace-nowrap text-base font-semibold text-primary",
+                "whitespace-nowrap text-base font-semibold text-swatch-charcoal",
                 collapsed && "lg:hidden",
               )}
             >
-              Accolode
+              Accolade
             </span>
           </div>
           <button
+            type="button"
             onClick={onToggle}
-            className="hidden h-7 w-7 items-center justify-center rounded-lg text-ink-muted transition-colors hover:bg-hairline lg:flex"
+            className="icon-btn hidden h-8 w-8 lg:inline-flex"
             aria-label="Toggle sidebar"
           >
             <ChevronLeft
@@ -138,7 +140,7 @@ export function Sidebar({ collapsed, onToggle, mobileOpen, onCloseMobile }: Side
               <div
                 className={cn(
                   "flex items-center rounded-lg transition-colors",
-                  isProfileRoute ? "bg-hairline" : "hover:bg-sidebar",
+                  isProfileRoute ? "border border-hairline bg-surface" : "hover:bg-surface",
                 )}
               >
                 <button
@@ -203,8 +205,8 @@ export function Sidebar({ collapsed, onToggle, mobileOpen, onCloseMobile }: Side
               className={cn(
                 "mt-1 flex w-full items-center justify-center rounded-lg px-0 py-2 transition-colors",
                 isProfileRoute
-                  ? "bg-hairline text-ink"
-                  : "text-ink-muted hover:bg-sidebar hover:text-ink",
+                  ? "border border-hairline bg-surface text-ink"
+                  : "text-ink-muted hover:bg-surface hover:text-ink",
               )}
               title="Client Profile"
               aria-label="Open first client profile"

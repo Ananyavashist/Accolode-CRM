@@ -15,7 +15,6 @@ import {
   Building02Icon,
   Calendar03Icon,
   CallIcon,
-  CancelCircleIcon,
   ChartDecreaseIcon,
   ChartIncreaseIcon,
   CheckmarkCircle01Icon,
@@ -110,7 +109,55 @@ export const Phone = createIcon(CallIcon);
 export const Search = createIcon(Search01Icon);
 export const RotateCw = createIcon(RefreshIcon);
 export const MoreVertical = createIcon(MoreVerticalIcon);
-export const X = createIcon(CancelCircleIcon);
+export function Pencil({ size = 18, className, color, ...rest }: AppIconProps) {
+  const px = typeof size === "number" ? size : Number.parseFloat(String(size)) || 18;
+  return (
+    <svg
+      width={px}
+      height={px}
+      viewBox="0 0 24 24"
+      fill="none"
+      className={className}
+      aria-hidden
+      {...rest}
+    >
+      <path
+        d="M4 20h4l10.5-10.5a1.5 1.5 0 0 0 0-2.12l-2.38-2.38a1.5 1.5 0 0 0-2.12 0L4 16v4z"
+        stroke={color ?? "currentColor"}
+        strokeWidth={1.5}
+        strokeLinejoin="round"
+      />
+      <path
+        d="M13.5 6.5l4 4"
+        stroke={color ?? "currentColor"}
+        strokeWidth={1.5}
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+export function X({ size = 18, className, color, ...rest }: AppIconProps) {
+  const px = typeof size === "number" ? size : Number.parseFloat(String(size)) || 18;
+  return (
+    <svg
+      width={px}
+      height={px}
+      viewBox="0 0 24 24"
+      fill="none"
+      className={className}
+      aria-hidden
+      {...rest}
+    >
+      <path
+        d="M7 7l10 10M17 7L7 17"
+        stroke={color ?? "currentColor"}
+        strokeWidth={1.5}
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
 export const Bell = createIcon(Notification03Icon);
 export const Menu = createIcon(Menu01Icon);
 export const Settings = createIcon(Settings01Icon);

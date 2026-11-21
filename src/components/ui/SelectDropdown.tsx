@@ -9,6 +9,7 @@ interface SelectDropdownProps {
   onChange: (value: string) => void;
   placeholder?: string;
   disabled?: boolean;
+  required?: boolean;
 }
 
 export function SelectDropdown({
@@ -18,6 +19,7 @@ export function SelectDropdown({
   onChange,
   placeholder = "Select an option",
   disabled = false,
+  required = false,
 }: SelectDropdownProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -32,7 +34,10 @@ export function SelectDropdown({
 
   return (
     <div ref={ref} className={cn("space-y-2", disabled && "pointer-events-none opacity-50")}>
-      <p className="text-sm font-medium text-ink">{label}</p>
+      <p className="text-sm font-medium text-ink">
+        {label}
+        {required && <span className="text-status-awaiting"> *</span>}
+      </p>
       <button
         type="button"
         disabled={disabled}

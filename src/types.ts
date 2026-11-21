@@ -7,7 +7,7 @@ export type ConversionStatus =
   | "Completed Client";
 export type ClientCategory = "Renter" | "Buyer";
 export type ClientSource = "Referral" | "Walk-in" | "WhatsApp" | "Portal";
-export type LeadStatus = "new" | "accepted" | "deprioritised";
+export type LeadStatus = "new" | "accepted" | "rejected" | "deprioritised";
 export type ProgressStage =
   | "Inquiry"
   | "New"

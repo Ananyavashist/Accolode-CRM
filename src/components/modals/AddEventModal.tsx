@@ -126,7 +126,7 @@ export function AddEventModal({ open, onClose, onSubmit, defaultDate }: AddEvent
             <input
               value={form.title}
               onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
-              placeholder="e.g. Property tour - Emerald Park"
+              placeholder="e.g. Property tour, Emerald Park"
               className="input-field mt-1.5"
             />
           </label>

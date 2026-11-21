@@ -6,10 +6,10 @@ export function NotFound() {
   return (
     <EmptyState
       title="Page not found"
-      description="That route is not in Accolode. Go back to the dashboard or open Notes."
+      description="That route is not in Accolade. Go back to the dashboard or open Notes."
       action={
         <button onClick={() => navigate("/")} className="btn-primary">
-          Go to Dashboard
+          Go to Home
         </button>
       }
     />

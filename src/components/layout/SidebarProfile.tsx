@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { Logout, MapPin, Settings, UnfoldMore } from "@/components/ui/icons";
+import { useNavigate } from "react-router-dom";
+import { Logout, MapPin, Settings, UnfoldMore, UserCircle } from "@/components/ui/icons";
 import { Avatar } from "@/components/ui/Avatar";
 import { AVATAR_IMAGES } from "@/data/images";
+import { useBroker } from "@/store/BrokerContext";
 import { cn } from "@/lib/utils";
 
 interface ProfilePopupProps {
@@ -12,6 +14,8 @@ interface ProfilePopupProps {
 
 export function ProfilePopup({ open, onClose, collapsed }: ProfilePopupProps) {
   const ref = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
+  const { profile, logout } = useBroker();
 
   useEffect(() => {
     if (!open) return;
@@ -23,6 +27,11 @@ export function ProfilePopup({ open, onClose, collapsed }: ProfilePopupProps) {
   }, [open, onClose]);
 
   if (!open) return null;
+
+  const locationLine =
+    profile.cities[0]?.areas[0] && profile.cities[0]?.city
+      ? `${profile.cities[0].areas[0]}, ${profile.cities[0].city}`
+      : "Add coverage in profile";
 
   return (
     <>
@@ -37,6 +46,22 @@ export function ProfilePopup({ open, onClose, collapsed }: ProfilePopupProps) {
       >
         <button
           type="button"
+          onClick={() => {
+            navigate("/broker/profile");
+            onClose();
+          }}
+          className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-ink transition-colors hover:bg-sidebar"
+          role="menuitem"
+        >
+          <UserCircle size={18} />
+          Profile
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            navigate("/broker/settings");
+            onClose();
+          }}
           className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-ink transition-colors hover:bg-sidebar"
           role="menuitem"
         >
@@ -46,6 +71,11 @@ export function ProfilePopup({ open, onClose, collapsed }: ProfilePopupProps) {
         <div className="my-1 border-t border-hairline" />
         <button
           type="button"
+          onClick={() => {
+            logout();
+            navigate("/login", { replace: true });
+            onClose();
+          }}
           className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-status-awaiting transition-colors hover:bg-status-awaitingBg"
           role="menuitem"
         >
@@ -54,7 +84,7 @@ export function ProfilePopup({ open, onClose, collapsed }: ProfilePopupProps) {
         </button>
         <div className="mt-2 flex items-center gap-2 border-t border-hairline px-3 py-2.5">
           <MapPin size={14} className="shrink-0 text-ink-soft" />
-          <span className="text-xs text-ink-muted">Connaught Place, New Delhi</span>
+          <span className="text-xs text-ink-muted">{locationLine}</span>
         </div>
       </div>
     </>
@@ -67,6 +97,9 @@ interface SidebarProfileProps {
 
 export function SidebarProfile({ collapsed }: SidebarProfileProps) {
   const [open, setOpen] = useState(false);
+  const { profile } = useBroker();
+  const displayName = profile.fullName || "Broker";
+  const avatarSrc = profile.photoUrl ?? AVATAR_IMAGES[0];
 
   return (
     <>
@@ -81,11 +114,11 @@ export function SidebarProfile({ collapsed }: SidebarProfileProps) {
           aria-expanded={open}
           aria-haspopup="menu"
         >
-          <Avatar name="Rakesh Verma" src={AVATAR_IMAGES[0]} size={32} />
+          <Avatar name={displayName} src={avatarSrc} size={32} />
           {!collapsed && (
             <>
               <span className="min-w-0 flex-1 truncate text-left text-sm font-semibold text-ink">
-                Rakesh Verma
+                {displayName}
               </span>
               <UnfoldMore size={16} className="shrink-0 text-ink-soft" />
             </>

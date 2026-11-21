@@ -162,7 +162,7 @@ Pastel tint + darker same-hue text. Examples:
 
 ### Typography
 
-Font: Inter (already loaded in `src/index.css`). Features: `cv11`, `ss01`. Antialiased.
+Font: Helvetica / Helvetica Neue (system stack via `font-sans` in `src/index.css` and `tailwind.config.js`). Antialiased. Do not load alternate webfonts unless product explicitly changes typography.
 
 | Role | Size | Weight | Line height |
 | --- | --- | --- | --- |

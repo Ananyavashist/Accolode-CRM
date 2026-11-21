@@ -1,5 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { useCrm } from "@/store/CrmContext";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { cn } from "@/lib/utils";
 import type { FirstStepId } from "@/types";
 
@@ -12,7 +13,7 @@ const STEPS: { id: FirstStepId; label: string; detail: string; to: string }[] = 
   },
   {
     id: "followUp",
-    label: "Set a follow-up",
+    label: "Set a follow up",
     detail: "When you accept a lead, pick a date so it lands in Notes.",
     to: "/notes",
   },
@@ -25,20 +26,20 @@ const STEPS: { id: FirstStepId; label: string; detail: string; to: string }[] = 
   {
     id: "siteVisit",
     label: "Move a deal to Site Visit",
-    detail: "Change the stage, or book a tour — booking advances the pipeline.",
+    detail: "Change the stage, or book a tour. Booking advances the pipeline.",
     to: "/calendar",
   },
   {
     id: "walkIn",
-    label: "Add a walk-in client",
-    detail: "Capture name, phone, and source for referrals and office walk-ins.",
+    label: "Add a walk in client",
+    detail: "Capture name, phone, and source for referrals and office walk ins.",
     to: "/clients",
   },
   {
     id: "whatsapp",
     label: "Message on WhatsApp",
     detail: "Open a pre-filled WhatsApp message with matched properties, then log the send.",
-    to: "/messages",
+    to: "/inbox",
   },
 ];
 
@@ -48,12 +49,10 @@ export function HelpPage() {
 
   return (
     <div className="page mx-auto max-w-2xl">
-      <div>
-        <h1 className="text-ink">First steps</h1>
-        <p className="page-lede">
-          {done} of {STEPS.length} jobs done. These are the six things Accolode is built for.
-        </p>
-      </div>
+      <PageHeader
+        title="First steps"
+        description={`${done} of ${STEPS.length} jobs done. These are the six things Accolade is built for.`}
+      />
       <ul className="section-card divide-y divide-hairline">
         {STEPS.map((step) => (
           <li key={step.id}>

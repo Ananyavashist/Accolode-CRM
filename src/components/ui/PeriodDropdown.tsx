@@ -60,7 +60,7 @@ export function PeriodDropdown({ value, options, onChange, className }: PeriodDr
     <div ref={ref} className={cn("relative", className)}>
       <button
         type="button"
-        className="btn-outline text-xs font-medium text-ink-muted"
+        className="btn-outline font-medium text-ink-muted"
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-controls={listId}

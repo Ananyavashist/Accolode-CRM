@@ -20,7 +20,7 @@ export const SEED_NOTIFICATIONS: AppNotification[] = [
   {
     id: "n3",
     title: "Client awaiting action",
-    body: "Sai Ventakteshwar needs a follow-up on Connaught Place listings.",
+    body: "Sai Ventakteshwar needs a follow up on Connaught Place listings.",
     time: "1 hr ago",
     unread: true,
     type: "client",
@@ -115,7 +115,7 @@ export const SEED_NOTIFICATIONS: AppNotification[] = [
   },
   {
     id: "n15",
-    title: "High-intent lead",
+    title: "High intent lead",
     body: "Aditya Chauhan viewed 15 properties in Punjabi Bagh.",
     time: "Yesterday",
     unread: false,
@@ -123,7 +123,7 @@ export const SEED_NOTIFICATIONS: AppNotification[] = [
   },
   {
     id: "n16",
-    title: "Follow-up reminder",
+    title: "Follow up reminder",
     body: "Sneha Reddy is awaiting Bandra rental options.",
     time: "Yesterday",
     unread: false,
