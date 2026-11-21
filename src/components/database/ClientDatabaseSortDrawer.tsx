@@ -22,6 +22,12 @@ const SORT_SECTIONS: SortSection[] = [
   { field: "budget", title: "Budget", ascLabel: "Low → high", descLabel: "High → low" },
   { field: "source", title: "Source", ascLabel: "A–Z", descLabel: "Z–A" },
   { field: "moveInDate", title: "Move-in date", ascLabel: "Soonest first", descLabel: "Latest first" },
+  {
+    field: "lastTouchedAt",
+    title: "Recently updated",
+    ascLabel: "Oldest first",
+    descLabel: "Newest first",
+  },
 ];
 
 function SortSectionBlock({
