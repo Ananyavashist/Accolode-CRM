@@ -266,7 +266,7 @@ export function ClientProfile() {
               <BadgeRow
                 label="Progress Stage"
                 value={String(client.progressStage)}
-                options={[...PROGRESS_STAGE_OPTIONS.filter((s) => s !== "Inquiry")]}
+                options={[...PROGRESS_STAGE_OPTIONS]}
                 className="bg-status-activeBg text-status-active"
                 ariaLabel="Progress stage"
                 onChange={(progressStage) =>

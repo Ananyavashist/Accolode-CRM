@@ -137,6 +137,137 @@ export function Pencil({ size = 18, className, color, ...rest }: AppIconProps) {
   );
 }
 
+/** Bold arrow to tray line — save / download file. */
+export function DataDownload({ size = 18, className, color, ...rest }: AppIconProps) {
+  const px = typeof size === "number" ? size : Number.parseFloat(String(size)) || 18;
+  const stroke = color ?? "currentColor";
+  return (
+    <svg
+      width={px}
+      height={px}
+      viewBox="0 0 24 24"
+      fill="none"
+      className={className}
+      aria-hidden
+      {...rest}
+    >
+      <path
+        d="M12 4v9m0 0l3.5-3.5M12 13l-3.5-3.5"
+        stroke={stroke}
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path d="M5 19h14" stroke={stroke} strokeWidth={2.25} strokeLinecap="round" />
+    </svg>
+  );
+}
+
+/** Bold arrow from tray line — upload file. */
+export function DataUpload({ size = 18, className, color, ...rest }: AppIconProps) {
+  const px = typeof size === "number" ? size : Number.parseFloat(String(size)) || 18;
+  const stroke = color ?? "currentColor";
+  return (
+    <svg
+      width={px}
+      height={px}
+      viewBox="0 0 24 24"
+      fill="none"
+      className={className}
+      aria-hidden
+      {...rest}
+    >
+      <path
+        d="M12 20V11m0 0l3.5 3.5M12 11l-3.5 3.5"
+        stroke={stroke}
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path d="M5 19h14" stroke={stroke} strokeWidth={2.25} strokeLinecap="round" />
+    </svg>
+  );
+}
+
+const TRAY_PATH = "M6 20h12M6 20v-7M18 20v-7";
+
+/** Thin arrow up from open tray — export / send out. */
+export function DataExport({ size = 18, className, color, ...rest }: AppIconProps) {
+  const px = typeof size === "number" ? size : Number.parseFloat(String(size)) || 18;
+  const stroke = color ?? "currentColor";
+  return (
+    <svg
+      width={px}
+      height={px}
+      viewBox="0 0 24 24"
+      fill="none"
+      className={className}
+      aria-hidden
+      {...rest}
+    >
+      <path
+        d="M12 17V7m0 0l-3 3m3-3l3 3"
+        stroke={stroke}
+        strokeWidth={1.5}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path d={TRAY_PATH} stroke={stroke} strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+/** Thin arrow down into open tray — import / bring in. */
+export function DataImport({ size = 18, className, color, ...rest }: AppIconProps) {
+  const px = typeof size === "number" ? size : Number.parseFloat(String(size)) || 18;
+  const stroke = color ?? "currentColor";
+  return (
+    <svg
+      width={px}
+      height={px}
+      viewBox="0 0 24 24"
+      fill="none"
+      className={className}
+      aria-hidden
+      {...rest}
+    >
+      <path
+        d="M12 7v10m0 0l-3-3m3 3l3-3"
+        stroke={stroke}
+        strokeWidth={1.5}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path d={TRAY_PATH} stroke={stroke} strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+/** Cloud upload (toolbar + upload modal). */
+export function UploadCloud({ size = 18, className, color, ...rest }: AppIconProps) {
+  const px = typeof size === "number" ? size : Number.parseFloat(String(size)) || 18;
+  const stroke = color ?? "currentColor";
+  return (
+    <svg
+      width={px}
+      height={px}
+      viewBox="0 0 24 24"
+      fill="none"
+      className={className}
+      aria-hidden
+      {...rest}
+    >
+      <path
+        d="M7 18a4 4 0 0 1 .1-8 5.5 5.5 0 0 1 10.6 1.5A3.5 3.5 0 0 1 19 18H7z"
+        stroke={stroke}
+        strokeWidth={1.5}
+        strokeLinejoin="round"
+      />
+      <path d="M12 8v8M9 11l3-3 3 3" stroke={stroke} strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 export function X({ size = 18, className, color, ...rest }: AppIconProps) {
   const px = typeof size === "number" ? size : Number.parseFloat(String(size)) || 18;
   return (

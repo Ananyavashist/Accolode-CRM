@@ -16,6 +16,7 @@ import { BrokerLoginPage } from "@/pages/BrokerLoginPage";
 import { BrokerOnboardingPage } from "@/pages/BrokerOnboardingPage";
 import { BrokerProfilePage } from "@/pages/BrokerProfilePage";
 import { BrokerAccountSettingsPage } from "@/pages/BrokerAccountSettingsPage";
+import { AdminSectionPage } from "@/pages/AdminSectionPage";
 
 export default function App() {
   return (
@@ -41,6 +42,7 @@ export default function App() {
           <Route path="/broker/profile" element={<BrokerProfilePage />} />
           <Route path="/broker/settings" element={<BrokerAccountSettingsPage />} />
           <Route path="/help" element={<HelpPage />} />
+          <Route path="/admin/:section" element={<AdminSectionPage />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Route>

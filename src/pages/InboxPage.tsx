@@ -2,8 +2,9 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import {
   ListFilter,
-  MoreHorizontal,
+  PaperclipIcon,
   Phone,
+  Plus,
   Search,
   Send,
   VideoIcon,
@@ -14,21 +15,13 @@ import { useCrm } from "@/store/CrmContext";
 import type { Conversation } from "@/types";
 import { cn, formatDisplayCopy } from "@/lib/utils";
 
-function unreadForConversation(convId: string, index: number): number {
-  if (convId === "conv-aman") return 2;
-  if (index % 4 === 1) return 1;
-  return 0;
-}
-
 function ConversationRow({
   conversation,
   active,
-  unread,
   onSelect,
 }: {
   conversation: Conversation;
   active: boolean;
-  unread: number;
   onSelect: () => void;
 }) {
   return (
@@ -51,13 +44,8 @@ function ConversationRow({
           <span className="truncate text-sm font-semibold text-ink">{conversation.name}</span>
           <span className="shrink-0 text-xs text-ink-muted">{conversation.time}</span>
         </span>
-        <span className="mt-0.5 flex items-center justify-between gap-2">
-          <span className="truncate text-sm text-ink-muted">{formatDisplayCopy(conversation.preview)}</span>
-          {unread > 0 && (
-            <span className="flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-status-awaiting px-1.5 text-[11px] font-semibold text-white">
-              {unread}
-            </span>
-          )}
+        <span className="mt-0.5 block truncate text-sm text-ink-muted">
+          {formatDisplayCopy(conversation.preview)}
         </span>
       </span>
     </button>
@@ -77,8 +65,6 @@ function ChatThread({
   onSend: () => void;
   onBack?: () => void;
 }) {
-  const memberLine = conversation.online ? "1 online" : "Offline";
-
   const submit = (e: FormEvent) => {
     e.preventDefault();
     onSend();
@@ -96,7 +82,6 @@ function ChatThread({
           <Avatar name={conversation.name} src={conversation.avatar} size={40} />
           <div className="min-w-0">
             <p className="truncate text-sm font-semibold text-ink">{conversation.name}</p>
-            <p className="text-xs text-ink-muted">{memberLine}</p>
           </div>
         </div>
         <div className="flex shrink-0 items-center gap-1">
@@ -105,9 +90,6 @@ function ChatThread({
           </button>
           <button type="button" className="icon-btn" aria-label="Phone call">
             <Phone size={18} />
-          </button>
-          <button type="button" className="icon-btn" aria-label="More">
-            <MoreHorizontal size={18} />
           </button>
         </div>
       </header>
@@ -145,14 +127,24 @@ function ChatThread({
         onSubmit={submit}
         className="flex shrink-0 items-center gap-2 border-t border-hairline bg-surface px-3 py-3"
       >
+        <button type="button" className="icon-btn shrink-0" aria-label="Attach file">
+          <PaperclipIcon size={18} />
+        </button>
+        <button type="button" className="icon-btn shrink-0" aria-label="Add">
+          <Plus size={18} />
+        </button>
         <input
           value={draft}
           onChange={(e) => onDraft(e.target.value)}
           placeholder="Enter a message"
           className="input-field h-10 min-w-0 flex-1 border-transparent bg-sidebar"
         />
-        <button type="submit" className="btn-primary !w-auto shrink-0 gap-1.5 px-4">
-          Send <Send size={16} />
+        <button
+          type="submit"
+          className="btn-primary !w-auto shrink-0 !px-2.5"
+          aria-label="Send message"
+        >
+          <Send size={18} />
         </button>
       </form>
     </div>
@@ -212,14 +204,8 @@ export function InboxPage() {
             mobileThread && "hidden lg:flex",
           )}
         >
-          <div className="flex items-center justify-between gap-2 border-b border-hairline px-4 py-3">
-            <h1 className="text-lg font-bold text-ink">Inbox</h1>
-            <button type="button" className="icon-btn" aria-label="More options">
-              <MoreHorizontal size={18} />
-            </button>
-          </div>
-
           <div className="flex items-center gap-2 border-b border-hairline px-3 py-2.5">
+            <h1 className="shrink-0 text-lg font-bold text-ink">Inbox</h1>
             <div className="relative min-w-0 flex-1">
               <label htmlFor="inbox-search" className="sr-only">
                 Search inbox
@@ -258,12 +244,11 @@ export function InboxPage() {
                 className="py-12"
               />
             ) : (
-              filtered.map((conv, index) => (
+              filtered.map((conv) => (
                 <ConversationRow
                   key={conv.id}
                   conversation={conv}
                   active={active?.id === conv.id}
-                  unread={unreadForConversation(conv.id, index)}
                   onSelect={() => {
                     setActiveId(conv.id);
                     setMobileThread(true);

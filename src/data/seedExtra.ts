@@ -217,7 +217,7 @@ export const EXTRA_CLIENTS: Client[] = [
     email: "priya.menon@gmail.com",
     phone: "+91 9811022233",
     city: "New Delhi",
-    progressStage: "Qualified",
+    progressStage: "Inquiry",
     onboarding: {
       preferredLocation: "Lajpat Nagar",
       preferredNeighbour: "South Delhi",
@@ -241,7 +241,7 @@ export const EXTRA_CLIENTS: Client[] = [
     email: "rajesh.k@gmail.com",
     phone: "+91 9811033344",
     city: "New Delhi",
-    progressStage: "New",
+    progressStage: "Inquiry",
     onboarding: {
       preferredLocation: "Dwarka",
       preferredNeighbour: "West Delhi",
@@ -266,7 +266,7 @@ export const EXTRA_CLIENTS: Client[] = [
     email: "anita.shah@gmail.com",
     phone: "+91 9811044455",
     city: "Gurgaon",
-    progressStage: "Qualified",
+    progressStage: "Inquiry",
     onboarding: {
       preferredLocation: "Cyber City",
       preferredNeighbour: "Gurgaon",
@@ -316,7 +316,7 @@ export const EXTRA_CLIENTS: Client[] = [
     email: "sneha.r@gmail.com",
     phone: "+91 9811066677",
     city: "Mumbai",
-    progressStage: "New",
+    progressStage: "Inquiry",
     onboarding: {
       preferredLocation: "Bandra",
       preferredNeighbour: "West Mumbai",
@@ -340,7 +340,7 @@ export const EXTRA_CLIENTS: Client[] = [
     email: "manish.t@gmail.com",
     phone: "+91 9811077788",
     city: "Noida",
-    progressStage: "Qualified",
+    progressStage: "Inquiry",
     onboarding: {
       preferredLocation: "Sector 18",
       preferredNeighbour: "Noida",

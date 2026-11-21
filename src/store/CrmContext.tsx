@@ -21,6 +21,18 @@ import type {
 } from "@/types";
 import { SEED_CLIENTS, SEED_CONVERSATIONS, SEED_LEADS } from "@/data/seed";
 import {
+  deriveMoveInDate,
+  inferClientSource,
+  normalizeClientSource,
+} from "@/lib/clientSource";
+import {
+  acceptBlockedReason as getAcceptBlockReason,
+  type CapacityBlockReason,
+} from "@/lib/brokerCapacity";
+import { getPendingRoutedLeads } from "@/lib/brokerRouting";
+import { enrichLeadProfile } from "@/lib/leadProfileEnrich";
+import { normalizeLead } from "@/lib/leadNormalize";
+import {
   addDaysISO,
   normalizeStage,
   personSlug,
@@ -28,6 +40,7 @@ import {
   todayISO,
   withDerivedStatus,
 } from "@/lib/pipeline";
+import type { LeadRejectionReason } from "@/types";
 
 interface CrmState {
   leads: Lead[];
@@ -43,10 +56,13 @@ interface CrmContextValue extends CrmState {
   acceptLead: (leadId: string, followUpDate?: string) => string | undefined;
   undoAccept: (clientId: string) => void;
   deprioritiseLead: (leadId: string) => string | undefined;
-  rejectLead: (leadId: string) => string | undefined;
+  rejectLead: (leadId: string, reason: LeadRejectionReason) => string | undefined;
+  capacityBlock: CapacityBlockReason;
   refreshLeadActivity: () => void;
+  resurfaceDeprioritisedLead: (leadId: string) => void;
   addClient: (input: AddClientInput) => string;
   updateClient: (id: string, patch: Partial<Client>) => void;
+  removeClient: (id: string) => void;
   setProgressStage: (id: string, stage: ProgressStage) => void;
   getClient: (id: string) => Client | undefined;
   sendMessage: (conversationId: string, text: string) => void;
@@ -57,7 +73,7 @@ interface CrmContextValue extends CrmState {
   newLeadCount: number;
 }
 
-const STORAGE_KEY = "accolode-crm-v5";
+const STORAGE_KEY = "accolode-crm-v7";
 
 const EMPTY_STEPS: FirstSteps = {
   triage: false,
@@ -86,15 +102,15 @@ function defaultObserved(client: Client): Client["observed"] {
   };
 }
 
-function normalizeLead(lead: Lead): Lead {
-  return { ...lead, status: lead.status ?? "new" };
-}
-
 function normalizeClient(client: Client): Client {
   const progressStage = normalizeStage(client.progressStage);
+  const source = inferClientSource(client);
+  const moveInDate = deriveMoveInDate({ ...client, source });
   return {
     ...client,
     progressStage,
+    source,
+    moveInDate,
     status: statusFromStage(progressStage),
     observed: client.observed ?? defaultObserved(client),
     onboarding: {
@@ -159,6 +175,19 @@ function applyResurface(leads: Lead[]): Lead[] {
   });
 }
 
+/** Backfill new seed fields onto leads restored from localStorage. */
+function mergeLeadWithSeed(stored: Lead): Lead {
+  const seed = SEED_LEADS.find((s) => s.id === stored.id);
+  if (!seed) return stored;
+  return enrichLeadProfile({
+    ...seed,
+    ...stored,
+    preference: { ...seed.preference, ...stored.preference },
+    mustHaves: stored.mustHaves?.length ? stored.mustHaves : seed.mustHaves,
+    inquiryDetails: stored.inquiryDetails ?? seed.inquiryDetails,
+  });
+}
+
 function loadState(): CrmState {
   const fresh = (): CrmState => {
     const clients = SEED_CLIENTS.map(normalizeClient);
@@ -179,7 +208,9 @@ function loadState(): CrmState {
       if (raw) {
         const parsed = JSON.parse(raw) as Partial<CrmState>;
         return {
-          leads: applyResurface((parsed.leads ?? SEED_LEADS).map(normalizeLead)),
+          leads: applyResurface(
+            (parsed.leads ?? SEED_LEADS).map((l) => normalizeLead(mergeLeadWithSeed(l))),
+          ),
           clients: (parsed.clients ?? SEED_CLIENTS).map(normalizeClient),
           conversations: parsed.conversations ?? SEED_CONVERSATIONS,
           acceptedLeadIds: parsed.acceptedLeadIds ?? [],
@@ -199,6 +230,12 @@ function genClientId(): string {
   return `#${Math.floor(100000 + Math.random() * 899999)}`;
 }
 
+function sourceFromLead(lead: Lead): ClientSource {
+  if (lead.source === "ShiftHona") return "ShiftHona";
+  if (lead.source === "Magicbricks" || lead.source === "99acres") return "Link";
+  return "Manual";
+}
+
 function clientFromLead(lead: Lead): Client {
   const progressStage = "Qualified" as const;
   return normalizeClient({
@@ -215,7 +252,7 @@ function clientFromLead(lead: Lead): Client {
     phone: lead.phone,
     city: lead.city,
     progressStage,
-    source: "Portal",
+    source: sourceFromLead(lead),
     lastTouchedAt: new Date().toISOString(),
     onboarding: {
       preferredLocation: lead.location,
@@ -237,6 +274,21 @@ export function CrmProvider({ children }: { children: ReactNode }) {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   }, [state]);
 
+  useEffect(() => {
+    const id = window.setInterval(() => {
+      setState((prev) => {
+        const leads = prev.leads.map(normalizeLead);
+        const changed = leads.some(
+          (l, i) =>
+            l.status !== prev.leads[i]?.status ||
+            l.movedOnAt !== prev.leads[i]?.movedOnAt,
+        );
+        return changed ? { ...prev, leads } : prev;
+      });
+    }, 60_000);
+    return () => window.clearInterval(id);
+  }, []);
+
   const completeStep = useCallback((id: FirstStepId) => {
     setState((prev) => {
       if (prev.firstSteps[id]) return prev;
@@ -248,6 +300,7 @@ export function CrmProvider({ children }: { children: ReactNode }) {
     (leadId: string, followUpDate?: string) => {
       let newClientId: string | undefined;
       setState((prev) => {
+        if (getAcceptBlockReason(prev.clients, prev.leads)) return prev;
         const lead = prev.leads.find((l) => l.id === leadId);
         if (!lead) return prev;
         const client = clientFromLead(lead);
@@ -264,7 +317,9 @@ export function CrmProvider({ children }: { children: ReactNode }) {
         return {
           ...prev,
           leads: prev.leads.map((l) =>
-            l.id === leadId ? { ...l, status: "accepted" as const } : l,
+            l.id === leadId
+              ? { ...l, status: "accepted" as const, acceptedAt: new Date().toISOString() }
+              : l,
           ),
           clients: [client, ...prev.clients],
           acceptedLeadIds: [...prev.acceptedLeadIds, leadId],
@@ -321,7 +376,7 @@ export function CrmProvider({ children }: { children: ReactNode }) {
     return leadName;
   }, []);
 
-  const rejectLead = useCallback((leadId: string) => {
+  const rejectLead = useCallback((leadId: string, reason: LeadRejectionReason) => {
     let leadName: string | undefined;
     setState((prev) => {
       const lead = prev.leads.find((l) => l.id === leadId);
@@ -331,7 +386,12 @@ export function CrmProvider({ children }: { children: ReactNode }) {
         ...prev,
         leads: prev.leads.map((l) =>
           l.id === leadId
-            ? { ...l, status: "rejected" as const, returnedReason: undefined }
+            ? {
+                ...l,
+                status: "rejected" as const,
+                rejectionReason: reason,
+                returnedReason: undefined,
+              }
             : l,
         ),
         firstSteps: { ...prev.firstSteps, triage: true },
@@ -353,13 +413,30 @@ export function CrmProvider({ children }: { children: ReactNode }) {
     }));
   }, []);
 
+  const resurfaceDeprioritisedLead = useCallback((leadId: string) => {
+    setState((prev) => ({
+      ...prev,
+      leads: prev.leads.map((l) =>
+        l.id === leadId && l.status === "deprioritised"
+          ? {
+              ...l,
+              status: "new" as const,
+              deprioritisedAt: undefined,
+              viewedPropertiesAtDeprioritise: undefined,
+              assignedAt: new Date().toISOString(),
+            }
+          : l,
+      ),
+    }));
+  }, []);
+
   const addClient = useCallback((input: AddClientInput) => {
     const id = `client-new-${Date.now()}`;
     const budgetLabel =
       input.priceMax >= 1000000
         ? `Up to 10L+`
         : `Up to ₹${Math.round(input.priceMax / 1000)}K`;
-    const walkInSources: ClientSource[] = ["Walk-in", "Referral", "WhatsApp"];
+    const walkInSources: ClientSource[] = ["Manual"];
     const client = normalizeClient({
       id,
       clientId: genClientId(),
@@ -373,7 +450,12 @@ export function CrmProvider({ children }: { children: ReactNode }) {
       phone: input.phone,
       city: `${input.locality}, ${input.city}`,
       progressStage: "New",
-      source: input.source,
+      source: normalizeClientSource(input.source),
+      moveInDate: (() => {
+        const d = new Date();
+        d.setMonth(d.getMonth() + Math.max(0, input.availableFromMonths));
+        return d.toISOString().slice(0, 10);
+      })(),
       lastTouchedAt: new Date().toISOString(),
       onboarding: {
         preferredLocation: input.locality,
@@ -407,6 +489,22 @@ export function CrmProvider({ children }: { children: ReactNode }) {
         c.id === id ? withDerivedStatus({ ...c, ...patch, lastTouchedAt: new Date().toISOString() }) : c,
       ),
     }));
+  }, []);
+
+  const removeClient = useCallback((id: string) => {
+    setState((prev) => {
+      const leadId = id.replace(/^client-/, "");
+      const hadLead = prev.leads.some((l) => l.id === leadId);
+      return {
+        ...prev,
+        clients: prev.clients.filter((c) => c.id !== id),
+        tasks: prev.tasks.filter((t) => t.clientId !== id),
+        leads: hadLead
+          ? prev.leads.map((l) => (l.id === leadId ? { ...l, status: "new" as const } : l))
+          : prev.leads,
+        acceptedLeadIds: prev.acceptedLeadIds.filter((x) => x !== leadId),
+      };
+    });
   }, []);
 
   const setProgressStage = useCallback((id: string, stage: ProgressStage) => {
@@ -490,7 +588,8 @@ export function CrmProvider({ children }: { children: ReactNode }) {
     }));
   }, []);
 
-  const newLeadCount = state.leads.filter((l) => (l.status ?? "new") === "new").length;
+  const newLeadCount = getPendingRoutedLeads(state.leads).length;
+  const capacityBlock = getAcceptBlockReason(state.clients, state.leads);
 
   const value = useMemo<CrmContextValue>(
     () => ({
@@ -500,8 +599,11 @@ export function CrmProvider({ children }: { children: ReactNode }) {
       deprioritiseLead,
       rejectLead,
       refreshLeadActivity,
+      resurfaceDeprioritisedLead,
+      capacityBlock,
       addClient,
       updateClient,
+      removeClient,
       setProgressStage,
       getClient,
       sendMessage,
@@ -513,13 +615,16 @@ export function CrmProvider({ children }: { children: ReactNode }) {
     }),
     [
       state,
+      capacityBlock,
       acceptLead,
       undoAccept,
       deprioritiseLead,
       rejectLead,
       refreshLeadActivity,
+      resurfaceDeprioritisedLead,
       addClient,
       updateClient,
+      removeClient,
       setProgressStage,
       getClient,
       sendMessage,

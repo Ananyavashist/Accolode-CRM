@@ -11,11 +11,10 @@ const STATUS_STYLES: Record<string, string> = {
 };
 
 const STAGE_STYLES: Record<string, string> = {
-  New: "bg-status-activeBg text-status-active",
   Inquiry: "bg-status-activeBg text-status-active",
-  Qualified: "bg-status-activeBg text-status-active",
   "Site Visit": "bg-status-warningBg text-status-warning",
   Negotiation: "bg-status-warningBg text-status-warning",
+  Documentation: "bg-status-warningBg text-status-warning",
   Closed: "bg-status-completedBg text-status-completed",
 };
 
@@ -42,10 +41,12 @@ export function TypeChip({
   type,
   label,
   className,
+  showDot = true,
 }: {
   type: DealType | ListingType;
   label?: string;
   className?: string;
+  showDot?: boolean;
 }) {
   const chip = TYPE_CHIP[type];
   return (
@@ -53,7 +54,7 @@ export function TypeChip({
       className={cn("pill", className)}
       style={{ backgroundColor: chip.bg, color: chip.text }}
     >
-      <Dot />
+      {showDot ? <Dot /> : null}
       {label ?? type}
     </span>
   );

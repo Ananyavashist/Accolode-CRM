@@ -26,8 +26,8 @@ export function ListedProperties() {
     const total = LISTED_PROPERTIES.length;
     const rent = LISTED_PROPERTIES.filter((p) => p.type === "Rent").length;
     const sale = LISTED_PROPERTIES.filter((p) => p.type === "Sale").length;
-    const active = LISTED_PROPERTIES.filter((p) => p.status === "Active").length;
-    return { total, rent, sale, active };
+    const sold = LISTED_PROPERTIES.filter((p) => p.status === "Sold").length;
+    return { total, rent, sale, sold };
   }, []);
 
   const rows = useMemo(() => {
@@ -42,7 +42,6 @@ export function ListedProperties() {
     <div className="page">
       <PageHeader
         title="Properties"
-        description="Manage your active listings, track offers, and monitor rent vs sale inventory"
         trailing={
           <button type="button" className="btn-primary">
             Add Property <Plus size={16} />
@@ -54,7 +53,7 @@ export function ListedProperties() {
         <StatCard title="Total Listed" value={stats.total} trend="4.2%" subtitle="across all cities" />
         <StatCard title="For Rent" value={stats.rent} trend="2.1%" subtitle="active rental listings" />
         <StatCard title="For Sale" value={stats.sale} trend="1.8%" subtitle="sale inventory" />
-        <StatCard title="Active" value={stats.active} trend="6.0%" subtitle="currently on market" />
+        <StatCard title="Sold properties" value={stats.sold} trend="6.0%" subtitle="completed sales" />
       </div>
 
       <div className="section-card p-4">

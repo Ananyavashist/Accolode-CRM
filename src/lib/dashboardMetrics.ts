@@ -1,4 +1,6 @@
-import type { Client, Lead } from "@/types";
+import type { Client, Lead, Task } from "@/types";
+import { getPendingRoutedLeads } from "@/lib/brokerRouting";
+import { normalizeStage } from "@/lib/pipeline";
 import {
   CRM_CURRENT_MONTH,
   crmMonthIndex,
@@ -121,12 +123,15 @@ export interface PieSlice {
 }
 
 export function computeNewLeads(leads: Lead[]): number {
-  return leads.filter((l) => (l.status ?? "new") === "new").length;
+  return getPendingRoutedLeads(leads).length;
 }
 
 export function computeQualified(leads: Lead[], clients: Client[]): number {
   const leadQualified = leads.filter((l) => l.intent === "High").length;
-  const clientQualified = clients.filter((c) => c.progressStage === "Qualified").length;
+  const clientQualified = clients.filter((c) => {
+    const stage = normalizeStage(c.progressStage);
+    return stage === "Site Visit" || stage === "Negotiation" || stage === "Documentation";
+  }).length;
   return leadQualified + clientQualified;
 }
 
@@ -266,13 +271,13 @@ export function computeClientInProgress(clients: Client[]): { slices: PieSlice[]
   return { slices, total: sliceTotal || total };
 }
 
-export function computeClientDatabaseStats(clients: Client[]) {
+export function computeClientDatabaseStats(clients: Client[], tasks: Task[] = []) {
+  const clientIds = new Set(clients.map((c) => c.id));
   return {
     total: clients.length,
-    active: clients.filter((c) => c.status === "Active Lead").length,
-    completed: clients.filter((c) => c.status === "Completed" || c.status === "Completed Client")
-      .length,
-    awaiting: clients.filter((c) => c.status === "Awaiting Action").length,
+    active: clients.filter((c) => normalizeStage(c.progressStage) !== "Closed").length,
+    closed: clients.filter((c) => normalizeStage(c.progressStage) === "Closed").length,
+    pendingFollowUps: tasks.filter((t) => !t.done && clientIds.has(t.clientId)).length,
   };
 }
 

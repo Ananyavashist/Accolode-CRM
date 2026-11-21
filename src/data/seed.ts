@@ -1,8 +1,12 @@
-import type { Client, Conversation, Lead, LeadStatus } from "@/types";
+import type { Client, Conversation, Lead } from "@/types";
 import { AVATAR_IMAGES } from "./images";
 import { makeProperties } from "./seedHelpers";
-import { CHANNEL_BOOST_LEADS } from "./seedChannelLeads";
-import { EXTRA_CLIENTS, EXTRA_CONVERSATIONS, EXTRA_LEADS } from "./seedExtra";
+import {
+  BROKER_ACCEPTED_LEADS,
+  BROKER_DEPRIORITISED_LEADS,
+  BROKER_PENDING_LEADS,
+} from "./brokerQueueLeads";
+import { EXTRA_CLIENTS, EXTRA_CONVERSATIONS } from "./seedExtra";
 
 export const SEED_LEADS: Lead[] = [
   {
@@ -26,8 +30,19 @@ export const SEED_LEADS: Lead[] = [
       budget: "₹80K to ₹1.2L",
       location: "South Delhi, Rajiv Chowk, Guru Chowk",
       propertyType: "2BHK, 3BHK, Duplex with furnished rooms, Apartment preferred",
-      timeline: "2 to 3 Months",
+      timeline: "1 month",
     },
+    inquiryDetails:
+      "Looking for a light filled home in South Delhi with an open living area and a kitchen that opens to a private terrace or garden on a quiet street. " +
+      "Wants Yellow Line access, daily groceries on foot, and a building that allows a small dog with clear society rules and visitor parking. " +
+      "Move in within one month; semi or fully furnished works if covered parking and a second bedroom for a home desk are confirmed. " +
+      "They have compared several societies online and want a broker shortlist before visiting.",
+    mustHaves: [
+      { label: "Furnishing", value: "Semi-furnished or fully furnished" },
+      { label: "Parking", value: "At least one covered slot" },
+      { label: "Metro", value: "Within 10 min walk" },
+      { label: "Pets", value: "Small dog — must allow" },
+    ],
     properties: makeProperties(4),
   },
   {
@@ -101,8 +116,19 @@ export const SEED_LEADS: Lead[] = [
       budget: "₹80K to ₹1.2L",
       location: "South Delhi",
       propertyType: "2BHK, 3BHK",
-      timeline: "2 to 3 Months",
+      timeline: "1 month",
     },
+    inquiryDetails:
+      "Young couple relocating within South Delhi and prioritising metro access, a modern kitchen, and weekend sunlight in the living room. " +
+      "Budget is firm near the top of range only if the unit includes covered parking and society maintenance is transparent. " +
+      "They have viewed several listings online and want a broker curated shortlist before booking any site visits. " +
+      "Both work hybrid and need a second bedroom that can serve as a desk nook.",
+    mustHaves: [
+      { label: "Furnishing", value: "Fully or semi-furnished" },
+      { label: "Metro", value: "Yellow line under 12 min" },
+      { label: "Parking", value: "One covered slot" },
+      { label: "Pets", value: "Small dog — building must allow" },
+    ],
     properties: makeProperties(4),
   },
   {
@@ -130,8 +156,59 @@ export const SEED_LEADS: Lead[] = [
     },
     properties: makeProperties(4),
   },
-  ...EXTRA_LEADS.map((l) => ({ ...l, status: "deprioritised" as LeadStatus })),
-  ...CHANNEL_BOOST_LEADS.map((l) => ({ ...l, status: "deprioritised" as LeadStatus })),
+  {
+    id: "lead-expired-1",
+    name: "Nikhil Rao",
+    avatar: AVATAR_IMAGES[3],
+    daysAgo: 3,
+    dealType: "Rent",
+    intent: "Medium",
+    budget: "₹55K to ₹75K",
+    location: "Saket",
+    bhk: "2BHK",
+    inquiryFilled: true,
+    viewedProperties: 6,
+    source: "ShiftHona",
+    email: "nikhil.r@gmail.com",
+    phone: "+91 9811199888",
+    city: "New Delhi",
+    signals: ["Viewed 6 properties"],
+    preference: {
+      budget: "₹55K to ₹75K",
+      location: "Saket",
+      propertyType: "2BHK Apartment",
+      timeline: "1 to 2 Months",
+    },
+    properties: makeProperties(3),
+  },
+  {
+    id: "lead-rejected-demo",
+    name: "Meera Iyer",
+    avatar: AVATAR_IMAGES[1],
+    daysAgo: 4,
+    dealType: "Rent",
+    intent: "High",
+    budget: "₹2L to ₹2.5L",
+    location: "Defence Colony",
+    bhk: "3BHK",
+    inquiryFilled: true,
+    viewedProperties: 8,
+    source: "ShiftHona",
+    email: "meera.i@gmail.com",
+    phone: "+91 9811155667",
+    city: "New Delhi",
+    signals: ["Budget above typical range"],
+    preference: {
+      budget: "₹2L to ₹2.5L",
+      location: "Defence Colony",
+      propertyType: "3BHK",
+      timeline: "Immediate",
+    },
+    properties: makeProperties(3),
+  },
+  ...BROKER_PENDING_LEADS,
+  ...BROKER_ACCEPTED_LEADS,
+  ...BROKER_DEPRIORITISED_LEADS,
 ];
 
 export const SEED_CLIENTS: Client[] = [
@@ -148,7 +225,7 @@ export const SEED_CLIENTS: Client[] = [
     email: "amanver99@gmail.com",
     phone: "+91746383920",
     city: "Rajouri Garden, New Delhi",
-    progressStage: "Qualified",
+    progressStage: "Site Visit",
     onboarding: {
       preferredLocation: "Chandni Chowk",
       preferredNeighbour: "Near Red Fort Market",
@@ -172,7 +249,7 @@ export const SEED_CLIENTS: Client[] = [
     email: "sai.v@gmail.com",
     phone: "+91 9700090909",
     city: "New Delhi",
-    progressStage: "New",
+    progressStage: "Negotiation",
     onboarding: {
       preferredLocation: "Near Connaught Place",
       preferredNeighbour: "Central Delhi",
@@ -220,7 +297,7 @@ export const SEED_CLIENTS: Client[] = [
     email: "shaurya.s@gmail.com",
     phone: "+91 9700456789",
     city: "New Delhi",
-    progressStage: "Qualified",
+    progressStage: "Inquiry",
     onboarding: {
       preferredLocation: "Near Saket Mall",
       preferredNeighbour: "South Delhi",
@@ -244,7 +321,7 @@ export const SEED_CLIENTS: Client[] = [
     email: "krishna.d@gmail.com",
     phone: "+91 9700112233",
     city: "New Delhi",
-    progressStage: "New",
+    progressStage: "Inquiry",
     onboarding: {
       preferredLocation: "Hauz Khas Station",
       preferredNeighbour: "South Delhi",
@@ -292,7 +369,7 @@ export const SEED_CLIENTS: Client[] = [
     email: "noopur.d@gmail.com",
     phone: "+91 9700334455",
     city: "New Delhi",
-    progressStage: "Qualified",
+    progressStage: "Documentation",
     onboarding: {
       preferredLocation: "Guru Nanak Chowk",
       preferredNeighbour: "Central Delhi",
@@ -340,7 +417,7 @@ export const SEED_CLIENTS: Client[] = [
     email: "akshay.k@gmail.com",
     phone: "+91 9700778899",
     city: "New Delhi",
-    progressStage: "New",
+    progressStage: "Inquiry",
     onboarding: {
       preferredLocation: "Near Saket Mall",
       preferredNeighbour: "South Delhi",

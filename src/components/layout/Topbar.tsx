@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { Bell, Download, Menu, Plus, Search, Share2 } from "@/components/ui/icons";
+import { Bell, DataImport, Menu, Plus, Search, Share2 } from "@/components/ui/icons";
 import { SEED_NOTIFICATIONS } from "@/data/notifications";
 import { PillDropdown } from "@/components/ui/PillDropdown";
 import { useBroker } from "@/store/BrokerContext";
@@ -103,9 +103,17 @@ export function Topbar({ onOpenMobile }: TopbarProps) {
       >
         Add Client <Plus size={16} />
       </button>
-      <button type="button" className="icon-btn shrink-0" aria-label="Export">
-        <Download size={18} />
-      </button>
+      <span className="relative inline-flex shrink-0">
+        <button type="button" className="icon-btn peer" aria-label="Import">
+          <DataImport size={18} />
+        </button>
+        <span
+          role="tooltip"
+          className="pointer-events-none absolute bottom-full left-1/2 z-20 mb-1.5 hidden -translate-x-1/2 whitespace-nowrap rounded-md border border-hairline bg-surface px-2 py-1 text-xs font-medium text-ink shadow-pop peer-hover:block peer-focus-visible:block"
+        >
+          Import
+        </span>
+      </span>
 
       <div ref={notifRef} className="relative">
         <button
