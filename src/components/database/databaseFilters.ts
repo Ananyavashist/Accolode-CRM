@@ -46,7 +46,8 @@ export type DatabaseSortField =
   | "location"
   | "budget"
   | "source"
-  | "moveInDate";
+  | "moveInDate"
+  | "lastTouchedAt";
 
 export type DatabaseSortDirection = "asc" | "desc";
 
@@ -55,7 +56,10 @@ export type DatabaseSort = {
   direction: DatabaseSortDirection;
 };
 
-export const DEFAULT_DATABASE_SORT: DatabaseSort = { field: "name", direction: "asc" };
+export const DEFAULT_DATABASE_SORT: DatabaseSort = {
+  field: "lastTouchedAt",
+  direction: "desc",
+};
 
 export function compareClients(a: Client, b: Client, sort: DatabaseSort): number {
   const dir = sort.direction === "asc" ? 1 : -1;
@@ -79,6 +83,8 @@ export function compareClients(a: Client, b: Client, sort: DatabaseSort): number
       const maxB = parseBudgetMax(b.budget) ?? 0;
       return dir * (maxA - maxB);
     }
+    case "lastTouchedAt":
+      return dir * String(a.lastTouchedAt ?? "").localeCompare(String(b.lastTouchedAt ?? ""));
     default:
       return 0;
   }

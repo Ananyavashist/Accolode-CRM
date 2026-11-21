@@ -107,6 +107,7 @@ function LeadDetail({
   acceptDisabled,
   capacityNote,
   onSendToActive,
+  sendToActiveDisabled,
 }: {
   lead: Lead;
   onAccept: () => void;
@@ -115,6 +116,7 @@ function LeadDetail({
   acceptDisabled?: boolean;
   capacityNote?: string;
   onSendToActive?: () => void;
+  sendToActiveDisabled?: boolean;
 }) {
   const isDeprioritised = lead.status === "deprioritised";
   const canTriage = (lead.status ?? "new") === "new";
@@ -160,13 +162,18 @@ function LeadDetail({
               No action within 24 hours — routed to the next broker.
             </p>
           )}
-          {capacityNote && canTriage && (
+          {(capacityNote && canTriage) || (capacityNote && isDeprioritised && onSendToActive) ? (
             <p className="mt-1 text-xs text-status-awaiting">{capacityNote}</p>
-          )}
+          ) : null}
         </div>
         <div className="flex flex-wrap items-center gap-2">
           {isDeprioritised && onSendToActive && (
-            <button type="button" onClick={onSendToActive} className="btn-primary">
+            <button
+              type="button"
+              onClick={onSendToActive}
+              disabled={sendToActiveDisabled}
+              className="btn-primary disabled:opacity-50"
+            >
               Send to Active tab
             </button>
           )}
@@ -251,7 +258,6 @@ export function SmartLeads() {
     undoAccept,
     rejectLead,
     refreshLeadActivity,
-    resurfaceDeprioritisedLead,
     capacityBlock,
   } = useCrm();
   const [query, setQuery] = useState("");
@@ -266,7 +272,13 @@ export function SmartLeads() {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<string>();
   const [mobileDetail, setMobileDetail] = useState(false);
-  const [toast, setToast] = useState<{ message: string; undoId?: string } | null>(null);
+  const [toast, setToast] = useState<{
+    message: string;
+    undoId?: string;
+    undoRevert?: "new" | "deprioritised";
+  } | null>(null);
+
+  const ACCEPT_TOAST_MS = 6000;
   const [rejectOpen, setRejectOpen] = useState(false);
   const [, setSlaTick] = useState(0);
 
@@ -325,7 +337,8 @@ export function SmartLeads() {
 
   useEffect(() => {
     if (!toast) return;
-    const t = setTimeout(() => setToast(null), 5000);
+    const duration = toast.undoId ? ACCEPT_TOAST_MS : 5000;
+    const t = setTimeout(() => setToast(null), duration);
     return () => clearTimeout(t);
   }, [toast]);
 
@@ -336,15 +349,33 @@ export function SmartLeads() {
 
   const filtersActive = Boolean(dealFilter || query);
 
+  const leadAddedToast = (
+    lead: Lead,
+    clientId: string,
+    undoRevert: "new" | "deprioritised",
+  ) => {
+    setTab("active");
+    setSelectedId(lead.id);
+    setMobileDetail(false);
+    setToast({
+      message: `${lead.name} added to Client Database and Active tab`,
+      undoId: clientId,
+      undoRevert,
+    });
+  };
+
   const handleAccept = (lead: Lead) => {
     if (capacityBlock) return;
     const clientId = acceptLead(lead.id);
     if (!clientId) return;
-    setMobileDetail(false);
-    setToast({
-      message: `${lead.name} added to Client Database`,
-      undoId: clientId,
-    });
+    leadAddedToast(lead, clientId, "new");
+  };
+
+  const handleSendDeprioritisedToActive = (lead: Lead) => {
+    if (capacityBlock) return;
+    const clientId = acceptLead(lead.id);
+    if (!clientId) return;
+    leadAddedToast(lead, clientId, "deprioritised");
   };
 
   const handleRejectConfirm = (reason: LeadRejectionReason) => {
@@ -524,13 +555,10 @@ export function SmartLeads() {
               capacityNote={capacityNote}
               onSendToActive={
                 tab === "deprioritised" && selected.status === "deprioritised"
-                  ? () => {
-                      resurfaceDeprioritisedLead(selected.id);
-                      setTab("pending");
-                      setToast({ message: `${selected.name} sent to Pending` });
-                    }
+                  ? () => handleSendDeprioritisedToActive(selected)
                   : undefined
               }
+              sendToActiveDisabled={Boolean(capacityBlock)}
             />
             </div>
           ) : (
@@ -561,8 +589,10 @@ export function SmartLeads() {
           onAction={
             toast.undoId
               ? () => {
-                  undoAccept(toast.undoId!);
+                  undoAccept(toast.undoId!, toast.undoRevert ?? "new");
                   setToast(null);
+                  if (toast.undoRevert === "deprioritised") setTab("deprioritised");
+                  else setTab("pending");
                 }
               : undefined
           }

@@ -54,7 +54,7 @@ interface CrmState {
 
 interface CrmContextValue extends CrmState {
   acceptLead: (leadId: string, followUpDate?: string) => string | undefined;
-  undoAccept: (clientId: string) => void;
+  undoAccept: (clientId: string, revertLeadStatus?: "new" | "deprioritised") => void;
   deprioritiseLead: (leadId: string) => string | undefined;
   rejectLead: (leadId: string, reason: LeadRejectionReason) => string | undefined;
   capacityBlock: CapacityBlockReason;
@@ -112,6 +112,9 @@ function normalizeClient(client: Client): Client {
     source,
     moveInDate,
     status: statusFromStage(progressStage),
+    lastTouchedAt:
+      client.lastTouchedAt ??
+      new Date(Date.now() - 30 * 86_400_000).toISOString(),
     observed: client.observed ?? defaultObserved(client),
     onboarding: {
       ...client.onboarding,
@@ -302,7 +305,7 @@ export function CrmProvider({ children }: { children: ReactNode }) {
       setState((prev) => {
         if (getAcceptBlockReason(prev.clients, prev.leads)) return prev;
         const lead = prev.leads.find((l) => l.id === leadId);
-        if (!lead) return prev;
+        if (!lead || lead.status === "accepted") return prev;
         const client = clientFromLead(lead);
         newClientId = client.id;
         const task: Task | null = followUpDate
@@ -336,20 +339,32 @@ export function CrmProvider({ children }: { children: ReactNode }) {
     [],
   );
 
-  const undoAccept = useCallback((clientId: string) => {
-    setState((prev) => {
-      const leadId = clientId.replace(/^client-/, "");
-      return {
-        ...prev,
-        clients: prev.clients.filter((c) => c.id !== clientId),
-        tasks: prev.tasks.filter((t) => t.clientId !== clientId),
-        leads: prev.leads.map((l) =>
-          l.id === leadId ? { ...l, status: "new" as const } : l,
-        ),
-        acceptedLeadIds: prev.acceptedLeadIds.filter((id) => id !== leadId),
-      };
-    });
-  }, []);
+  const undoAccept = useCallback(
+    (clientId: string, revertLeadStatus: "new" | "deprioritised" = "new") => {
+      setState((prev) => {
+        const leadId = clientId.replace(/^client-/, "");
+        return {
+          ...prev,
+          clients: prev.clients.filter((c) => c.id !== clientId),
+          tasks: prev.tasks.filter((t) => t.clientId !== clientId),
+          leads: prev.leads.map((l) =>
+            l.id === leadId
+              ? {
+                  ...l,
+                  status: revertLeadStatus,
+                  acceptedAt: undefined,
+                  ...(revertLeadStatus === "deprioritised" && !l.deprioritisedAt
+                    ? { deprioritisedAt: new Date().toISOString() }
+                    : {}),
+                }
+              : l,
+          ),
+          acceptedLeadIds: prev.acceptedLeadIds.filter((id) => id !== leadId),
+        };
+      });
+    },
+    [],
+  );
 
   const deprioritiseLead = useCallback((leadId: string) => {
     let leadName: string | undefined;
