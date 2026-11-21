@@ -13,6 +13,8 @@ export function AppLayout() {
   const { pathname } = useLocation();
   const hideTopbar = ROUTES_WITHOUT_TOPBAR.includes(pathname);
   const isInbox = pathname === "/inbox";
+  const isLeadManagement =
+    pathname === "/client-leads" || pathname.startsWith("/client-leads/");
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -51,7 +53,7 @@ export function AppLayout() {
             id="main"
             className={cn(
               "flex min-h-0 flex-1 flex-col",
-              isInbox ? "overflow-hidden" : "overflow-y-auto",
+              isInbox || isLeadManagement ? "overflow-hidden" : "overflow-y-auto",
             )}
           >
             <Outlet />

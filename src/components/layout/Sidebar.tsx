@@ -1,22 +1,21 @@
-import { useEffect, useId, useMemo, useState } from "react";
-import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import {
   Building2,
   Calendar,
-  ChevronDown,
   ChevronLeft,
   HelpCircle,
   LayoutGrid,
   DirectInboxIcon,
-  Navigation,
-  Sparkles,
-  UserCircle,
+  FileText,
+  Notes,
+  TrendingUp,
   Users,
 } from "@/components/ui/icons";
 import { SidebarProfile } from "@/components/layout/SidebarProfile";
 import { FirstStepsWidget } from "@/components/layout/FirstSteps";
+import { SidebarUpgradeCard } from "@/components/layout/SidebarUpgradeCard";
 import { useCrm } from "@/store/CrmContext";
-import { clientProfilePath } from "@/lib/pipeline";
+import { AccoladeLogo } from "@/components/ui/AccoladeLogo";
 import { cn } from "@/lib/utils";
 
 interface SidebarProps {
@@ -26,46 +25,50 @@ interface SidebarProps {
   onCloseMobile: () => void;
 }
 
-const NAV_ITEMS = [
-  { to: "/", label: "Home", icon: LayoutGrid, end: true },
+const NAV_ITEMS_PRIMARY = [
+  { to: "/", label: "Dashboard", icon: LayoutGrid, end: true },
   { to: "/clients", label: "Database", icon: Users, end: true },
-  { to: "/client-leads", label: "Lead Management", icon: Sparkles },
+  { to: "/client-leads", label: "Leads", icon: TrendingUp },
+] as const;
+
+const NAV_ITEMS_SECONDARY = [
   { to: "/listed-properties", label: "Properties", icon: Building2 },
   { to: "/calendar", label: "Calendar", icon: Calendar },
   { to: "/inbox", label: "Inbox", icon: DirectInboxIcon },
 ] as const;
 
+const ADMIN_NAV_ITEMS = [
+  { to: "/admin/analytics", label: "Analytics", icon: TrendingUp },
+  { to: "/admin/report", label: "Report", icon: Notes },
+  { to: "/admin/templates", label: "Templates", icon: FileText },
+] as const;
+
+const SIDEBAR_EASE = "cubic-bezier(0.4, 0, 0.2, 1)";
+const SIDEBAR_MS = "duration-300";
+
+function sidebarCollapsedOnDesktop(collapsed: boolean, mobileOpen: boolean) {
+  return collapsed && !mobileOpen;
+}
+
 export function Sidebar({ collapsed, onToggle, mobileOpen, onCloseMobile }: SidebarProps) {
-  const { clients, firstSteps } = useCrm();
-  const location = useLocation();
-  const navigate = useNavigate();
-  const [profilesOpen, setProfilesOpen] = useState(false);
-  const listId = useId();
-
-  const isProfileRoute = location.pathname.startsWith("/clients/");
-  const firstClient = clients[0];
-
-  useEffect(() => {
-    if (isProfileRoute) setProfilesOpen(true);
-  }, [isProfileRoute]);
-
-  const profileClients = useMemo(() => clients.slice(0, 8), [clients]);
-
-  const goToFirstProfile = () => {
-    if (firstClient) {
-      navigate(clientProfilePath(firstClient.name));
-      onCloseMobile();
-    }
-  };
+  const { firstSteps } = useCrm();
+  const desktopCollapsed = sidebarCollapsedOnDesktop(collapsed, mobileOpen);
 
   const navClass = ({ isActive }: { isActive: boolean }) =>
     cn(
-      "group flex items-center gap-3 rounded-lg px-3 py-[8px] text-sm transition-colors",
+      "group box-border flex h-10 w-full items-center gap-3 overflow-hidden rounded-lg border px-3 text-sm",
+      `transition-[width,gap,padding,border-color,background-color,color,transform] ${SIDEBAR_MS} ease-in-out`,
       isActive
-        ? "border border-hairline bg-surface font-semibold text-ink"
-        : "font-medium text-ink-muted hover:bg-surface hover:text-ink",
-      collapsed && "lg:justify-center lg:px-0",
+        ? "border-hairline bg-surface font-semibold text-ink"
+        : "border-transparent font-medium text-ink-muted hover:border-hairline hover:bg-surface hover:text-ink",
+      desktopCollapsed && "lg:mx-auto lg:w-10 lg:justify-center lg:gap-0 lg:px-0",
     );
+
+  const navLabelClass = cn(
+    "min-w-0 overflow-hidden whitespace-nowrap",
+    `transition-[max-width,opacity,margin] ${SIDEBAR_MS} ease-in-out`,
+    desktopCollapsed ? "lg:max-w-0 lg:opacity-0" : "max-w-[11rem] opacity-100",
+  );
 
   return (
     <>
@@ -79,152 +82,128 @@ export function Sidebar({ collapsed, onToggle, mobileOpen, onCloseMobile }: Side
 
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-40 flex flex-col bg-sidebar transition-[width,transform] duration-200 ease-in-out",
+          "fixed inset-y-0 left-0 z-40 flex flex-col bg-sidebar",
+          `transition-[width,transform] ${SIDEBAR_MS} ease-in-out`,
           "border-r border-hairline lg:static lg:translate-x-0",
           collapsed ? "lg:w-[78px]" : "lg:w-[244px]",
           "w-[244px]",
           mobileOpen ? "translate-x-0" : "-translate-x-full",
         )}
+        style={{ transitionTimingFunction: SIDEBAR_EASE }}
       >
         <div
           className={cn(
-            "flex h-16 items-center px-4",
-            collapsed ? "lg:justify-center lg:px-2" : "justify-between",
+            "relative flex h-16 items-center overflow-hidden px-4",
+            `transition-[padding] ${SIDEBAR_MS} ease-in-out`,
+            desktopCollapsed ? "lg:justify-center lg:px-2" : "justify-between",
           )}
         >
-          <div className={cn("flex items-center gap-2 overflow-hidden", collapsed && "lg:hidden")}>
-            <span className="icon-btn h-8 w-8 border-primary/20 bg-primary/5 text-primary">
-              <Navigation size={16} />
-            </span>
-            <span
-              className={cn(
-                "whitespace-nowrap text-base font-semibold text-swatch-charcoal",
-                collapsed && "lg:hidden",
-              )}
-            >
-              Accolade
-            </span>
+          <div
+            className={cn(
+              "flex min-w-0 items-center gap-2 overflow-hidden",
+              `transition-[max-width,opacity] ${SIDEBAR_MS} ease-in-out`,
+              desktopCollapsed ? "lg:max-w-0 lg:opacity-0" : "max-w-[12rem] opacity-100",
+            )}
+          >
+            <AccoladeLogo size={32} />
+            <span className="truncate text-lg font-semibold text-ink">Accolade</span>
           </div>
           <button
             type="button"
             onClick={onToggle}
-            className="icon-btn hidden h-8 w-8 lg:inline-flex"
-            aria-label="Toggle sidebar"
+            className={cn(
+              "icon-btn hidden shrink-0 lg:flex lg:items-center lg:justify-center",
+              `transition-transform ${SIDEBAR_MS} ease-in-out`,
+              desktopCollapsed && "lg:absolute lg:left-1/2 lg:top-1/2 lg:-translate-x-1/2 lg:-translate-y-1/2",
+            )}
+            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
             <ChevronLeft
-              size={16}
-              className={cn("transition-transform", collapsed && "rotate-180")}
+              size={18}
+              className={cn(
+                `transition-transform ${SIDEBAR_MS} ease-in-out`,
+                collapsed && "rotate-180",
+              )}
             />
           </button>
         </div>
 
-        <nav aria-label="Primary" className="flex flex-1 flex-col gap-0.5 overflow-y-auto px-3 py-2">
-          {NAV_ITEMS.map((item) => (
+        <nav
+          aria-label="Primary"
+          className={cn(
+            "flex flex-1 flex-col gap-0.5 overflow-y-auto py-2",
+            `px-3 transition-[padding] ${SIDEBAR_MS} ease-in-out`,
+            desktopCollapsed && "lg:px-2",
+          )}
+        >
+          {NAV_ITEMS_PRIMARY.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
               end={"end" in item ? item.end : undefined}
               onClick={onCloseMobile}
               className={navClass}
-              title={collapsed ? item.label : undefined}
+              title={desktopCollapsed ? item.label : undefined}
             >
               <item.icon size={18} className="shrink-0" />
-              <span className={cn("whitespace-nowrap", collapsed && "lg:hidden")}>
-                {item.label}
-              </span>
+              <span className={navLabelClass}>{item.label}</span>
             </NavLink>
           ))}
 
-          {!collapsed ? (
-            <div className="mt-1">
-              <div
-                className={cn(
-                  "flex items-center rounded-lg transition-colors",
-                  isProfileRoute ? "border border-hairline bg-surface" : "hover:bg-surface",
-                )}
-              >
-                <button
-                  type="button"
-                  onClick={goToFirstProfile}
-                  className={cn(
-                    "flex flex-1 items-center gap-3 px-3 py-2 text-left text-sm font-medium transition-colors",
-                    isProfileRoute ? "text-ink" : "text-ink-muted hover:text-ink",
-                  )}
-                  aria-expanded={profilesOpen}
-                  aria-controls={listId}
-                >
-                  <UserCircle size={18} className="shrink-0" />
-                  <span className="whitespace-nowrap">Client Profile</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setProfilesOpen((v) => !v)}
-                  className="mr-2 flex h-7 w-7 items-center justify-center rounded-md text-ink-muted hover:bg-hairline hover:text-ink"
-                  aria-label={profilesOpen ? "Collapse client profiles" : "Expand client profiles"}
-                  aria-expanded={profilesOpen}
-                  aria-controls={listId}
-                >
-                  <ChevronDown
-                    size={16}
-                    className={cn("transition-transform", profilesOpen && "rotate-180")}
-                  />
-                </button>
-              </div>
-
-              {profilesOpen && profileClients.length > 0 && (
-                <ul
-                  id={listId}
-                  role="list"
-                  className="relative ml-5 mt-1 space-y-0.5 border-l border-hairline pl-3"
-                >
-                  {profileClients.map((client) => (
-                    <li key={client.id}>
-                      <NavLink
-                        to={clientProfilePath(client.name)}
-                        onClick={onCloseMobile}
-                        className={({ isActive }) =>
-                          cn(
-                            "block rounded-md px-2.5 py-1.5 text-sm transition-colors",
-                            isActive
-                              ? "bg-primary-50 font-medium text-primary"
-                              : "text-ink-muted hover:bg-sidebar hover:text-ink",
-                          )
-                        }
-                      >
-                        {client.name}
-                      </NavLink>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          ) : (
-            <button
-              type="button"
-              onClick={goToFirstProfile}
-              className={cn(
-                "mt-1 flex w-full items-center justify-center rounded-lg px-0 py-2 transition-colors",
-                isProfileRoute
-                  ? "border border-hairline bg-surface text-ink"
-                  : "text-ink-muted hover:bg-surface hover:text-ink",
-              )}
-              title="Client Profile"
-              aria-label="Open first client profile"
+          {NAV_ITEMS_SECONDARY.map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              onClick={onCloseMobile}
+              className={navClass}
+              title={desktopCollapsed ? item.label : undefined}
             >
-              <UserCircle size={18} />
-            </button>
-          )}
+              <item.icon size={18} className="shrink-0" />
+              <span className={navLabelClass}>{item.label}</span>
+            </NavLink>
+          ))}
+
+          <div className={cn("mt-3", collapsed && "lg:mt-2")}>
+            <p
+              className={cn(
+                "mb-1 overflow-hidden px-3 text-xs font-semibold uppercase tracking-wide text-ink-soft",
+                `transition-[max-height,opacity,margin] ${SIDEBAR_MS} ease-in-out`,
+                desktopCollapsed ? "lg:mb-0 lg:max-h-0 lg:opacity-0" : "max-h-8 opacity-100",
+              )}
+            >
+              Administration
+            </p>
+            {ADMIN_NAV_ITEMS.map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                onClick={onCloseMobile}
+                className={navClass}
+                title={desktopCollapsed ? item.label : undefined}
+              >
+                <item.icon size={18} className="shrink-0" />
+                <span className={navLabelClass}>{item.label}</span>
+              </NavLink>
+            ))}
+          </div>
         </nav>
 
-        <div className="px-3">
+        <div
+          className={cn(
+            "shrink-0 space-y-2 pb-2",
+            `px-3 transition-[padding] ${SIDEBAR_MS} ease-in-out`,
+            desktopCollapsed && "lg:px-2",
+          )}
+        >
+          <SidebarUpgradeCard collapsed={collapsed} />
           <NavLink
             to="/help"
             onClick={onCloseMobile}
             className={navClass}
-            title={collapsed ? "Help & Support" : undefined}
+            title={desktopCollapsed ? "Help & Support" : undefined}
           >
             <HelpCircle size={18} className="shrink-0" />
-            <span className={cn("whitespace-nowrap", collapsed && "lg:hidden")}>Help & Support</span>
+            <span className={navLabelClass}>Help & Support</span>
           </NavLink>
         </div>
 

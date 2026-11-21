@@ -132,7 +132,7 @@ export function BrokerLoginPage() {
         </div>
       </section>
 
-      <aside className="relative flex min-h-[280px] flex-1 flex-col justify-between overflow-hidden bg-gradient-to-br from-primary via-primary-800 to-swatch-charcoal p-8 text-white lg:max-w-[48%]">
+      <aside className="relative flex min-h-[320px] flex-1 flex-col overflow-hidden bg-gradient-to-br from-primary via-primary-800 to-swatch-charcoal text-white lg:min-h-0 lg:max-w-[48%]">
         <div
           className="pointer-events-none absolute inset-0 opacity-20"
           style={{
@@ -142,15 +142,39 @@ export function BrokerLoginPage() {
           }}
           aria-hidden
         />
-        <div className="relative max-w-md">
-          <p className="text-lg leading-relaxed text-white/95">
-            My experience with Accolade has made client capacity easy. Scheduling visits,
-            negotiation, and lead management stay in one flow.
-          </p>
-          <p className="mt-6 text-sm font-semibold">Bettie Porter</p>
-          <p className="text-sm text-white/75">Senior Marketing Manager</p>
+        <div className="relative flex min-h-0 flex-1 flex-col px-8 pt-8">
+          <div className="relative max-w-md shrink-0">
+            <p className="text-lg leading-relaxed text-white/95">
+              My experience with Accolade has made client capacity easy. Scheduling visits,
+              negotiation, and lead management stay in one flow.
+            </p>
+            <div className="mt-6 flex items-center gap-3">
+              <span
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white/20 text-lg font-serif text-white"
+                aria-hidden
+              >
+                “
+              </span>
+              <div>
+                <p className="text-sm font-semibold">Bettie Porter</p>
+                <p className="text-sm text-white/75">Senior Marketing Manager</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="relative mt-6 flex min-h-[200px] flex-1 items-end justify-center lg:min-h-[280px]">
+            <div className="w-[min(100%,620px)] translate-y-6 overflow-hidden rounded-t-2xl border border-white/25 bg-white/95 p-1.5 shadow-[0_-8px_40px_rgba(0,0,0,0.35)] lg:translate-y-10">
+              <img
+                src="/marketing/overview-dashboard-preview.png"
+                alt="Accolade broker overview with client capacity, metrics, and deal pipeline"
+                className="block w-full rounded-t-xl"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+          </div>
         </div>
-        <p className="relative text-xs text-white/60">Broker onboarding · November 2026</p>
+        <p className="relative z-10 px-8 pb-6 text-xs text-white/60">Broker onboarding · November 2026</p>
       </aside>
     </div>
   );

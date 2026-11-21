@@ -51,7 +51,7 @@ export function Overview() {
           </div>
           <button
             type="button"
-            onClick={() => navigate("/client-leads")}
+            onClick={() => navigate("/client-leads?view=pending")}
             className="btn-leads-banner-cta"
           >
             View New Leads <ArrowUpRight size={16} />

@@ -3,27 +3,41 @@ import { PROGRESS_STAGE_OPTIONS } from "@/types";
 
 export const PIPELINE_TABS = [
   "All",
-  "New",
-  "Qualified",
+  "Inquiry",
   "Site Visit",
   "Negotiation",
+  "Documentation",
   "Closed",
 ] as const;
 
 export type PipelineTab = (typeof PIPELINE_TABS)[number];
 
+/** User-facing labels; internal `ProgressStage` values stay unchanged. */
+export function progressStageLabel(stage: string | ProgressStage | PipelineTab): string {
+  const normalized = stage === "All" ? "All" : normalizeStage(stage);
+  if (normalized === "Inquiry") return "Enquiry";
+  if (normalized === "Documentation") return "Documents";
+  return normalized;
+}
+
+export function pipelineTabLabel(tab: PipelineTab): string {
+  return progressStageLabel(tab);
+}
+
 export function normalizeStage(stage: string | undefined): ProgressStage {
-  if (stage === "Inquiry") return "New";
+  if (!stage) return "Inquiry";
+  if (stage === "New" || stage === "Qualified") return "Inquiry";
+  if (stage === "Documents") return "Documentation";
   if (PROGRESS_STAGE_OPTIONS.includes(stage as ProgressStage)) {
     return stage as ProgressStage;
   }
-  return "New";
+  return "Inquiry";
 }
 
 export function statusFromStage(stage: string | undefined): ConversionStatus {
   const s = normalizeStage(stage);
   if (s === "Closed") return "Completed";
-  if (s === "Site Visit" || s === "Negotiation") return "Awaiting Action";
+  if (s === "Site Visit" || s === "Negotiation" || s === "Documentation") return "Awaiting Action";
   return "Active Lead";
 }
 

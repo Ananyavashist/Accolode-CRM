@@ -15,6 +15,13 @@ export function formatDisplayCopy(text: string): string {
     .trim();
 }
 
+export function formatClientIdDisplay(clientId: string): string {
+  const trimmed = clientId?.trim() ?? "";
+  if (!trimmed) return "—";
+  if (/^ID\s/i.test(trimmed)) return trimmed;
+  return `ID ${trimmed}`;
+}
+
 export function initials(name: string): string {
   return name
     .split(" ")

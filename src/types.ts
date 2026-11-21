@@ -6,14 +6,25 @@ export type ConversionStatus =
   | "Completed"
   | "Completed Client";
 export type ClientCategory = "Renter" | "Buyer";
-export type ClientSource = "Referral" | "Walk-in" | "WhatsApp" | "Portal";
-export type LeadStatus = "new" | "accepted" | "rejected" | "deprioritised";
+export type ClientSource = "Manual" | "ShiftHona" | "Link";
+export type LeadStatus =
+  | "new"
+  | "accepted"
+  | "rejected"
+  | "moved_on"
+  | "deprioritised";
+
+export type LeadRejectionReason =
+  | "outside_area"
+  | "budget_mismatch"
+  | "property_type"
+  | "at_capacity"
+  | "requirements_incomplete";
 export type ProgressStage =
   | "Inquiry"
-  | "New"
-  | "Qualified"
   | "Site Visit"
   | "Negotiation"
+  | "Documentation"
   | "Closed";
 
 export const CONVERSION_STATUS_OPTIONS: ConversionStatus[] = [
@@ -24,19 +35,13 @@ export const CONVERSION_STATUS_OPTIONS: ConversionStatus[] = [
 
 export const PROGRESS_STAGE_OPTIONS: ProgressStage[] = [
   "Inquiry",
-  "New",
-  "Qualified",
   "Site Visit",
   "Negotiation",
+  "Documentation",
   "Closed",
 ];
 
-export const CLIENT_SOURCE_OPTIONS: ClientSource[] = [
-  "Referral",
-  "Walk-in",
-  "WhatsApp",
-  "Portal",
-];
+export const CLIENT_SOURCE_OPTIONS: ClientSource[] = ["Manual", "ShiftHona", "Link"];
 
 export interface PropertyPreference {
   id: string;
@@ -71,8 +76,17 @@ export interface Lead {
     propertyType: string;
     timeline: string;
   };
+  /** Client narrative from inquiry (broker read-only). */
+  inquiryDetails?: string;
+  /** Non-negotiable requirements from inquiry. */
+  mustHaves?: { label: string; value: string }[];
   properties: PropertyPreference[];
   status?: LeadStatus;
+  assignedBrokerId?: string;
+  assignedAt?: string;
+  acceptedAt?: string;
+  movedOnAt?: string;
+  rejectionReason?: LeadRejectionReason;
   deprioritisedAt?: string;
   viewedPropertiesAtDeprioritise?: number;
   returnedReason?: string;
@@ -93,6 +107,8 @@ export interface Client {
   city: string;
   progressStage: ProgressStage | string;
   source?: ClientSource;
+  /** ISO date (YYYY-MM-DD) when the client plans to move in */
+  moveInDate?: string;
   lastTouchedAt?: string;
   onboarding: {
     preferredLocation: string;

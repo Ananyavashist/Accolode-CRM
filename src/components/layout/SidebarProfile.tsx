@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Logout, MapPin, Settings, UnfoldMore, UserCircle } from "@/components/ui/icons";
+import { ChevronRight, Logout, MapPin, Settings, UserCircle } from "@/components/ui/icons";
 import { Avatar } from "@/components/ui/Avatar";
 import { AVATAR_IMAGES } from "@/data/images";
 import { useBroker } from "@/store/BrokerContext";
@@ -120,7 +120,7 @@ export function SidebarProfile({ collapsed }: SidebarProfileProps) {
               <span className="min-w-0 flex-1 truncate text-left text-sm font-semibold text-ink">
                 {displayName}
               </span>
-              <UnfoldMore size={16} className="shrink-0 text-ink-soft" />
+              <ChevronRight size={16} className="shrink-0 text-ink-soft" />
             </>
           )}
         </button>
