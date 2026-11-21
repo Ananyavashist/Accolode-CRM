@@ -44,38 +44,17 @@ export function createEmptyBrokerProfile(partial?: Partial<BrokerProfile>): Brok
   };
 }
 
-const DEMO_SEED: BrokerProfile = {
-  fullName: "Rakesh Verma",
-  phone: "+91 98765 43210",
-  email: "rakesh@accolade.demo",
-  practiceType: "independent",
-  reraNumber: "DLRERA2024-001",
-  yearsInRealEstate: 8,
-  cities: [{ city: "Delhi", areas: ["Connaught Place", "Saket"] }],
-  outsideAreasPolicy: "budget_only",
-  dealTypes: ["rent", "buy"],
-  propertyTypes: ["Apartment", "Builder floor", "Villa"],
-  bhkSizes: ["2BHK", "3BHK", "4BHK+"],
-  furnishingOptions: ["Any"],
-  languages: ["English", "Hindi"],
-  techComfort: true,
-  clientsManagedOnline: 120,
-  clientsManagedInPerson: 85,
-  listingCount: 24,
-  listingImportChoice: "later",
-  listingFiles: [],
-  updatedAt: nowIso(),
-};
+import { DEMO_BROKER_PROFILE } from "./brokerDemoSeed";
 
 function loadState(): BrokerPersistedState {
   try {
     const raw = localStorage.getItem(BROKER_STORAGE_KEY);
     if (!raw) {
-      return { profile: DEMO_SEED, session: null };
+      return { profile: DEMO_BROKER_PROFILE, session: null };
     }
     return JSON.parse(raw) as BrokerPersistedState;
   } catch {
-    return { profile: DEMO_SEED, session: null };
+    return { profile: DEMO_BROKER_PROFILE, session: null };
   }
 }
 
@@ -92,6 +71,7 @@ interface BrokerContextValue {
   patchProfile: (patch: Partial<BrokerProfile>) => void;
   setProfile: (profile: BrokerProfile) => void;
   completeOnboarding: (profile: BrokerProfile) => void;
+  enterDemoDashboard: () => void;
 }
 
 const BrokerContext = createContext<BrokerContextValue | null>(null);
@@ -151,6 +131,17 @@ export function BrokerProvider({ children }: { children: ReactNode }) {
     [persist, state.session],
   );
 
+  const enterDemoDashboard = useCallback(() => {
+    persist({
+      session: { email: DEMO_BROKER_PROFILE.email, signedInAt: nowIso() },
+      profile: {
+        ...DEMO_BROKER_PROFILE,
+        onboardingCompletedAt: nowIso(),
+        updatedAt: nowIso(),
+      },
+    });
+  }, [persist]);
+
   const value = useMemo(
     () => ({
       profile: state.profile,
@@ -161,8 +152,9 @@ export function BrokerProvider({ children }: { children: ReactNode }) {
       patchProfile,
       setProfile,
       completeOnboarding,
+      enterDemoDashboard,
     }),
-    [state, login, logout, patchProfile, setProfile, completeOnboarding],
+    [state, login, logout, patchProfile, setProfile, completeOnboarding, enterDemoDashboard],
   );
 
   return <BrokerContext.Provider value={value}>{children}</BrokerContext.Provider>;

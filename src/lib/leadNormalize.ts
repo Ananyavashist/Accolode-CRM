@@ -30,6 +30,11 @@ const ROUTING_OVERRIDES: Record<string, Partial<Lead>> = {
     assignedAt: hoursAgoIso(120),
     acceptedAt: hoursAgoIso(96),
   },
+  "lead-acc-3": {
+    status: "accepted",
+    assignedAt: hoursAgoIso(90),
+    acceptedAt: hoursAgoIso(60),
+  },
 };
 
 export function normalizeLead(lead: Lead): Lead {
