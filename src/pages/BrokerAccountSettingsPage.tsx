@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Logout } from "@/components/ui/icons";
+import { ChevronRight, Logout } from "@/components/ui/icons";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { useBroker } from "@/store/BrokerContext";
 
@@ -33,6 +33,14 @@ export function BrokerAccountSettingsPage() {
             className="input-field mt-1.5 opacity-60"
           />
         </label>
+        <button
+          type="button"
+          onClick={() => navigate("/onboarding?edit=1")}
+          className="btn-outline w-full gap-1.5"
+        >
+          Open onboarding setup
+          <ChevronRight size={16} />
+        </button>
         <button type="button" onClick={handleLogout} className="btn-outline w-full gap-2 text-status-awaiting">
           Log out
           <Logout size={18} />

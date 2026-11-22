@@ -56,7 +56,7 @@ export function StatCard({
             className="peer icon-btn-sm text-ink-soft hover:text-ink"
             aria-label={`About ${formatDisplayCopy(title)}`}
           >
-            <Info size={14} strokeWidth={1.5} />
+            <Info size={14} />
           </button>
           <span
             role="tooltip"

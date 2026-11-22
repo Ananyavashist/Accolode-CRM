@@ -268,6 +268,54 @@ export function UploadCloud({ size = 18, className, color, ...rest }: AppIconPro
   );
 }
 
+export function Eye({ size = 18, className, color, ...rest }: AppIconProps) {
+  const px = typeof size === "number" ? size : Number.parseFloat(String(size)) || 18;
+  const stroke = color ?? "currentColor";
+  return (
+    <svg
+      width={px}
+      height={px}
+      viewBox="0 0 24 24"
+      fill="none"
+      className={className}
+      aria-hidden
+      {...rest}
+    >
+      <path
+        d="M2.25 12s3.75-6.75 9.75-6.75S21.75 12 21.75 12s-3.75 6.75-9.75 6.75S2.25 12 2.25 12Z"
+        stroke={stroke}
+        strokeWidth={1.5}
+        strokeLinejoin="round"
+      />
+      <circle cx="12" cy="12" r="2.75" stroke={stroke} strokeWidth={1.5} />
+    </svg>
+  );
+}
+
+export function EyeOff({ size = 18, className, color, ...rest }: AppIconProps) {
+  const px = typeof size === "number" ? size : Number.parseFloat(String(size)) || 18;
+  const stroke = color ?? "currentColor";
+  return (
+    <svg
+      width={px}
+      height={px}
+      viewBox="0 0 24 24"
+      fill="none"
+      className={className}
+      aria-hidden
+      {...rest}
+    >
+      <path
+        d="M3.5 4.5l17 17M10.2 10.7a2.75 2.75 0 003.1 3.1M6.7 6.9C4.9 8.2 3.4 10.1 2.25 12c1.5 2.7 5.2 6.75 9.75 6.75 1.45 0 2.82-.35 4.05-.97M9.9 5.26A10.4 10.4 0 0112 4.25c4.55 0 8.25 4.05 9.75 6.75-.6 1.1-1.55 2.35-2.75 3.45"
+        stroke={stroke}
+        strokeWidth={1.5}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 export function X({ size = 18, className, color, ...rest }: AppIconProps) {
   const px = typeof size === "number" ? size : Number.parseFloat(String(size)) || 18;
   return (
