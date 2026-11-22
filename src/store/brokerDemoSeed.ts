@@ -26,3 +26,16 @@ export const DEMO_BROKER_PROFILE: BrokerProfile = {
   listingFiles: [],
   updatedAt: nowIso(),
 };
+
+/** Pre-filled broker answers for sign-up onboarding (demo / prototype). */
+export function createOnboardingDemoProfile(email: string): BrokerProfile {
+  const profile: BrokerProfile = {
+    ...DEMO_BROKER_PROFILE,
+    email: email.trim(),
+    updatedAt: nowIso(),
+  };
+  delete profile.onboardingCompletedAt;
+  delete profile.referralLink;
+  delete profile.referralLinkGeneratedAt;
+  return profile;
+}

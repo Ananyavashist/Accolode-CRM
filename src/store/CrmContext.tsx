@@ -71,6 +71,8 @@ interface CrmContextValue extends CrmState {
   logWhatsApp: (send: Omit<WhatsAppSend, "id" | "sentAt">) => void;
   completeStep: (id: FirstStepId) => void;
   newLeadCount: number;
+  /** Reset leads, clients, and inbox to bundled demo seed (prototype flows). */
+  restoreDemoSeed: () => void;
 }
 
 const STORAGE_KEY = "accolode-crm-v7";
@@ -191,20 +193,20 @@ function mergeLeadWithSeed(stored: Lead): Lead {
   });
 }
 
-function loadState(): CrmState {
-  const fresh = (): CrmState => {
-    const clients = SEED_CLIENTS.map(normalizeClient);
-    return {
-      leads: SEED_LEADS.map(normalizeLead),
-      clients,
-      conversations: SEED_CONVERSATIONS,
-      acceptedLeadIds: [],
-      tasks: seedTasks(clients),
-      whatsappSends: [],
-      firstSteps: { ...EMPTY_STEPS },
-    };
+function buildFreshCrmState(): CrmState {
+  const clients = SEED_CLIENTS.map(normalizeClient);
+  return {
+    leads: SEED_LEADS.map(normalizeLead),
+    clients,
+    conversations: SEED_CONVERSATIONS,
+    acceptedLeadIds: [],
+    tasks: seedTasks(clients),
+    whatsappSends: [],
+    firstSteps: { ...EMPTY_STEPS },
   };
+}
 
+function loadState(): CrmState {
   if (typeof window !== "undefined") {
     try {
       const raw = window.localStorage.getItem(STORAGE_KEY);
@@ -226,7 +228,7 @@ function loadState(): CrmState {
       // ignore malformed storage
     }
   }
-  return fresh();
+  return buildFreshCrmState();
 }
 
 function genClientId(): string {
@@ -290,6 +292,10 @@ export function CrmProvider({ children }: { children: ReactNode }) {
       });
     }, 60_000);
     return () => window.clearInterval(id);
+  }, []);
+
+  const restoreDemoSeed = useCallback(() => {
+    setState(buildFreshCrmState());
   }, []);
 
   const completeStep = useCallback((id: FirstStepId) => {
@@ -627,6 +633,7 @@ export function CrmProvider({ children }: { children: ReactNode }) {
       logWhatsApp,
       completeStep,
       newLeadCount,
+      restoreDemoSeed,
     }),
     [
       state,
@@ -648,6 +655,7 @@ export function CrmProvider({ children }: { children: ReactNode }) {
       logWhatsApp,
       completeStep,
       newLeadCount,
+      restoreDemoSeed,
     ],
   );
 
