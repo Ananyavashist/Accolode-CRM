@@ -4,11 +4,13 @@ import { useNavigate } from "react-router-dom";
 import { AccoladeLogo } from "@/components/ui/AccoladeLogo";
 import { ChevronRight, Eye, EyeOff } from "@/components/ui/icons";
 import { useBroker } from "@/store/BrokerContext";
+import { useCrm } from "@/store/CrmContext";
 import { cn } from "@/lib/utils";
 
 export function BrokerLoginPage() {
   const navigate = useNavigate();
   const { login, enterDemoDashboard } = useBroker();
+  const { restoreDemoSeed } = useCrm();
   const [mode, setMode] = useState<"signin" | "signup">("signup");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -31,12 +33,18 @@ export function BrokerLoginPage() {
     let ready = false;
     flushSync(() => {
       ready = login(email.trim(), { signup: mode === "signup" });
+      if (mode === "signup" || ready) {
+        restoreDemoSeed();
+      }
     });
     navigate(ready ? "/" : "/onboarding", { replace: true });
   };
 
   const skipToDashboard = () => {
-    enterDemoDashboard();
+    flushSync(() => {
+      enterDemoDashboard();
+      restoreDemoSeed();
+    });
     navigate("/", { replace: true });
   };
 

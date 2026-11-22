@@ -44,7 +44,7 @@ export function createEmptyBrokerProfile(partial?: Partial<BrokerProfile>): Brok
   };
 }
 
-import { DEMO_BROKER_PROFILE } from "./brokerDemoSeed";
+import { DEMO_BROKER_PROFILE, createOnboardingDemoProfile } from "./brokerDemoSeed";
 
 function loadState(): BrokerPersistedState {
   try {
@@ -91,8 +91,7 @@ export function BrokerProvider({ children }: { children: ReactNode }) {
 
       let profile: BrokerProfile;
       if (options?.signup) {
-        profile = createEmptyBrokerProfile({ email: trimmed });
-        delete profile.onboardingCompletedAt;
+        profile = createOnboardingDemoProfile(trimmed);
       } else {
         if (state.profile.onboardingCompletedAt && state.profile.fullName.trim()) {
           profile = { ...state.profile, email: trimmed, updatedAt: nowIso() };
