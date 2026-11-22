@@ -1,7 +1,8 @@
 import { useState } from "react";
+import { flushSync } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import { AccoladeLogo } from "@/components/ui/AccoladeLogo";
-import { ChevronRight } from "@/components/ui/icons";
+import { ChevronRight, Eye, EyeOff } from "@/components/ui/icons";
 import { useBroker } from "@/store/BrokerContext";
 import { cn } from "@/lib/utils";
 
@@ -27,7 +28,10 @@ export function BrokerLoginPage() {
     e.preventDefault();
     setTouched({ email: true, password: true });
     if (!validate()) return;
-    const ready = login(email.trim());
+    let ready = false;
+    flushSync(() => {
+      ready = login(email.trim(), { signup: mode === "signup" });
+    });
     navigate(ready ? "/" : "/onboarding", { replace: true });
   };
 
@@ -57,9 +61,6 @@ export function BrokerLoginPage() {
         <h1 className="text-2xl font-bold text-ink">
           {mode === "signup" ? "Create an account" : "Sign in"}
         </h1>
-        <p className="page-lede mt-1">
-          Broker workspace for leads, clients, and pipeline in one place.
-        </p>
 
         <div className="mt-6 flex gap-2 rounded-lg border border-hairline bg-sidebar p-1">
           {(
@@ -113,7 +114,7 @@ export function BrokerLoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 onBlur={() => setTouched((t) => ({ ...t, password: true }))}
                 className={cn(
-                  "input-field pr-16",
+                  "input-field pr-11",
                   (touched.password || errors.password) && !password.trim() && "border-status-awaiting",
                 )}
                 aria-invalid={Boolean(errors.password)}
@@ -122,9 +123,10 @@ export function BrokerLoginPage() {
               <button
                 type="button"
                 onClick={() => setShowPassword((v) => !v)}
-                className="absolute right-2 top-1/2 -translate-y-1/2 rounded px-2 py-1 text-xs font-medium text-ink-muted hover:text-ink"
+                className="absolute right-1 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-md text-ink-muted transition-colors hover:bg-sidebar hover:text-ink"
+                aria-label={showPassword ? "Hide password" : "Show password"}
               >
-                {showPassword ? "Hide" : "Show"}
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
             {errors.password && touched.password && (

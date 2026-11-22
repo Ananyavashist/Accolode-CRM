@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { OnboardingStepPanel } from "@/components/onboarding/OnboardingStepPanel";
 import { OnboardingStepper } from "@/components/onboarding/OnboardingStepper";
-import { ChevronLeft, ChevronRight, Navigation } from "@/components/ui/icons";
+import { ChevronLeft, ChevronRight } from "@/components/ui/icons";
+import { AccoladeLogo } from "@/components/ui/AccoladeLogo";
 import { validateOnboardingStep, type BrokerFieldErrors } from "@/lib/brokerOnboardingValidation";
 import { useBroker } from "@/store/BrokerContext";
 import type { BrokerProfile } from "@/types/broker";
@@ -37,7 +38,8 @@ export function BrokerOnboardingPage() {
     setProfile(saved);
   }, [saved]);
 
-  if (!session || (isOnboardingComplete && !isEditMode)) return null;
+  if (!session) return null;
+  if (isOnboardingComplete && !isEditMode) return null;
 
   const patch = (p: Partial<BrokerProfile>) => setProfile((prev) => ({ ...prev, ...p }));
 
@@ -73,9 +75,7 @@ export function BrokerOnboardingPage() {
     <div className="flex min-h-screen flex-col bg-surface lg:flex-row">
       <aside className="flex w-full flex-col border-b border-hairline bg-sidebar px-6 py-8 lg:w-[320px] lg:shrink-0 lg:border-b-0 lg:border-r">
         <div className="mb-8 flex items-center gap-2">
-          <span className="icon-btn border-primary/20 bg-primary/5 text-primary">
-            <Navigation size={16} />
-          </span>
+          <AccoladeLogo size={32} />
           <span className="text-base font-semibold text-swatch-charcoal">Accolade</span>
         </div>
         <OnboardingStepper activeStep={step} maxReached={maxReached} />

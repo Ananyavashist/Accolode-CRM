@@ -66,7 +66,7 @@ interface BrokerContextValue {
   profile: BrokerProfile;
   session: BrokerAuthSession | null;
   isOnboardingComplete: boolean;
-  login: (email: string) => boolean;
+  login: (email: string, options?: { signup?: boolean }) => boolean;
   logout: () => void;
   patchProfile: (patch: Partial<BrokerProfile>) => void;
   setProfile: (profile: BrokerProfile) => void;
@@ -85,15 +85,31 @@ export function BrokerProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const login = useCallback(
-    (email: string) => {
-      const session: BrokerAuthSession = { email: email.trim(), signedInAt: nowIso() };
-      const profile = state.profile.onboardingCompletedAt
-        ? { ...state.profile, email: email.trim(), updatedAt: nowIso() }
-        : createEmptyBrokerProfile({ email: email.trim() });
+    (email: string, options?: { signup?: boolean }) => {
+      const trimmed = email.trim();
+      const session: BrokerAuthSession = { email: trimmed, signedInAt: nowIso() };
+
+      let profile: BrokerProfile;
+      if (options?.signup) {
+        profile = createEmptyBrokerProfile({ email: trimmed });
+        delete profile.onboardingCompletedAt;
+      } else {
+        if (state.profile.onboardingCompletedAt && state.profile.fullName.trim()) {
+          profile = { ...state.profile, email: trimmed, updatedAt: nowIso() };
+        } else {
+          profile = {
+            ...DEMO_BROKER_PROFILE,
+            email: trimmed,
+            onboardingCompletedAt: nowIso(),
+            updatedAt: nowIso(),
+          };
+        }
+      }
+
       persist({ profile, session });
       return Boolean(profile.onboardingCompletedAt);
     },
-    [persist, state.profile],
+    [persist, state.profile, state.session?.email],
   );
 
   const logout = useCallback(() => {

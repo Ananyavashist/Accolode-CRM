@@ -138,7 +138,7 @@
   }
 
   .btn {
-    @apply inline-flex h-9 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-md px-3 text-sm font-medium leading-none transition-colors;
+    @apply inline-flex h-10 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-md px-3 text-sm font-medium leading-none transition-colors;
   }
 
   .btn-primary {
@@ -163,7 +163,11 @@
   }
 
   .btn-leads-banner-cta {
-    @apply btn-primary !w-auto shrink-0;
+    @apply btn !w-auto shrink-0 border border-primary bg-surface text-primary;
+  }
+
+  .btn-leads-banner-cta:hover {
+    background-color: var(--brand-soft);
   }
 
   .btn-ghost {
@@ -181,6 +185,13 @@
 
   .input-field {
     @apply h-10 w-full rounded-md border border-hairline bg-surface px-3 text-sm text-ink outline-none ring-0 placeholder:text-ink-muted focus:border-primary focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0;
+  }
+
+  select.input-field {
+    @apply appearance-none bg-no-repeat pr-10;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' viewBox='0 0 24 24'%3E%3Cpath stroke='%236B7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-position: right 0.75rem center;
+    background-size: 1rem;
   }
 
   .tab-underline {

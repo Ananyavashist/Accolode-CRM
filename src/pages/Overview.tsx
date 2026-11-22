@@ -39,7 +39,7 @@ export function Overview() {
         <div className="leads-banner flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex min-w-0 items-center gap-2.5">
             <span
-              className="icon-btn shrink-0 border-primary/20 bg-primary-50 text-primary"
+              className="icon-btn shrink-0 border border-hairline bg-surface text-primary"
               role="img"
               aria-label="Lead growth"
             >
