@@ -95,7 +95,7 @@ function KanbanBoard({
         return (
           <div
             key={stage}
-            className="flex min-w-[200px] flex-1 basis-0 flex-col rounded-xl bg-sidebar/80 p-3"
+            className="kanban-column flex min-w-[200px] flex-1 basis-0 flex-col p-3"
           >
             <div className="mb-3 flex items-center justify-between gap-2">
               <h3 className="text-sm font-semibold text-ink">{formatDisplayCopy(stage)}</h3>

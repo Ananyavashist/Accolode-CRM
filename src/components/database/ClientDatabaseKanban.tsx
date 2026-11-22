@@ -33,7 +33,7 @@ export function ClientDatabaseKanban({ rows, onStageChange }: ClientDatabaseKanb
         return (
           <div
             key={stage}
-            className="flex min-w-[220px] flex-1 basis-0 flex-col rounded-xl bg-sidebar/80 p-3"
+            className="kanban-column flex min-w-[220px] flex-1 basis-0 flex-col p-3"
           >
             <p
               className={cn(

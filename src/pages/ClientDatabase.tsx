@@ -468,10 +468,11 @@ export function ClientDatabase() {
                     key={client.id}
                     onClick={() => {
                       if (editMode) toggleRowSelected(client.id);
+                      else navigate(clientProfilePath(client.name));
                     }}
                     className={cn(
                       "border-t border-hairline text-sm transition-colors hover:bg-sidebar",
-                      editMode && "cursor-default",
+                      editMode ? "cursor-default" : "cursor-pointer",
                       selected.has(client.id) && "bg-primary/[0.06]",
                     )}
                   >
@@ -559,7 +560,16 @@ export function ClientDatabase() {
             rows.map((client) => (
               <div
                 key={client.id}
-                className="flex w-full items-center gap-3 px-4 py-3 text-left"
+                role="button"
+                tabIndex={0}
+                onClick={() => navigate(clientProfilePath(client.name))}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    navigate(clientProfilePath(client.name));
+                  }
+                }}
+                className="flex w-full cursor-pointer items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-sidebar"
               >
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-sm font-medium text-ink">{client.name}</span>
@@ -568,18 +578,13 @@ export function ClientDatabase() {
                   </span>
                   <span className="block truncate text-sm text-ink-muted">{client.email}</span>
                 </span>
-                <ClientStagePicker
-                  clientId={client.id}
-                  stage={client.progressStage}
-                  onChange={(next) => setProgressStage(client.id, next)}
-                />
-                <button
-                  type="button"
-                  onClick={() => navigate(clientProfilePath(client.name))}
-                  className="shrink-0 text-sm font-medium text-primary hover:underline"
-                >
-                  View
-                </button>
+                <div onClick={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()}>
+                  <ClientStagePicker
+                    clientId={client.id}
+                    stage={client.progressStage}
+                    onChange={(next) => setProgressStage(client.id, next)}
+                  />
+                </div>
               </div>
             ))
           )}
