@@ -402,7 +402,7 @@ export function SmartLeads() {
             mobileDetail && "hidden lg:flex",
           )}
         >
-          <div className="flex gap-4 border-b border-hairline px-3">
+          <div className="flex flex-wrap items-end gap-x-3 gap-y-1 border-b border-hairline px-3 py-1 sm:gap-x-4">
             {(
               [
                 ["pending", "Pending", tabCounts.pending],
@@ -414,7 +414,7 @@ export function SmartLeads() {
                 key={key}
                 onClick={() => setTab(key)}
                 className={cn(
-                  "tab-underline",
+                  "tab-underline shrink-0 px-2 sm:px-3",
                   tab === key && "tab-underline-active",
                 )}
               >

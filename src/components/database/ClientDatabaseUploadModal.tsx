@@ -22,12 +22,29 @@ function formatBytes(bytes: number): string {
 interface ClientDatabaseUploadModalProps {
   open: boolean;
   onClose: () => void;
+  title?: string;
+  description?: string;
+  titleId?: string;
+  onSaved?: (files: { name: string }[]) => void;
 }
 
-export function ClientDatabaseUploadModal({ open, onClose }: ClientDatabaseUploadModalProps) {
+export function ClientDatabaseUploadModal({
+  open,
+  onClose,
+  title = "Upload files",
+  description = "Select and upload the files of your choice",
+  titleId = "upload-database-title",
+  onSaved,
+}: ClientDatabaseUploadModalProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [items, setItems] = useState<UploadItem[]>([]);
   const [dragOver, setDragOver] = useState(false);
+
+  useEffect(() => {
+    if (open) return;
+    setItems([]);
+    setDragOver(false);
+  }, [open]);
 
   useEffect(() => {
     if (!open) return;
@@ -79,7 +96,7 @@ export function ClientDatabaseUploadModal({ open, onClose }: ClientDatabaseUploa
       <div
         role="dialog"
         aria-modal="true"
-        aria-labelledby="upload-database-title"
+        aria-labelledby={titleId}
         className="relative z-10 w-full max-w-lg rounded-2xl border border-hairline bg-surface shadow-pop"
       >
         <header className="flex items-start justify-between gap-3 border-b border-hairline px-5 py-4">
@@ -88,10 +105,10 @@ export function ClientDatabaseUploadModal({ open, onClose }: ClientDatabaseUploa
               <UploadCloud size={20} />
             </span>
             <div>
-              <h2 id="upload-database-title" className="text-lg font-semibold text-ink">
-                Upload files
+              <h2 id={titleId} className="text-lg font-semibold text-ink">
+                {title}
               </h2>
-              <p className="text-sm text-ink-muted">Select and upload the files of your choice</p>
+              <p className="text-sm text-ink-muted">{description}</p>
             </div>
           </div>
           <button type="button" onClick={onClose} className="icon-btn shrink-0" aria-label="Close">
@@ -195,9 +212,15 @@ export function ClientDatabaseUploadModal({ open, onClose }: ClientDatabaseUploa
           </button>
           <button
             type="button"
-            onClick={onClose}
+            onClick={() => {
+              const completed = items
+                .filter((i) => i.status === "completed")
+                .map((i) => ({ name: i.name }));
+              if (completed.length > 0) onSaved?.(completed);
+              onClose();
+            }}
             className="btn-primary"
-            disabled={items.some((i) => i.status === "uploading")}
+            disabled={items.some((i) => i.status === "uploading") || items.length === 0}
           >
             Save
           </button>

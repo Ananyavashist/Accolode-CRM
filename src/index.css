@@ -179,4 +179,39 @@
   .tab-underline-active {
     @apply border-ink text-ink;
   }
+
+  .profile-category-tab {
+    @apply -mb-px whitespace-nowrap border-b-2 border-transparent px-3 pb-2.5 pt-2 text-[14px] font-medium leading-none text-ink-muted transition-colors hover:text-ink;
+  }
+
+  .profile-category-tab-active {
+    @apply border-ink font-semibold text-ink;
+  }
+
+  .kanban-column {
+    @apply rounded-xl bg-sidebar/80;
+  }
+
+  .property-stage-card-drop {
+    animation: property-stage-card-drop 0.38s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  .property-stage-card-dragging {
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .property-stage-column-active {
+    transform: scale(1.01);
+  }
+}
+
+@keyframes property-stage-card-drop {
+  from {
+    opacity: 0.55;
+    transform: translateY(-8px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
