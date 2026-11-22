@@ -1,4 +1,4 @@
-import { UnfoldMore, X } from "@/components/ui/icons";
+import { CheckCircle2, RotateCw, UnfoldMore, X } from "@/components/ui/icons";
 import { cn } from "@/lib/utils";
 import {
   DEFAULT_DATABASE_SORT,
@@ -139,12 +139,14 @@ export function ClientDatabaseSortDrawer({
           <button
             type="button"
             onClick={() => onChange(DEFAULT_DATABASE_SORT)}
-            className="btn-ghost !w-auto text-sm"
+            className="btn-ghost !w-auto gap-1.5 text-sm"
           >
             Reset
+            <RotateCw size={16} />
           </button>
-          <button type="button" onClick={onApply} className="btn-primary !w-auto">
+          <button type="button" onClick={onApply} className="btn-primary !w-auto gap-1.5">
             Apply now
+            <CheckCircle2 size={16} />
           </button>
         </footer>
       </aside>

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AccoladeLogo } from "@/components/ui/AccoladeLogo";
+import { ChevronRight } from "@/components/ui/icons";
 import { useBroker } from "@/store/BrokerContext";
 import { cn } from "@/lib/utils";
 
@@ -133,8 +134,9 @@ export function BrokerLoginPage() {
             )}
           </label>
 
-          <button type="submit" className="btn-primary w-full">
+          <button type="submit" className="btn-primary w-full gap-1.5">
             {mode === "signup" ? "Continue" : "Sign in"}
+            <ChevronRight size={16} />
           </button>
         </form>
 

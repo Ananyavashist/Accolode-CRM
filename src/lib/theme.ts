@@ -1,10 +1,21 @@
-/** Cool analogous data palette that sits next to Accolade teal. */
+/** Accolade logo + UI brand (single source for Tailwind primary and CTAs). */
+export const BRAND = {
+  DEFAULT: "#124553",
+  hover: "#0E3A45",
+  dark: "#0A2E38",
+  soft: "#E9F3F5",
+  softBorder: "#C5DDE3",
+} as const;
+
+/** Cool analogous palette anchored on Accolade logo teal (#124553). */
 export const DATA_PALETTE = {
   teal: "#124553",
   cyan: "#2A9D8F",
   slate: "#3D5A80",
   seafoam: "#52B788",
   indigo: "#4C6EF5",
+  /** Light teal tint for chart fills (contrast on dark teal segments). */
+  mint: "#B8DCE4",
 } as const;
 
 export const DATA_PALETTE_ORDER = [
@@ -47,17 +58,17 @@ export const BAR_COLORS = {
   sold: DATA_PALETTE.seafoam,
 } as const;
 
-/** Stacked property overview — dark base + light top (payroll-style chart). */
+/** Stacked property overview — logo teal base + light accessible top. */
 export const PROPERTY_OVERVIEW_COLORS = {
-  rent: "#3F6F56",
-  sold: "#B7E4C7",
+  rent: DATA_PALETTE.teal,
+  sold: DATA_PALETTE.mint,
 } as const;
 
-/** Swatch stack (charcoal → forest → light mint), bottom to top in capacity chart. */
+/** Stack: charcoal → logo teal → cyan (distinct, tone-matched). */
 export const CLIENT_CAPACITY_COLORS = {
   activeClients: "#292929",
-  leadAccepted: "#4E8054",
-  dealClosed: "#B8D4BC",
+  leadAccepted: DATA_PALETTE.teal,
+  dealClosed: DATA_PALETTE.cyan,
 } as const;
 
 /** Placeholder month (no data yet) — full stack reads as one light bar. */
@@ -77,6 +88,9 @@ export const LISTING_CHIP = {
 
 export const STATUS = {
   completed: "#157A3A",
-  active: "#1A5F6B",
+  active: DATA_PALETTE.teal,
   awaiting: "#B42318",
 } as const;
+
+/** Primary series for area / line charts (deals, trends). */
+export const CHART_SERIES_PRIMARY = DATA_PALETTE.teal;

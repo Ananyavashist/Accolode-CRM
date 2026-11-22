@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { FileText, RotateCw, UploadCloud, X } from "@/components/ui/icons";
+import { CheckCircle2, DataUpload, FileText, RotateCw, UploadCloud, X } from "@/components/ui/icons";
 import { cn, formatDisplayCopy } from "@/lib/utils";
 
 type UploadStatus = "uploading" | "completed";
@@ -140,8 +140,9 @@ export function ClientDatabaseUploadModal({
             <p className="mt-1 text-xs text-ink-muted">
               JPEG, PNG, PDF, and CSV formats, up to 50&nbsp;MB
             </p>
-            <button type="button" onClick={() => inputRef.current?.click()} className="btn-outline mt-4">
+            <button type="button" onClick={() => inputRef.current?.click()} className="btn-outline mt-4 gap-1.5">
               Browse File
+              <DataUpload size={16} />
             </button>
             <input
               ref={inputRef}
@@ -207,8 +208,9 @@ export function ClientDatabaseUploadModal({
         </div>
 
         <footer className="flex justify-end gap-2 border-t border-hairline px-5 py-4">
-          <button type="button" onClick={onClose} className="btn-ghost !w-auto">
+          <button type="button" onClick={onClose} className="btn-ghost !w-auto gap-1.5">
             Close
+            <X size={16} />
           </button>
           <button
             type="button"
@@ -219,10 +221,11 @@ export function ClientDatabaseUploadModal({
               if (completed.length > 0) onSaved?.(completed);
               onClose();
             }}
-            className="btn-primary"
+            className="btn-primary gap-1.5"
             disabled={items.some((i) => i.status === "uploading") || items.length === 0}
           >
             Save
+            <CheckCircle2 size={16} />
           </button>
         </footer>
       </div>

@@ -185,10 +185,11 @@ export function ClientHomesByStage({
         <h2 className="text-base font-semibold text-ink">{title}</h2>
         <button
           type="button"
-          className="btn-primary !h-9 !w-auto px-4 text-sm"
+          className="btn-primary !h-9 !w-auto gap-1.5 px-4 text-sm"
           onClick={() => openModal("interested")}
         >
           Add a property
+          <Plus size={16} />
         </button>
       </div>
       <div className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-4">

@@ -1,5 +1,6 @@
 import type { LeadRejectionReason } from "@/types";
 import { LEAD_REJECTION_LABELS } from "@/lib/brokerRouting";
+import { ChevronRight, X } from "@/components/ui/icons";
 import { cn } from "@/lib/utils";
 
 const REASONS = Object.entries(LEAD_REJECTION_LABELS) as [LeadRejectionReason, string][];
@@ -35,17 +36,19 @@ export function LeadRejectModal({ open, leadName, onClose, onConfirm }: LeadReje
                 type="button"
                 onClick={() => onConfirm(id)}
                 className={cn(
-                  "w-full rounded-lg px-3 py-2.5 text-left text-sm transition-colors",
+                  "flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2.5 text-left text-sm transition-colors",
                   "hover:bg-sidebar text-ink",
                 )}
               >
                 {label}
+                <ChevronRight size={16} className="shrink-0 text-ink-soft" />
               </button>
             </li>
           ))}
         </ul>
-        <button type="button" onClick={onClose} className="btn-outline mt-4 w-full">
+        <button type="button" onClick={onClose} className="btn-outline mt-4 w-full gap-1.5">
           Cancel
+          <X size={16} />
         </button>
       </div>
     </div>

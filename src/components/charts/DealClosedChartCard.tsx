@@ -16,10 +16,10 @@ import {
   type DealClosedView,
   filterDealClosed,
 } from "@/data/charts";
-import { CHART } from "@/lib/theme";
+import { CHART, CHART_SERIES_PRIMARY } from "@/lib/theme";
 import { cn } from "@/lib/utils";
 
-const DEAL_LINE = "#10B981";
+const DEAL_LINE = CHART_SERIES_PRIMARY;
 const VIEWS: { id: DealClosedView; label: string }[] = [
   { id: "1 year", label: "1Y" },
   { id: "9 months", label: "9M" },
@@ -49,7 +49,7 @@ function DealClosedTooltip({
       <p className="px-1 text-xs text-ink-muted">{row.monthYear}</p>
       <div className="flex items-center gap-2 p-1">
         <span className="text-2xl font-semibold leading-none text-ink">{row.closed}</span>
-        <span className="inline-flex items-center gap-0.5 text-xs font-medium text-[#10B981]">
+        <span className="inline-flex items-center gap-0.5 text-xs font-medium text-status-completed">
           <ArrowUp size={12} />
           {trend.toFixed(1)}%
         </span>
@@ -92,7 +92,7 @@ export function DealClosedChartCard({ className }: { className?: string }) {
     <div className={cn("section-card flex min-h-0 w-full flex-col p-4", className)}>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex items-center gap-2.5">
-          <span className="icon-btn text-[#10B981]">
+          <span className="icon-btn text-primary">
             <TrendingUp size={18} />
           </span>
           <h2>Deal closed Chart</h2>

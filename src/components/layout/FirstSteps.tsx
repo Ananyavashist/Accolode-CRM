@@ -2,6 +2,7 @@ import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { ChevronDown } from "@/components/ui/icons";
 import type { FirstStepId, FirstSteps } from "@/types";
+import { SidebarIconTooltip } from "@/components/layout/SidebarIconTooltip";
 import { cn } from "@/lib/utils";
 
 const STEPS: { id: FirstStepId; label: string; to: string }[] = [
@@ -16,9 +17,11 @@ const STEPS: { id: FirstStepId; label: string; to: string }[] = [
 export function FirstStepsWidget({
   steps,
   collapsed,
+  showTooltips = false,
 }: {
   steps: FirstSteps;
   collapsed: boolean;
+  showTooltips?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const done = STEPS.filter((s) => steps[s.id]).length;
@@ -30,12 +33,11 @@ export function FirstStepsWidget({
   if (collapsed) {
     return (
       <div className="hidden px-2 pb-2 lg:block">
-        <div
-          className="mx-auto flex h-9 w-9 items-center justify-center rounded-lg bg-primary-50 text-xs font-semibold text-primary"
-          title={`First steps ${done}/${total}`}
-        >
-          {done}/{total}
-        </div>
+        <SidebarIconTooltip show={showTooltips} label={`First steps ${done}/${total}`}>
+          <div className="mx-auto flex h-9 w-9 items-center justify-center rounded-lg bg-primary-50 text-xs font-semibold text-primary">
+            {done}/{total}
+          </div>
+        </SidebarIconTooltip>
       </div>
     );
   }

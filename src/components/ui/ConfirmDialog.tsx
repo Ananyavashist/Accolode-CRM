@@ -1,4 +1,6 @@
 import { useCallback, useState, type ReactNode } from "react";
+import { AppButton } from "@/components/ui/AppButton";
+import { CheckCircle2, X } from "@/components/ui/icons";
 
 export interface ConfirmRequest {
   title: string;
@@ -42,12 +44,12 @@ export function ConfirmDialog({ request, onClose }: ConfirmDialogProps) {
           {request.message}
         </p>
         <div className="mt-5 flex justify-end gap-2">
-          <button type="button" onClick={onClose} className="btn-outline">
+          <AppButton variant="outline" onClick={onClose} trailingIcon={<X size={16} />}>
             {request.cancelLabel ?? "Cancel"}
-          </button>
-          <button type="button" onClick={handleConfirm} className="btn-primary">
+          </AppButton>
+          <AppButton variant="primary" onClick={handleConfirm} trailingIcon={<CheckCircle2 size={16} />}>
             {request.confirmLabel ?? "Confirm"}
-          </button>
+          </AppButton>
         </div>
       </div>
     </>

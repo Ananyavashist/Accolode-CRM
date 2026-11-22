@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { ConfirmDialog, useConfirmAction } from "@/components/ui/ConfirmDialog";
 import type { ReactNode } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { ArrowUpRight } from "@/components/ui/icons";
 import { useCrm } from "@/store/CrmContext";
 import { clientProfilePath, personSlug, todayISO } from "@/lib/pipeline";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -50,8 +51,9 @@ export function NotesPage() {
             title="Nothing on the list"
             description="Accept a lead and set a follow up so Notes fills itself."
             action={
-              <button onClick={() => navigate("/client-leads")} className="btn-primary">
+              <button onClick={() => navigate("/client-leads")} className="btn-primary gap-1.5">
                 Go to Client Leads
+                <ArrowUpRight size={16} />
               </button>
             }
           />
@@ -202,9 +204,10 @@ function NotesRow({
       {profileTo && (
         <Link
           to={profileTo}
-          className="btn-outline ml-auto shrink-0"
+          className="btn-outline ml-auto shrink-0 gap-1.5"
         >
           View profile
+          <ArrowUpRight size={16} />
         </Link>
       )}
     </li>

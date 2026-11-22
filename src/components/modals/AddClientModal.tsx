@@ -200,11 +200,22 @@ export function AddClientModal() {
                 className={cn(
                   "btn !inline-flex !h-auto !w-auto min-w-[10.5rem] shrink-0 items-center gap-1.5 border !p-2 text-sm transition-colors duration-300",
                   linkCopied
-                    ? "border-status-completed/30 bg-status-completedBg text-status-completed hover:bg-status-completedBg"
+                    ? "border-primary/25 bg-primary-50 text-primary hover:bg-primary-50"
                     : "btn-secondary",
                 )}
                 aria-live="polite"
               >
+                <span className="inline-block h-4 overflow-hidden text-left">
+                  <span
+                    className={cn(
+                      "block transition-transform duration-300 ease-out",
+                      linkCopied && "-translate-y-4",
+                    )}
+                  >
+                    <span className="block h-4 leading-4">Onboarding Link</span>
+                    <span className="block h-4 leading-4">Copied to clipboard</span>
+                  </span>
+                </span>
                 <span className="relative flex h-4 w-4 shrink-0 items-center justify-center">
                   <Plus
                     size={16}
@@ -222,17 +233,6 @@ export function AddClientModal() {
                       linkCopied ? "scale-100 opacity-100" : "scale-75 opacity-0",
                     )}
                   />
-                </span>
-                <span className="inline-block h-4 overflow-hidden text-left">
-                  <span
-                    className={cn(
-                      "block transition-transform duration-300 ease-out",
-                      linkCopied && "-translate-y-4",
-                    )}
-                  >
-                    <span className="block h-4 leading-4">Onboarding Link</span>
-                    <span className="block h-4 leading-4">Copied to clipboard</span>
-                  </span>
                 </span>
               </button>
               <button
@@ -397,9 +397,10 @@ export function AddClientModal() {
             <button
               onClick={handleSave}
               disabled={!canSave}
-              className="btn-primary disabled:cursor-not-allowed disabled:opacity-50"
+              className="btn-primary gap-1.5 disabled:cursor-not-allowed disabled:opacity-50"
             >
               Save Details
+              <CheckCircle2 size={16} />
             </button>
           </div>
         </div>

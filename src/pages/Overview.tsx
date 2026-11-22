@@ -39,7 +39,7 @@ export function Overview() {
         <div className="leads-banner flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex min-w-0 items-center gap-2.5">
             <span
-              className="icon-btn shrink-0 bg-surface text-primary"
+              className="icon-btn shrink-0 border-primary/20 bg-primary-50 text-primary"
               role="img"
               aria-label="Lead growth"
             >
@@ -52,9 +52,10 @@ export function Overview() {
           <button
             type="button"
             onClick={() => navigate("/client-leads?view=pending")}
-            className="btn-leads-banner-cta"
+            className="btn-leads-banner-cta gap-1.5"
           >
-            View New Leads <ArrowUpRight size={16} />
+            View New Leads
+            <ArrowUpRight size={16} />
           </button>
         </div>
 

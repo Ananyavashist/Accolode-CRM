@@ -134,8 +134,9 @@ export function ClientProfile() {
       <div className="p-section">
         <div className="section-card flex flex-col items-center justify-center gap-3 px-6 py-24 text-center">
           <p className="font-semibold text-ink">Client not found</p>
-          <button onClick={() => navigate("/clients")} className="btn-primary">
+          <button onClick={() => navigate("/clients")} className="btn-primary gap-1.5">
             Back to Database
+            <ArrowLeft size={16} />
           </button>
         </div>
       </div>
@@ -200,18 +201,18 @@ export function ClientProfile() {
                 <button
                   type="button"
                   onClick={() => selectTab("Notes")}
-                  className="btn-outline !w-auto text-[14px] text-ink-muted"
+                  className="btn-outline !w-auto gap-1.5 text-[14px] text-ink-muted"
                 >
-                  <Pencil size={16} />
                   Edit
+                  <Pencil size={16} />
                 </button>
                 <button
                   type="button"
                   onClick={() => navigate(inboxPath)}
-                  className="btn-outline !w-auto text-[14px] text-ink-muted"
+                  className="btn-outline !w-auto gap-1.5 text-[14px] text-ink-muted"
                 >
-                  <Messages size={16} />
                   Message
+                  <Messages size={16} />
                 </button>
               </div>
             </div>

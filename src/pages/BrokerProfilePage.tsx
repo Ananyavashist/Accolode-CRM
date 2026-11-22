@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from "react";
 import { OnboardingStepPanel } from "@/components/onboarding/OnboardingStepPanel";
-import { Pencil, Share2 } from "@/components/ui/icons";
+import { CheckCircle2, Pencil, Share2, X } from "@/components/ui/icons";
 import { Avatar } from "@/components/ui/Avatar";
 import { validateOnboardingStep, type BrokerFieldErrors } from "@/lib/brokerOnboardingValidation";
 import type { BrokerProfile } from "@/types/broker";
@@ -139,18 +139,20 @@ export function BrokerProfilePage() {
         <div className="flex flex-wrap items-center gap-2">
           {isEditing ? (
             <>
-              <button type="button" onClick={cancelEditing} className="btn-outline !w-auto">
+              <button type="button" onClick={cancelEditing} className="btn-outline !w-auto gap-1.5">
                 Cancel
+                <X size={16} />
               </button>
-              <button type="button" onClick={saveProfile} className="btn-primary !w-auto">
+              <button type="button" onClick={saveProfile} className="btn-primary !w-auto gap-1.5">
                 Save profile
+                <CheckCircle2 size={16} />
               </button>
             </>
           ) : (
             <>
               <button type="button" onClick={startEditing} className="btn-secondary !w-auto gap-1.5">
-                <Pencil size={16} />
                 Edit
+                <Pencil size={16} />
               </button>
               <button
                 type="button"
@@ -158,8 +160,8 @@ export function BrokerProfilePage() {
                 disabled={!profile.referralLink}
                 className="btn-primary !w-auto gap-1.5 disabled:opacity-50"
               >
-                <Share2 size={16} />
                 {shareCopied ? "Link copied" : "Share my link"}
+                <Share2 size={16} />
               </button>
             </>
           )}
@@ -270,9 +272,10 @@ export function BrokerProfilePage() {
                     <button
                       type="button"
                       onClick={copyReferral}
-                      className="btn-outline !w-auto shrink-0 px-3 py-1.5 text-xs font-medium"
+                      className="btn-outline !w-auto shrink-0 gap-1.5 px-3 py-1.5 text-xs font-medium"
                     >
                       {linkCopied ? "Copied to clipboard" : "Copy"}
+                      {linkCopied ? <CheckCircle2 size={14} /> : <Share2 size={14} />}
                     </button>
                   </div>
                 </div>

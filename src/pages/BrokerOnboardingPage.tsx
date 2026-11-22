@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { OnboardingStepPanel } from "@/components/onboarding/OnboardingStepPanel";
 import { OnboardingStepper } from "@/components/onboarding/OnboardingStepper";
-import { Navigation } from "@/components/ui/icons";
+import { ChevronLeft, ChevronRight, Navigation } from "@/components/ui/icons";
 import { validateOnboardingStep, type BrokerFieldErrors } from "@/lib/brokerOnboardingValidation";
 import { useBroker } from "@/store/BrokerContext";
 import type { BrokerProfile } from "@/types/broker";
@@ -115,11 +115,13 @@ export function BrokerOnboardingPage() {
               ))}
             </div>
             <div className="flex justify-between gap-3">
-              <button type="button" onClick={goBack} className="btn-outline !w-auto" disabled={step === 0}>
+              <button type="button" onClick={goBack} className="btn-outline !w-auto gap-1.5" disabled={step === 0}>
                 Back
+                <ChevronLeft size={16} />
               </button>
-              <button type="button" onClick={goNext} className="btn-primary !w-auto">
+              <button type="button" onClick={goNext} className="btn-primary !w-auto gap-1.5">
                 {step === 4 ? (isEditMode ? "Save profile" : "Finish") : "Continue"}
+                <ChevronRight size={16} />
               </button>
             </div>
           </div>

@@ -1,4 +1,3 @@
-import { NavLink } from "react-router-dom";
 import {
   Building2,
   Calendar,
@@ -11,6 +10,8 @@ import {
   TrendingUp,
   Users,
 } from "@/components/ui/icons";
+import { SidebarNavLink } from "@/components/layout/SidebarNavLink";
+import { SidebarIconTooltip } from "@/components/layout/SidebarIconTooltip";
 import { SidebarProfile } from "@/components/layout/SidebarProfile";
 import { FirstStepsWidget } from "@/components/layout/FirstSteps";
 import { SidebarUpgradeCard } from "@/components/layout/SidebarUpgradeCard";
@@ -108,24 +109,31 @@ export function Sidebar({ collapsed, onToggle, mobileOpen, onCloseMobile }: Side
             <AccoladeLogo size={32} />
             <span className="truncate text-lg font-semibold text-ink">Accolade</span>
           </div>
-          <button
-            type="button"
-            onClick={onToggle}
+          <SidebarIconTooltip
+            show={desktopCollapsed}
+            label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
             className={cn(
-              "icon-btn hidden shrink-0 lg:flex lg:items-center lg:justify-center",
-              `transition-transform ${SIDEBAR_MS} ease-in-out`,
               desktopCollapsed && "lg:absolute lg:left-1/2 lg:top-1/2 lg:-translate-x-1/2 lg:-translate-y-1/2",
             )}
-            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
-            <ChevronLeft
-              size={18}
+            <button
+              type="button"
+              onClick={onToggle}
               className={cn(
+                "icon-btn hidden shrink-0 lg:flex lg:items-center lg:justify-center",
                 `transition-transform ${SIDEBAR_MS} ease-in-out`,
-                collapsed && "rotate-180",
               )}
-            />
-          </button>
+              aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+            >
+              <ChevronLeft
+                size={18}
+                className={cn(
+                  `transition-transform ${SIDEBAR_MS} ease-in-out`,
+                  collapsed && "rotate-180",
+                )}
+              />
+            </button>
+          </SidebarIconTooltip>
         </div>
 
         <nav
@@ -137,30 +145,30 @@ export function Sidebar({ collapsed, onToggle, mobileOpen, onCloseMobile }: Side
           )}
         >
           {NAV_ITEMS_PRIMARY.map((item) => (
-            <NavLink
+            <SidebarNavLink
               key={item.to}
               to={item.to}
+              label={item.label}
+              icon={item.icon}
               end={"end" in item ? item.end : undefined}
               onClick={onCloseMobile}
+              desktopCollapsed={desktopCollapsed}
               className={navClass}
-              title={desktopCollapsed ? item.label : undefined}
-            >
-              <item.icon size={18} className="shrink-0" />
-              <span className={navLabelClass}>{item.label}</span>
-            </NavLink>
+              navLabelClass={navLabelClass}
+            />
           ))}
 
           {NAV_ITEMS_SECONDARY.map((item) => (
-            <NavLink
+            <SidebarNavLink
               key={item.to}
               to={item.to}
+              label={item.label}
+              icon={item.icon}
               onClick={onCloseMobile}
+              desktopCollapsed={desktopCollapsed}
               className={navClass}
-              title={desktopCollapsed ? item.label : undefined}
-            >
-              <item.icon size={18} className="shrink-0" />
-              <span className={navLabelClass}>{item.label}</span>
-            </NavLink>
+              navLabelClass={navLabelClass}
+            />
           ))}
 
           <div className={cn("mt-3", collapsed && "lg:mt-2")}>
@@ -174,16 +182,16 @@ export function Sidebar({ collapsed, onToggle, mobileOpen, onCloseMobile }: Side
               Administration
             </p>
             {ADMIN_NAV_ITEMS.map((item) => (
-              <NavLink
+              <SidebarNavLink
                 key={item.to}
                 to={item.to}
+                label={item.label}
+                icon={item.icon}
                 onClick={onCloseMobile}
+                desktopCollapsed={desktopCollapsed}
                 className={navClass}
-                title={desktopCollapsed ? item.label : undefined}
-              >
-                <item.icon size={18} className="shrink-0" />
-                <span className={navLabelClass}>{item.label}</span>
-              </NavLink>
+                navLabelClass={navLabelClass}
+              />
             ))}
           </div>
         </nav>
@@ -195,20 +203,20 @@ export function Sidebar({ collapsed, onToggle, mobileOpen, onCloseMobile }: Side
             desktopCollapsed && "lg:px-2",
           )}
         >
-          <SidebarUpgradeCard collapsed={collapsed} />
-          <NavLink
+          <SidebarUpgradeCard collapsed={collapsed} showTooltips={desktopCollapsed} />
+          <SidebarNavLink
             to="/help"
+            label="Help & Support"
+            icon={HelpCircle}
             onClick={onCloseMobile}
+            desktopCollapsed={desktopCollapsed}
             className={navClass}
-            title={desktopCollapsed ? "Help & Support" : undefined}
-          >
-            <HelpCircle size={18} className="shrink-0" />
-            <span className={navLabelClass}>Help & Support</span>
-          </NavLink>
+            navLabelClass={navLabelClass}
+          />
         </div>
 
-        <FirstStepsWidget steps={firstSteps} collapsed={collapsed} />
-        <SidebarProfile collapsed={collapsed} />
+        <FirstStepsWidget steps={firstSteps} collapsed={collapsed} showTooltips={desktopCollapsed} />
+        <SidebarProfile collapsed={collapsed} showTooltips={desktopCollapsed} />
       </aside>
     </>
   );

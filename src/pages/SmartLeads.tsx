@@ -2,12 +2,15 @@ import { useEffect, useMemo, useState, type ReactNode, type CSSProperties } from
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import {
   ArrowLeft,
+  ArrowUpRight,
   CheckCircle2,
   ListFilter,
   Mail,
   MapPin,
   Phone,
+  RotateCw,
   Search,
+  X,
 } from "@/components/ui/icons";
 import { TypeChip } from "@/components/ui/StatusBadge";
 import { PropertyCard } from "@/components/ui/PropertyCard";
@@ -172,9 +175,10 @@ function LeadDetail({
               type="button"
               onClick={onSendToActive}
               disabled={sendToActiveDisabled}
-              className="btn-primary disabled:opacity-50"
+              className="btn-primary gap-1.5 disabled:opacity-50"
             >
               Send to Active tab
+              <ArrowUpRight size={16} />
             </button>
           )}
           {canTriage && (
@@ -183,12 +187,14 @@ function LeadDetail({
                 type="button"
                 onClick={onAccept}
                 disabled={acceptDisabled}
-                className="btn-primary disabled:opacity-50"
+                className="btn-primary gap-1.5 disabled:opacity-50"
               >
                 Accept
+                <CheckCircle2 size={16} />
               </button>
-              <button type="button" onClick={onReject} className="btn-outline">
+              <button type="button" onClick={onReject} className="btn-outline gap-1.5">
                 Reject
+                <X size={16} />
               </button>
             </>
           )}
@@ -220,16 +226,18 @@ function LeadDetail({
         </div>
 
         <div className="mt-5 flex items-center justify-between">
-          <h3 className="text-[14px] font-semibold text-ink">Property preferences</h3>
+          <h3 className="text-base font-semibold text-ink">Property preferences</h3>
         </div>
-        <div className="-mx-1 flex snap-x snap-mandatory gap-3 overflow-x-auto pb-1">
-          {lead.properties.map((property) => (
-            <PropertyCard
-              key={property.id}
-              property={property}
-              className="w-[56.25%] max-w-[315px] shrink-0 snap-start"
-            />
-          ))}
+        <div className="mt-3 min-w-0 overflow-x-auto pb-1">
+          <div className="flex gap-3">
+            {lead.properties.map((property) => (
+              <PropertyCard
+                key={property.id}
+                property={property}
+                className="w-56 shrink-0"
+              />
+            ))}
+          </div>
         </div>
 
         <h3 className="mt-5 text-[14px] font-semibold text-ink">Must-have preferences</h3>
@@ -478,8 +486,9 @@ export function SmartLeads() {
 
           {tab === "deprioritised" && deprioritisedLeads.length > 0 && (
             <div className="px-3 pb-2">
-              <button type="button" onClick={refreshLeadActivity} className="btn-ghost">
+              <button type="button" onClick={refreshLeadActivity} className="btn-ghost gap-1.5">
                 Refresh activity (resurface if views rose)
+                <RotateCw size={16} />
               </button>
             </div>
           )}
@@ -492,13 +501,14 @@ export function SmartLeads() {
                   description="Clear filters to see the rest of this list."
                   action={
                     <button
-                      className="btn-outline"
+                      className="btn-outline gap-1.5"
                       onClick={() => {
                         setQuery("");
                         setDealFilter("");
                       }}
                     >
                       Clear filters
+                      <RotateCw size={16} />
                     </button>
                   }
                   className="py-10"
@@ -566,8 +576,9 @@ export function SmartLeads() {
               title="No leads to review"
               description="Accepted leads move to the Client Database."
               action={
-                <button onClick={() => navigate("/clients")} className="btn-primary">
+                <button onClick={() => navigate("/clients")} className="btn-primary gap-1.5">
                   Go to Client Database
+                  <ArrowUpRight size={16} />
                 </button>
               }
             />

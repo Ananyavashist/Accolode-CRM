@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { X } from "@/components/ui/icons";
+import { CheckCircle2, X } from "@/components/ui/icons";
 import { SelectDropdown } from "@/components/ui/SelectDropdown";
 import { Snackbar } from "@/components/ui/Snackbar";
 import { useCrm } from "@/store/CrmContext";
@@ -189,11 +189,13 @@ export function AddEventModal({ open, onClose, onSubmit, defaultDate }: AddEvent
         </div>
 
         <div className="mt-6 flex items-center justify-end gap-2">
-          <button onClick={onClose} className="btn-outline">
+          <button onClick={onClose} className="btn-outline gap-1.5">
             Cancel
+            <X size={16} />
           </button>
-          <button onClick={handleSubmit} disabled={!canSubmit} className="btn-primary disabled:opacity-50">
+          <button onClick={handleSubmit} disabled={!canSubmit} className="btn-primary gap-1.5 disabled:opacity-50">
             Save Event
+            <CheckCircle2 size={16} />
           </button>
         </div>
       </div>

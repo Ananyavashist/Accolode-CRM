@@ -210,8 +210,8 @@ export function ClientNoteDatePicker({
         aria-haspopup="dialog"
         aria-controls={listId}
       >
-        <Calendar size={16} className="text-ink-muted" />
         {formatPickerLabel(value)}
+        <Calendar size={16} className="text-ink-muted" />
         <ChevronDown
           size={16}
           className={cn("text-ink-muted transition-transform", open && "rotate-180")}

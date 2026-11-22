@@ -7,8 +7,11 @@ import {
   ListFilter,
   Notes,
   Pencil,
+  Plus,
+  RotateCw,
   Search,
   UnfoldMore,
+  X,
 } from "@/components/ui/icons";
 import { ClientDatabaseKanban } from "@/components/database/ClientDatabaseKanban";
 import { ConfirmDialog, useConfirmAction } from "@/components/ui/ConfirmDialog";
@@ -274,23 +277,27 @@ export function ClientDatabase() {
                 type="button"
                 onClick={() => setListView("table")}
                 className={cn(
-                  "inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm font-medium transition-colors",
-                  listView === "table" ? "bg-surface text-ink shadow-sm" : "text-ink-muted hover:text-ink",
+                  "inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm transition-colors",
+                  listView === "table"
+                    ? "bg-surface font-semibold text-ink shadow-sm"
+                    : "font-medium text-ink-muted hover:text-ink",
                 )}
               >
-                <Notes size={15} />
                 Table
+                <Notes size={15} />
               </button>
               <button
                 type="button"
                 onClick={() => setListView("kanban")}
                 className={cn(
-                  "inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm font-medium transition-colors",
-                  listView === "kanban" ? "bg-surface text-ink shadow-sm" : "text-ink-muted hover:text-ink",
+                  "inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm transition-colors",
+                  listView === "kanban"
+                    ? "bg-surface font-semibold text-ink shadow-sm"
+                    : "font-medium text-ink-muted hover:text-ink",
                 )}
               >
-                <LayoutGrid size={15} />
                 Kanban
+                <LayoutGrid size={15} />
               </button>
             </div>
             <div className="flex flex-wrap gap-1">
@@ -386,18 +393,20 @@ export function ClientDatabase() {
             <div className="flex gap-2">
               <button
                 type="button"
-                className="btn-outline !w-auto text-sm"
+                className="btn-outline !w-auto gap-1.5 text-sm"
                 disabled={selected.size !== 1}
                 onClick={editSelected}
               >
                 Edit
+                <Pencil size={16} />
               </button>
               <button
                 type="button"
-                className="btn-outline !w-auto text-sm text-status-awaiting"
+                className="btn-outline !w-auto gap-1.5 text-sm text-status-awaiting"
                 onClick={confirmDeleteSelected}
               >
                 Delete
+                <X size={16} />
               </button>
             </div>
           </div>
@@ -444,8 +453,9 @@ export function ClientDatabase() {
                         title="No clients match"
                         description="Clear the search or stage tab to see everyone."
                         action={
-                          <button className="btn-outline" onClick={refreshView}>
+                          <button className="btn-outline gap-1.5" onClick={refreshView}>
                             Clear filters
+                            <RotateCw size={16} />
                           </button>
                         }
                       />
@@ -454,8 +464,9 @@ export function ClientDatabase() {
                         title="Add your first client"
                         description="Accept a lead or add a walk in so the book is not empty."
                         action={
-                          <button onClick={openAddClient} className="btn-primary">
+                          <button onClick={openAddClient} className="btn-primary gap-1.5">
                             Add Client
+                            <Plus size={16} />
                           </button>
                         }
                       />
