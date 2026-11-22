@@ -5,12 +5,12 @@ export default {
     extend: {
       colors: {
         primary: {
-          DEFAULT: "#4E8054",
-          50: "#F3FAF4",
-          100: "#DCEEDE",
-          600: "#4E8054",
-          700: "#427048",
-          800: "#365C3B",
+          DEFAULT: "#124553",
+          50: "#E9F3F5",
+          100: "#C5DDE3",
+          600: "#124553",
+          700: "#0E3A45",
+          800: "#0A2E38",
         },
         sidebar: "#F9FAFB",
         surface: "#FFFFFF",
@@ -23,15 +23,15 @@ export default {
         status: {
           awaiting: "#B42318",
           awaitingBg: "#FFE9EE",
-          active: "#1A5F6B",
-          activeBg: "#E8F2F4",
+          active: "#124553",
+          activeBg: "#E9F3F5",
           completed: "#157A3A",
           completedBg: "#E7F6EC",
           warning: "#B45309",
           warningBg: "#FEF3C7",
         },
         accentLav: "#C9C2F2",
-        accentGreen: "#B7E4C7",
+        accentGreen: "#C5DDE3",
         accentAmber: "#FBD38D",
         doc: {
           rose: "#FFF1F2",
@@ -39,13 +39,13 @@ export default {
           cream: "#FFFBEB",
         },
         leadsBar: {
-          /** Light sage wash — green-tinted, not yellow */
-          bg: "#F2F8F3",
+          /** Light teal wash aligned with logo primary */
+          bg: "#E9F3F5",
         },
         swatch: {
           charcoal: "#292929",
-          forest: "#4E8054",
-          mint: "#B8D4BC",
+          forest: "#124553",
+          mint: "#7EB8C4",
         },
         chart: {
           primary: "#124553",

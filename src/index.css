@@ -5,6 +5,9 @@
 @layer base {
   :root {
     color-scheme: light;
+    --brand: #124553;
+    --brand-hover: #0e3a45;
+    --brand-soft: #e9f3f5;
   }
 
   html,
@@ -139,7 +142,16 @@
   }
 
   .btn-primary {
-    @apply btn bg-primary text-white hover:bg-primary-700;
+    @apply btn border border-transparent text-white;
+    background-color: var(--brand);
+  }
+
+  .btn-primary:hover {
+    background-color: var(--brand-hover);
+  }
+
+  .btn-primary:disabled {
+    @apply opacity-50;
   }
 
   .btn-outline {
@@ -151,8 +163,7 @@
   }
 
   .btn-leads-banner-cta {
-    @apply btn-secondary !w-auto shrink-0 border-hairline bg-sidebar;
-    @apply hover:border-primary-100 hover:bg-surface;
+    @apply btn-primary !w-auto shrink-0;
   }
 
   .btn-ghost {
@@ -177,7 +188,7 @@
   }
 
   .tab-underline-active {
-    @apply border-ink text-ink;
+    @apply border-ink font-semibold text-ink;
   }
 
   .profile-category-tab {

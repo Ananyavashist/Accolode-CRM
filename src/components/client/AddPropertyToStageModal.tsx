@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Search, X } from "@/components/ui/icons";
+import { Plus, Search, X } from "@/components/ui/icons";
 import { PillDropdown } from "@/components/ui/PillDropdown";
 import { listingsForBroker } from "@/data/brokerListings";
 import { HOME_STAGE_LABELS, type HomeStageId } from "@/data/clientHomesByStage";
@@ -180,9 +180,10 @@ export function AddPropertyToStageModal({
               <button
                 type="button"
                 onClick={() => onSelect(listing, targetStage)}
-                className="btn-primary !h-9 shrink-0 self-center !px-3 text-sm"
+                className="btn-primary !h-9 shrink-0 gap-1.5 self-center !px-3 text-sm"
               >
                 Add
+                <Plus size={16} />
               </button>
             </li>
           ))}

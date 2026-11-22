@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Plus, Search } from "@/components/ui/icons";
+import { Plus, RotateCw, Search } from "@/components/ui/icons";
 import { Avatar } from "@/components/ui/Avatar";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { PageHeader } from "@/components/ui/PageHeader";
@@ -34,8 +34,9 @@ export function StaffList() {
         title="Staff List"
         description="Manage brokers and field agents on your team"
         trailing={
-          <button type="button" className="btn-primary">
-            Add Staff <Plus size={16} />
+          <button type="button" className="btn-primary gap-1.5">
+            Add Staff
+            <Plus size={16} />
           </button>
         }
       />
@@ -110,8 +111,9 @@ export function StaffList() {
             title="No staff match your search"
             description="Try a different name, role, or location."
             action={
-              <button className="btn-ghost" onClick={() => setQuery("")}>
+              <button className="btn-ghost gap-1.5" onClick={() => setQuery("")}>
                 Clear search
+                <RotateCw size={16} />
               </button>
             }
           />

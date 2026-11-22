@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { ListFilter, Search, X } from "@/components/ui/icons";
+import { CheckCircle2, ListFilter, RotateCw, Search, X } from "@/components/ui/icons";
 import { progressStageLabel } from "@/lib/pipeline";
 import { PROGRESS_STAGE_OPTIONS } from "@/types";
 import { EMPTY_DATABASE_FILTERS, type DatabaseFilters } from "@/components/database/databaseFilters";
@@ -146,16 +146,19 @@ export function ClientDatabaseFilterDrawer({
           <button
             type="button"
             onClick={() => onChange(EMPTY_DATABASE_FILTERS)}
-            className="btn-ghost !w-auto text-sm"
+            className="btn-ghost !w-auto gap-1.5 text-sm"
           >
             Reset
+            <RotateCw size={16} />
           </button>
           <div className="flex gap-2">
-            <button type="button" onClick={onSave} className="btn-outline !w-auto">
+            <button type="button" onClick={onSave} className="btn-outline !w-auto gap-1.5">
               Save
+              <CheckCircle2 size={16} />
             </button>
-            <button type="button" onClick={onApply} className="btn-primary !w-auto">
+            <button type="button" onClick={onApply} className="btn-primary !w-auto gap-1.5">
               Apply now
+              <CheckCircle2 size={16} />
             </button>
           </div>
         </footer>

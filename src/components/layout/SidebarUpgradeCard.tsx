@@ -1,12 +1,14 @@
 import { Sparkles } from "@/components/ui/icons";
+import { SidebarIconTooltip } from "@/components/layout/SidebarIconTooltip";
 import { formatTrialDaysLeft, trialDaysRemaining } from "@/lib/trial";
 import { useBroker } from "@/store/BrokerContext";
 
 interface SidebarUpgradeCardProps {
   collapsed: boolean;
+  showTooltips?: boolean;
 }
 
-export function SidebarUpgradeCard({ collapsed }: SidebarUpgradeCardProps) {
+export function SidebarUpgradeCard({ collapsed, showTooltips = false }: SidebarUpgradeCardProps) {
   const { profile, session } = useBroker();
   const trialStart = profile.onboardingCompletedAt ?? session?.signedInAt ?? profile.updatedAt;
   const daysLeft = trialDaysRemaining(trialStart);
@@ -15,22 +17,23 @@ export function SidebarUpgradeCard({ collapsed }: SidebarUpgradeCardProps) {
   if (collapsed) {
     return (
       <div className="flex justify-center py-2">
-        <button
-          type="button"
-          className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-white shadow-sm transition-colors hover:bg-primary-700"
-          aria-label={`Upgrade to Pro · ${daysLabel}`}
-          title={`Upgrade to Pro · ${daysLabel}`}
-        >
-          <Sparkles size={18} />
-        </button>
+        <SidebarIconTooltip show={showTooltips} label={`Upgrade to Pro · ${daysLabel}`}>
+          <button
+            type="button"
+            className="btn-primary flex !h-10 !w-10 shrink-0 items-center justify-center !rounded-full !p-0 shadow-sm"
+            aria-label={`Upgrade to Pro · ${daysLabel}`}
+          >
+            <Sparkles size={18} />
+          </button>
+        </SidebarIconTooltip>
       </div>
     );
   }
 
   return (
-    <div className="rounded-2xl border border-primary/15 bg-primary-50 p-4">
+    <div className="rounded-2xl border border-primary bg-surface p-4">
       <div className="flex items-start gap-3">
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-primary/20 bg-surface text-primary">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-primary bg-surface text-primary shadow-sm">
           <Sparkles size={18} aria-hidden />
         </span>
         <div className="min-w-0">
@@ -44,12 +47,13 @@ export function SidebarUpgradeCard({ collapsed }: SidebarUpgradeCardProps) {
       </p>
       <button
         type="button"
-        className="btn-primary mt-4 w-full"
+        className="btn-primary mt-4 w-full gap-1.5"
         onClick={() => {
           /* demo CTA */
         }}
       >
         Upgrade to Pro
+        <Sparkles size={16} />
       </button>
     </div>
   );

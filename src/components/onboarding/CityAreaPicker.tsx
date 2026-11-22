@@ -73,8 +73,8 @@ export function CityAreaPicker({ cities, onChange, error }: CityAreaPickerProps)
             </select>
           </label>
           <button type="button" onClick={addCity} className="btn-outline !w-auto gap-1.5" disabled={!pickCity}>
-            <Plus size={16} />
             Add city
+            <Plus size={16} />
           </button>
         </div>
       )}

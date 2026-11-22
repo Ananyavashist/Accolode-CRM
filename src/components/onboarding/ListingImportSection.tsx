@@ -1,7 +1,8 @@
 import { useRef, useState } from "react";
 import type { BrokerProfile } from "@/types/broker";
 import { buildReferralUrl, generateReferralToken, maskReferralUrl } from "@/lib/brokerReferral";
-import { PaperclipIcon } from "@/components/ui/icons";
+import { ChevronDown, PaperclipIcon, Sparkles } from "@/components/ui/icons";
+import { cn } from "@/lib/utils";
 interface ListingImportSectionProps {
   profile: BrokerProfile;
   onChange: (patch: Partial<BrokerProfile>) => void;
@@ -105,8 +106,9 @@ export function ListingImportSection({ profile, onChange, errors }: ListingImpor
         <p className="mt-1 text-xs text-ink-muted">
           Share this encrypted style link with prospects after onboarding.
         </p>
-        <button type="button" onClick={generateLink} className="btn-primary mt-3 !w-auto">
+        <button type="button" onClick={generateLink} className="btn-primary mt-3 !w-auto gap-1.5">
           Generate personal link
+          <Sparkles size={16} />
         </button>
         {profile.referralLink && (
           <div className="mt-3 space-y-2">
@@ -115,10 +117,11 @@ export function ListingImportSection({ profile, onChange, errors }: ListingImpor
               <button
                 type="button"
                 onClick={() => setShowLink((v) => !v)}
-                className="btn-outline !w-auto px-3"
+                className="btn-outline !w-auto gap-1.5 px-3"
                 aria-label={showLink ? "Hide link" : "Show link"}
               >
                 {showLink ? "Hide" : "Show"}
+                <ChevronDown size={16} className={cn(showLink && "rotate-180")} />
               </button>
             </div>
           </div>

@@ -93,15 +93,16 @@ export function Topbar({ onOpenMobile }: TopbarProps) {
         disabled={!profile.referralLink}
         className="btn-secondary !w-auto shrink-0 gap-1.5 disabled:opacity-50"
       >
-        <Share2 size={16} />
         {shareCopied ? "Link copied" : "Share my link"}
+        <Share2 size={16} />
       </button>
       <button
         type="button"
         onClick={openAddClient}
         className="btn-primary !w-auto shrink-0 gap-1.5"
       >
-        Add Client <Plus size={16} />
+        Add Client
+        <Plus size={16} />
       </button>
       <span className="relative inline-flex shrink-0">
         <button type="button" className="icon-btn peer" aria-label="Import">

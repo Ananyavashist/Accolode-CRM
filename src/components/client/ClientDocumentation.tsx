@@ -188,8 +188,8 @@ export function ClientDocumentation() {
                 view === "list" ? "bg-surface text-ink shadow-sm" : "text-ink-muted hover:text-ink",
               )}
             >
-              <Notes size={15} />
               List
+              <Notes size={15} />
             </button>
             <button
               type="button"
@@ -199,8 +199,8 @@ export function ClientDocumentation() {
                 view === "kanban" ? "bg-surface text-ink shadow-sm" : "text-ink-muted hover:text-ink",
               )}
             >
-              <LayoutGrid size={15} />
               Kanban
+              <LayoutGrid size={15} />
             </button>
           </div>
           <button
@@ -208,8 +208,8 @@ export function ClientDocumentation() {
             onClick={() => setUploadOpen(true)}
             className="btn-outline !w-auto gap-1.5 text-sm"
           >
-            <DataUpload size={16} />
             Upload
+            <DataUpload size={16} />
           </button>
         </div>
       </div>

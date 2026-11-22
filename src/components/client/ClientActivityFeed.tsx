@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 
 const ICON_BY_TYPE: Record<ClientActivityType, { Icon: typeof Phone; wrap: string }> = {
   call: { Icon: Phone, wrap: "bg-[#E8F2FF] text-[#2563EB]" },
-  visit: { Icon: Calendar, wrap: "bg-[#E6F6EF] text-[#0D8A5B]" },
+  visit: { Icon: Calendar, wrap: "bg-primary-50 text-primary" },
   task: { Icon: FileText, wrap: "bg-ink text-white" },
   email: { Icon: Mail, wrap: "bg-[#F0E8FF] text-[#7C3AED]" },
 };

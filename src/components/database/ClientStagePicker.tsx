@@ -5,7 +5,7 @@ import { PROGRESS_STAGE_OPTIONS, type ProgressStage } from "@/types";
 import { cn } from "@/lib/utils";
 
 export const DATABASE_STAGE_PASTEL: Record<ProgressStage, string> = {
-  Inquiry: "bg-[#DDF4E8] text-[#1B6B45]",
+  Inquiry: "bg-primary-50 text-primary",
   "Site Visit": "bg-[#EDE4FF] text-[#5B3FA8]",
   Negotiation: "bg-[#FFE8D6] text-[#9A4D12]",
   Documentation: "bg-[#FCE4F0] text-[#9D2463]",

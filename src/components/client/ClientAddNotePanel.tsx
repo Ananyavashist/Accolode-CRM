@@ -1,5 +1,5 @@
 import { useId, useState } from "react";
-import { ChevronDown, MoreHorizontal } from "@/components/ui/icons";
+import { ChevronDown, MoreHorizontal, Plus } from "@/components/ui/icons";
 import {
   ClientNoteDatePicker,
   formatNoteDate,
@@ -118,11 +118,12 @@ export function ClientAddNotePanel({
               onClick={handleAdd}
               disabled={!body.trim()}
               className={cn(
-                "btn-primary h-8 !w-auto shrink-0 px-4 text-[14px]",
+                "btn-primary h-8 !w-auto shrink-0 gap-1.5 px-4 text-[14px]",
                 !body.trim() && "pointer-events-none opacity-50",
               )}
             >
               Add note
+              <Plus size={16} />
             </button>
           </div>
         </div>

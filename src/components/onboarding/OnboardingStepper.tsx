@@ -58,7 +58,7 @@ export function OnboardingStepper({
                 className={cn(
                   "icon-btn h-8 w-8 shrink-0 border",
                   isActive && "border-primary/30 bg-primary/5 text-primary",
-                  isComplete && !isActive && "border-status-completed/30 bg-status-completedBg text-status-completed",
+                  isComplete && !isActive && "border-primary/25 bg-primary-50 text-primary",
                   isUpcoming && "border-hairline bg-sidebar text-ink-soft",
                 )}
               >

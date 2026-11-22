@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import {
   Calendar,
   LayoutGrid,
+  DataImport,
   ListFilter,
   Notes,
   Search,
@@ -339,11 +340,12 @@ export function DealPipelineWorkspace() {
             className="h-9 w-full shrink-0 gap-1.5 border border-hairline bg-surface px-3 text-sm font-medium text-ink sm:w-auto"
           />
           <button type="button" className="btn-outline gap-1.5">
-            <ListFilter size={16} />
             Filter
+            <ListFilter size={16} />
           </button>
           <button type="button" className="btn-outline gap-1.5">
             Import
+            <DataImport size={16} />
           </button>
         </div>
       </div>

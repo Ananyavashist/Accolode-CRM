@@ -95,10 +95,10 @@ export function CalendarPage() {
     <div className="page">
       <PageHeader
         title="Calendar"
-        description="Track tours, calls and meetings with your clients"
         trailing={
-          <button type="button" onClick={() => setAddOpen(true)} className="btn-primary">
-            Add Event <Plus size={16} />
+          <button type="button" onClick={() => setAddOpen(true)} className="btn-primary gap-1.5">
+            Add Event
+            <Plus size={16} />
           </button>
         }
       />
@@ -119,8 +119,9 @@ export function CalendarPage() {
             </div>
             <div className="flex flex-wrap items-center gap-3">
               {(Object.keys(TYPE_STYLES) as EventType[]).map((t) => (
-                <span key={t} className="flex items-center gap-1.5 text-xs text-ink-muted">
-                  <span className={cn("h-2 w-2 rounded-full", TYPE_STYLES[t].dot)} /> {t}
+                <span key={t} className="flex items-center gap-1.5 text-[14px] text-ink-muted">
+                  <span className={cn("h-2.5 w-2.5 shrink-0 rounded-full", TYPE_STYLES[t].dot)} />
+                  {t}
                 </span>
               ))}
             </div>
@@ -183,7 +184,7 @@ export function CalendarPage() {
           <h2 className="text-ink">
             {selectedEvents.length > 0 ? "Schedule" : "Upcoming Schedule"}
           </h2>
-          <p className="mt-0.5 text-sm text-ink-muted">
+          <p className="mt-0.5 text-[14px] text-ink-muted">
             {selectedEvents.length > 0
               ? parseLocal(selected).toLocaleDateString("en-US", {
                   weekday: "long",
@@ -195,18 +196,18 @@ export function CalendarPage() {
 
           <div className="mt-3 space-y-2.5 overflow-y-auto lg:max-h-[560px]">
             {(selectedEvents.length > 0 ? selectedEvents : upcoming).map((e, i) => (
-              <div key={`${e.date}-${e.time}-${e.title}-${i}`} className="rounded-[10px] border border-hairline p-3">
+              <div key={`${e.date}-${e.time}-${e.title}-${i}`} className="rounded-[10px] border border-hairline p-3 text-[14px]">
                 <div className="flex items-center justify-between gap-2">
-                  <span className={cn("pill", TYPE_STYLES[e.type].chip)}>{e.type}</span>
-                  <span className="flex items-center gap-1 text-xs text-ink-soft">
-                    <Clock size={12} /> {e.time}
+                  <span className={cn("pill text-[14px]", TYPE_STYLES[e.type].chip)}>{e.type}</span>
+                  <span className="flex items-center gap-1.5 text-[14px] text-ink-soft">
+                    <Clock size={14} /> {e.time}
                   </span>
                 </div>
-                <p className="mt-2 text-sm font-medium text-ink">{e.title}</p>
-                <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-ink-muted">
+                <p className="mt-2 text-[14px] font-medium text-ink">{e.title}</p>
+                <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-[14px] text-ink-muted">
                   <span>{e.client}</span>
-                  <span className="flex items-center gap-1">
-                    <MapPin size={12} /> {e.location}
+                  <span className="flex items-center gap-1.5">
+                    <MapPin size={14} /> {e.location}
                   </span>
                   {selectedEvents.length === 0 && (
                     <span>
@@ -225,8 +226,9 @@ export function CalendarPage() {
                 description="Add a tour or call so the week is not empty."
                 className="py-8"
                 action={
-                  <button onClick={() => setAddOpen(true)} className="btn-primary">
+                  <button onClick={() => setAddOpen(true)} className="btn-primary gap-1.5">
                     Add event
+                    <Plus size={16} />
                   </button>
                 }
               />

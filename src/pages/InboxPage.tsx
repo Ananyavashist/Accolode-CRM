@@ -1,6 +1,7 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import {
+  ChevronLeft,
   ListFilter,
   PaperclipIcon,
   Phone,
@@ -75,8 +76,9 @@ function ChatThread({
       <header className="flex shrink-0 items-center justify-between gap-3 border-b border-hairline px-4 py-3">
         <div className="flex min-w-0 items-center gap-3">
           {onBack && (
-            <button type="button" onClick={onBack} className="btn-ghost !w-auto lg:hidden">
+            <button type="button" onClick={onBack} className="btn-ghost !w-auto gap-1.5 lg:hidden">
               Back
+              <ChevronLeft size={16} />
             </button>
           )}
           <Avatar name={conversation.name} src={conversation.avatar} size={40} />
@@ -141,10 +143,11 @@ function ChatThread({
         />
         <button
           type="submit"
-          className="btn-primary !w-auto shrink-0 !px-2.5"
+          className="btn-primary !w-auto shrink-0 gap-1.5 !px-3"
           aria-label="Send message"
         >
-          <Send size={18} />
+          Send
+          <Send size={16} />
         </button>
       </form>
     </div>

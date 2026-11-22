@@ -4,6 +4,7 @@ import { ChevronRight, Logout, MapPin, Settings, UserCircle } from "@/components
 import { Avatar } from "@/components/ui/Avatar";
 import { AVATAR_IMAGES } from "@/data/images";
 import { useBroker } from "@/store/BrokerContext";
+import { SidebarIconTooltip } from "@/components/layout/SidebarIconTooltip";
 import { cn } from "@/lib/utils";
 
 interface ProfilePopupProps {
@@ -93,9 +94,10 @@ export function ProfilePopup({ open, onClose, collapsed }: ProfilePopupProps) {
 
 interface SidebarProfileProps {
   collapsed: boolean;
+  showTooltips?: boolean;
 }
 
-export function SidebarProfile({ collapsed }: SidebarProfileProps) {
+export function SidebarProfile({ collapsed, showTooltips = false }: SidebarProfileProps) {
   const [open, setOpen] = useState(false);
   const { profile } = useBroker();
   const displayName = profile.fullName || "Broker";
@@ -104,26 +106,33 @@ export function SidebarProfile({ collapsed }: SidebarProfileProps) {
   return (
     <>
       <div className="border-t border-hairline px-3 pb-5 pt-3">
-        <button
-          type="button"
-          onClick={() => setOpen((v) => !v)}
-          className={cn(
-            "flex w-full items-center gap-2.5 rounded-xl px-2 py-2 transition-colors hover:bg-hairline",
-            collapsed && "lg:justify-center lg:px-0",
-          )}
-          aria-expanded={open}
-          aria-haspopup="menu"
+        <SidebarIconTooltip
+          show={showTooltips}
+          label={displayName}
+          className={cn(collapsed && "lg:flex lg:justify-center")}
         >
-          <Avatar name={displayName} src={avatarSrc} size={32} />
-          {!collapsed && (
-            <>
-              <span className="min-w-0 flex-1 truncate text-left text-sm font-semibold text-ink">
-                {displayName}
-              </span>
-              <ChevronRight size={16} className="shrink-0 text-ink-soft" />
-            </>
-          )}
-        </button>
+          <button
+            type="button"
+            onClick={() => setOpen((v) => !v)}
+            className={cn(
+              "flex w-full items-center gap-2.5 rounded-xl px-2 py-2 transition-colors hover:bg-hairline",
+              collapsed && "lg:justify-center lg:px-0",
+            )}
+            aria-expanded={open}
+            aria-haspopup="menu"
+            aria-label={showTooltips ? displayName : undefined}
+          >
+            <Avatar name={displayName} src={avatarSrc} size={32} />
+            {!collapsed && (
+              <>
+                <span className="min-w-0 flex-1 truncate text-left text-sm font-semibold text-ink">
+                  {displayName}
+                </span>
+                <ChevronRight size={16} className="shrink-0 text-ink-soft" />
+              </>
+            )}
+          </button>
+        </SidebarIconTooltip>
       </div>
       <ProfilePopup open={open} onClose={() => setOpen(false)} collapsed={collapsed} />
     </>

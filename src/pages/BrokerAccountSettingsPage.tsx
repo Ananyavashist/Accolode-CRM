@@ -34,8 +34,8 @@ export function BrokerAccountSettingsPage() {
           />
         </label>
         <button type="button" onClick={handleLogout} className="btn-outline w-full gap-2 text-status-awaiting">
-          <Logout size={18} />
           Log out
+          <Logout size={18} />
         </button>
       </div>
     </div>

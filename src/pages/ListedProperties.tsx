@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { MapPin, Plus, Search, SlidersHorizontal } from "@/components/ui/icons";
+import { MapPin, Plus, RotateCw, Search, SlidersHorizontal } from "@/components/ui/icons";
 import { StatCard } from "@/components/ui/StatCard";
 import { LISTED_PROPERTIES } from "@/data/listings";
 import type { ListingStatus } from "@/types";
@@ -43,17 +43,18 @@ export function ListedProperties() {
       <PageHeader
         title="Properties"
         trailing={
-          <button type="button" className="btn-primary">
-            Add Property <Plus size={16} />
+          <button type="button" className="btn-primary gap-1.5">
+            Add Property
+            <Plus size={16} />
           </button>
         }
       />
 
       <div className="grid grid-cols-1 gap-section sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard title="Total Listed" value={stats.total} trend="4.2%" subtitle="across all cities" />
-        <StatCard title="For Rent" value={stats.rent} trend="2.1%" subtitle="active rental listings" />
-        <StatCard title="For Sale" value={stats.sale} trend="1.8%" subtitle="sale inventory" />
-        <StatCard title="Sold properties" value={stats.sold} trend="6.0%" subtitle="completed sales" />
+        <StatCard title="Total Listed" value={stats.total} trend="4.2%" />
+        <StatCard title="For Rent" value={stats.rent} trend="2.1%" />
+        <StatCard title="For Sale" value={stats.sale} trend="1.8%" />
+        <StatCard title="Sold properties" value={stats.sold} trend="6.0%" />
       </div>
 
       <div className="section-card p-4">
@@ -83,8 +84,9 @@ export function ListedProperties() {
                 className="input-field pl-9"
               />
             </div>
-            <button className="btn-outline shrink-0">
-              Filters <SlidersHorizontal size={16} />
+            <button className="btn-outline shrink-0 gap-1.5">
+              Filters
+              <SlidersHorizontal size={16} />
             </button>
           </div>
         </div>
@@ -105,34 +107,36 @@ export function ListedProperties() {
                 <TypeChip
                   type={property.type}
                   label={property.type === "Rent" ? "For Rent" : "For Sale"}
-                  className="absolute left-3 top-3"
+                  className="absolute left-3 top-3 !text-sm"
                 />
               </div>
-              <div className="space-y-2 px-3 pb-4">
+              <div className="space-y-2.5 px-3 pb-4 text-sm text-ink-muted">
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
-                    <h3 className="truncate text-sm font-semibold text-ink">{property.name}</h3>
-                    <p className="mt-0.5 inline-flex items-center gap-1 truncate text-xs text-ink-muted">
-                      <MapPin size={12} className="shrink-0" />
+                    <h3 className="truncate text-base font-semibold text-ink">{property.name}</h3>
+                    <p className="mt-1 inline-flex items-center gap-1 truncate">
+                      <MapPin size={14} className="shrink-0" />
                       {property.location}, {property.city}
                     </p>
                   </div>
-                  <span className="shrink-0 text-sm font-semibold text-primary">{property.price}</span>
+                  <span className="shrink-0 text-base font-semibold text-primary">{property.price}</span>
                 </div>
-                <div className="flex flex-wrap items-center gap-2 text-xs text-ink-muted">
-                  <span className="pill bg-sidebar text-ink-muted">{property.bhk}</span>
-                  <span className="pill bg-sidebar text-ink-muted">{property.sqft}</span>
-                  <span className="pill bg-sidebar text-ink-muted">{property.tag}</span>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="rounded-md bg-sidebar px-2 py-1 text-sm text-ink-muted">{property.bhk}</span>
+                  <span className="rounded-md bg-sidebar px-2 py-1 text-sm text-ink-muted">{property.sqft}</span>
+                  <span className="rounded-md bg-sidebar px-2 py-1 text-sm text-ink-muted">{property.tag}</span>
                 </div>
-                <div className="flex items-center justify-between gap-2 border-t border-hairline pt-2">
-                  <span className={cn("pill", STATUS_STYLES[property.status])}>{property.status}</span>
-                  <span className="truncate text-xs text-ink-muted">Listed {property.listedDate}</span>
+                <div className="flex items-center justify-between gap-2 border-t border-hairline pt-2.5">
+                  <span
+                    className={cn(
+                      "rounded-md px-2 py-1 text-sm font-medium",
+                      STATUS_STYLES[property.status],
+                    )}
+                  >
+                    {property.status}
+                  </span>
+                  <span className="truncate">Listed {property.listedDate}</span>
                 </div>
-                {property.brokerName && (
-                  <p className="text-xs text-ink-muted">
-                    Broker handling: <span className="font-medium text-ink">{property.brokerName}</span>
-                  </p>
-                )}
               </div>
             </article>
           ))}
@@ -144,13 +148,14 @@ export function ListedProperties() {
             description="Clear search or switch type to see listings again."
             action={
               <button
-                className="btn-outline"
+                className="btn-outline gap-1.5"
                 onClick={() => {
                   setQuery("");
                   setTypeTab("All");
                 }}
               >
                 Clear filters
+                <RotateCw size={16} />
               </button>
             }
           />

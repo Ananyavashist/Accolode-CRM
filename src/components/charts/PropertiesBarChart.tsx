@@ -13,7 +13,7 @@ import {
 import type { TooltipProps } from "recharts";
 import type { PropertiesPoint } from "@/data/charts";
 import { ArrowDown, ArrowUp } from "@/components/ui/icons";
-import { PROPERTY_OVERVIEW_COLORS, CHART } from "@/lib/theme";
+import { CHART, DATA_PALETTE, PROPERTY_OVERVIEW_COLORS } from "@/lib/theme";
 import { cn } from "@/lib/utils";
 
 const CHART_YEAR = 2026;
@@ -239,7 +239,7 @@ export function PropertiesBarChart({
             {rows.map((entry) => (
               <Cell
                 key={`rent-${entry.month}`}
-                stroke={entry.month === highlightedMonth ? "#1B4332" : "transparent"}
+                stroke={entry.month === highlightedMonth ? DATA_PALETTE.teal : "transparent"}
                 strokeWidth={entry.month === highlightedMonth ? 1.5 : 0}
               />
             ))}
@@ -254,7 +254,7 @@ export function PropertiesBarChart({
             {rows.map((entry) => (
               <Cell
                 key={`sold-${entry.month}`}
-                stroke={entry.month === highlightedMonth ? "#1B4332" : "transparent"}
+                stroke={entry.month === highlightedMonth ? DATA_PALETTE.teal : "transparent"}
                 strokeWidth={entry.month === highlightedMonth ? 1.5 : 0}
               />
             ))}
